@@ -10,31 +10,33 @@ import SwiftUI
 struct AppSidebarNavigation: View {
 
     enum NavigationItem {
-        case menu
+        case productType
+        case documentType
+        case recent
         case favorites
         case recipes
     }
 
     @EnvironmentObject private var model: Model
     @State private var presentingRewards: Bool = false
-    @State private var selection: NavigationItem? = .menu
+    @State private var selection: NavigationItem? = .productType
     
     var body: some View {
         NavigationView {
             List {
-                NavigationLink(tag: NavigationItem.menu, selection: $selection) {
-                    ProductMenu()
+                NavigationLink(tag: NavigationItem.productType, selection: $selection) {
+                    ProductTypeMenu()
                 } label: {
                     Label("Products", systemImage: "list.bullet")
                 }
                 
-                NavigationLink(tag: NavigationItem.menu, selection: $selection) {
+                NavigationLink(tag: NavigationItem.documentType, selection: $selection) {
                     ProductMenu()
                 } label: {
                     Label("Documents", systemImage: "doc")
                 }
                 
-                NavigationLink(tag: NavigationItem.menu, selection: $selection) {
+                NavigationLink(tag: NavigationItem.recent, selection: $selection) {
                     ProductMenu()
                 } label: {
                     Label("Recent", systemImage: "clock")

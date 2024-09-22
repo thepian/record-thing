@@ -7,6 +7,80 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3E6BBAF22C977E5A00F53B63 /* DocumentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBAF12C977E5A00F53B63 /* DocumentType.swift */; };
+		3E6BBAF32C977E5A00F53B63 /* DocumentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBAF12C977E5A00F53B63 /* DocumentType.swift */; };
+		3E6BBAF42C977E5A00F53B63 /* DocumentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBAF12C977E5A00F53B63 /* DocumentType.swift */; };
+		3E6BBAF52C977E5A00F53B63 /* DocumentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBAF12C977E5A00F53B63 /* DocumentType.swift */; };
+		3E6BBAF62C977E5A00F53B63 /* DocumentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBAF12C977E5A00F53B63 /* DocumentType.swift */; };
+		3E6BBAF72C977E5A00F53B63 /* DocumentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBAF12C977E5A00F53B63 /* DocumentType.swift */; };
+		3E6BBAF82C977E5A00F53B63 /* DocumentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBAF12C977E5A00F53B63 /* DocumentType.swift */; };
+		3E6BBAFA2C981D9C00F53B63 /* ProductTypeMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBAF92C981D9C00F53B63 /* ProductTypeMenu.swift */; };
+		3E6BBAFB2C981D9C00F53B63 /* ProductTypeMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBAF92C981D9C00F53B63 /* ProductTypeMenu.swift */; };
+		3E6BBAFC2C981D9C00F53B63 /* ProductTypeMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBAF92C981D9C00F53B63 /* ProductTypeMenu.swift */; };
+		3E6BBAFD2C981D9C00F53B63 /* ProductTypeMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBAF92C981D9C00F53B63 /* ProductTypeMenu.swift */; };
+		3E6BBAFE2C981D9C00F53B63 /* ProductTypeMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBAF92C981D9C00F53B63 /* ProductTypeMenu.swift */; };
+		3E6BBAFF2C981D9C00F53B63 /* ProductTypeMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBAF92C981D9C00F53B63 /* ProductTypeMenu.swift */; };
+		3E6BBB002C981D9C00F53B63 /* ProductTypeMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBAF92C981D9C00F53B63 /* ProductTypeMenu.swift */; };
+		3E6BBB032C98217E00F53B63 /* ProductTypeList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB022C98217E00F53B63 /* ProductTypeList.swift */; };
+		3E6BBB042C98217E00F53B63 /* ProductTypeList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB022C98217E00F53B63 /* ProductTypeList.swift */; };
+		3E6BBB052C98217E00F53B63 /* ProductTypeList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB022C98217E00F53B63 /* ProductTypeList.swift */; };
+		3E6BBB062C98217E00F53B63 /* ProductTypeList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB022C98217E00F53B63 /* ProductTypeList.swift */; };
+		3E6BBB072C98217E00F53B63 /* ProductTypeList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB022C98217E00F53B63 /* ProductTypeList.swift */; };
+		3E6BBB082C98217E00F53B63 /* ProductTypeList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB022C98217E00F53B63 /* ProductTypeList.swift */; };
+		3E6BBB092C98217E00F53B63 /* ProductTypeList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB022C98217E00F53B63 /* ProductTypeList.swift */; };
+		3E6BBB0B2C9F265700F53B63 /* ProductTypeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB0A2C9F265700F53B63 /* ProductTypeRow.swift */; };
+		3E6BBB0C2C9F265700F53B63 /* ProductTypeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB0A2C9F265700F53B63 /* ProductTypeRow.swift */; };
+		3E6BBB0D2C9F265700F53B63 /* ProductTypeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB0A2C9F265700F53B63 /* ProductTypeRow.swift */; };
+		3E6BBB0E2C9F265700F53B63 /* ProductTypeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB0A2C9F265700F53B63 /* ProductTypeRow.swift */; };
+		3E6BBB0F2C9F265700F53B63 /* ProductTypeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB0A2C9F265700F53B63 /* ProductTypeRow.swift */; };
+		3E6BBB102C9F265700F53B63 /* ProductTypeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB0A2C9F265700F53B63 /* ProductTypeRow.swift */; };
+		3E6BBB112C9F265700F53B63 /* ProductTypeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB0A2C9F265700F53B63 /* ProductTypeRow.swift */; };
+		3E6BBB132C9F2D5500F53B63 /* ProductType+SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB122C9F2D5500F53B63 /* ProductType+SwiftUI.swift */; };
+		3E6BBB142C9F2D5500F53B63 /* ProductType+SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB122C9F2D5500F53B63 /* ProductType+SwiftUI.swift */; };
+		3E6BBB152C9F2D5500F53B63 /* ProductType+SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB122C9F2D5500F53B63 /* ProductType+SwiftUI.swift */; };
+		3E6BBB162C9F2D5500F53B63 /* ProductType+SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB122C9F2D5500F53B63 /* ProductType+SwiftUI.swift */; };
+		3E6BBB172C9F2D5500F53B63 /* ProductType+SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB122C9F2D5500F53B63 /* ProductType+SwiftUI.swift */; };
+		3E6BBB182C9F2D5500F53B63 /* ProductType+SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB122C9F2D5500F53B63 /* ProductType+SwiftUI.swift */; };
+		3E6BBB192C9F2D5500F53B63 /* ProductType+SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB122C9F2D5500F53B63 /* ProductType+SwiftUI.swift */; };
+		3E6BBB1B2C9F3B8200F53B63 /* ProductTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB1A2C9F3B8200F53B63 /* ProductTypeView.swift */; };
+		3E6BBB1C2C9F3B8200F53B63 /* ProductTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB1A2C9F3B8200F53B63 /* ProductTypeView.swift */; };
+		3E6BBB1D2C9F3B8200F53B63 /* ProductTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB1A2C9F3B8200F53B63 /* ProductTypeView.swift */; };
+		3E6BBB1E2C9F3B8200F53B63 /* ProductTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB1A2C9F3B8200F53B63 /* ProductTypeView.swift */; };
+		3E6BBB1F2C9F3B8200F53B63 /* ProductTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB1A2C9F3B8200F53B63 /* ProductTypeView.swift */; };
+		3E6BBB202C9F3B8200F53B63 /* ProductTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB1A2C9F3B8200F53B63 /* ProductTypeView.swift */; };
+		3E6BBB212C9F3B8200F53B63 /* ProductTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB1A2C9F3B8200F53B63 /* ProductTypeView.swift */; };
+		3E6BBB232C9F3DBB00F53B63 /* ProductTypeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB222C9F3DBB00F53B63 /* ProductTypeHeaderView.swift */; };
+		3E6BBB242C9F3DBB00F53B63 /* ProductTypeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB222C9F3DBB00F53B63 /* ProductTypeHeaderView.swift */; };
+		3E6BBB252C9F3DBB00F53B63 /* ProductTypeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB222C9F3DBB00F53B63 /* ProductTypeHeaderView.swift */; };
+		3E6BBB262C9F3DBB00F53B63 /* ProductTypeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB222C9F3DBB00F53B63 /* ProductTypeHeaderView.swift */; };
+		3E6BBB272C9F3DBB00F53B63 /* ProductTypeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB222C9F3DBB00F53B63 /* ProductTypeHeaderView.swift */; };
+		3E6BBB282C9F3DBB00F53B63 /* ProductTypeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB222C9F3DBB00F53B63 /* ProductTypeHeaderView.swift */; };
+		3E6BBB292C9F3DBB00F53B63 /* ProductTypeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBB222C9F3DBB00F53B63 /* ProductTypeHeaderView.swift */; };
+		3ECD50AF2C96E3FA00755E83 /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50AE2C96E3FA00755E83 /* RecordLib */; };
+		3ECD50BF2C974E4500755E83 /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50BE2C974E4500755E83 /* RecordLib */; };
+		3ECD50C12C974E5000755E83 /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50C02C974E5000755E83 /* RecordLib */; };
+		3ECD50C32C974E5600755E83 /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50C22C974E5600755E83 /* RecordLib */; };
+		3ECD50C52C97594900755E83 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50C42C97594900755E83 /* Blackbird */; };
+		3ECD50C72C97595000755E83 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50C62C97595000755E83 /* Blackbird */; };
+		3ECD50C92C97595900755E83 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50C82C97595900755E83 /* Blackbird */; };
+		3ECD50CB2C97595F00755E83 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50CA2C97595F00755E83 /* Blackbird */; };
+		3ECD50CD2C97596500755E83 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50CC2C97596500755E83 /* Blackbird */; };
+		3ECD50CF2C97598800755E83 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50CE2C97598800755E83 /* Blackbird */; };
+		3ECD50D12C97598E00755E83 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50D02C97598E00755E83 /* Blackbird */; };
+		3ECD50D32C9759EF00755E83 /* MLModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50D22C9759EF00755E83 /* MLModel.swift */; };
+		3ECD50D42C9759EF00755E83 /* MLModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50D22C9759EF00755E83 /* MLModel.swift */; };
+		3ECD50D52C9759EF00755E83 /* MLModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50D22C9759EF00755E83 /* MLModel.swift */; };
+		3ECD50D62C9759EF00755E83 /* MLModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50D22C9759EF00755E83 /* MLModel.swift */; };
+		3ECD50D72C9759EF00755E83 /* MLModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50D22C9759EF00755E83 /* MLModel.swift */; };
+		3ECD50D82C9759EF00755E83 /* MLModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50D22C9759EF00755E83 /* MLModel.swift */; };
+		3ECD50D92C9759EF00755E83 /* MLModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50D22C9759EF00755E83 /* MLModel.swift */; };
+		3ECD50DB2C975ADA00755E83 /* ProductType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50DA2C975ADA00755E83 /* ProductType.swift */; };
+		3ECD50DC2C975ADA00755E83 /* ProductType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50DA2C975ADA00755E83 /* ProductType.swift */; };
+		3ECD50DD2C975ADA00755E83 /* ProductType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50DA2C975ADA00755E83 /* ProductType.swift */; };
+		3ECD50DE2C975ADA00755E83 /* ProductType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50DA2C975ADA00755E83 /* ProductType.swift */; };
+		3ECD50DF2C975ADA00755E83 /* ProductType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50DA2C975ADA00755E83 /* ProductType.swift */; };
+		3ECD50E02C975ADA00755E83 /* ProductType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50DA2C975ADA00755E83 /* ProductType.swift */; };
+		3ECD50E12C975ADA00755E83 /* ProductType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50DA2C975ADA00755E83 /* ProductType.swift */; };
 		610F54C926158DDB001D3AA0 /* CountButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1CD26157D870046AAA9 /* CountButton.swift */; };
 		610F54CA26158DDB001D3AA0 /* CardActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1CE26157D870046AAA9 /* CardActionButton.swift */; };
 		610F54CB26158DDB001D3AA0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1E026157D870046AAA9 /* ContentView.swift */; };
@@ -499,6 +573,16 @@
 
 /* Begin PBXFileReference section */
 		33BFC6A1DCA101BFABE069E5 /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		3E6BBAF12C977E5A00F53B63 /* DocumentType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentType.swift; sourceTree = "<group>"; };
+		3E6BBAF92C981D9C00F53B63 /* ProductTypeMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductTypeMenu.swift; sourceTree = "<group>"; };
+		3E6BBB022C98217E00F53B63 /* ProductTypeList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductTypeList.swift; sourceTree = "<group>"; };
+		3E6BBB0A2C9F265700F53B63 /* ProductTypeRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductTypeRow.swift; sourceTree = "<group>"; };
+		3E6BBB122C9F2D5500F53B63 /* ProductType+SwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProductType+SwiftUI.swift"; sourceTree = "<group>"; };
+		3E6BBB1A2C9F3B8200F53B63 /* ProductTypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductTypeView.swift; sourceTree = "<group>"; };
+		3E6BBB222C9F3DBB00F53B63 /* ProductTypeHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductTypeHeaderView.swift; sourceTree = "<group>"; };
+		3ECD50AD2C96E3E000755E83 /* RecordLib */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = RecordLib; path = ../libs/RecordLib; sourceTree = "<group>"; };
+		3ECD50D22C9759EF00755E83 /* MLModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MLModel.swift; sourceTree = "<group>"; };
+		3ECD50DA2C975ADA00755E83 /* ProductType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductType.swift; sourceTree = "<group>"; };
 		5E6123FD244E8B32004DDFF7 /* RecordThingApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordThingApp.swift; sourceTree = "<group>"; };
 		5E6123FF244E8B32004DDFF7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		610F54662615818D001D3AA0 /* NutritionFactView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NutritionFactView.swift; sourceTree = "<group>"; };
@@ -578,6 +662,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3ECD50BF2C974E4500755E83 /* RecordLib in Frameworks */,
+				3ECD50C72C97595000755E83 /* Blackbird in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -585,6 +671,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3ECD50C32C974E5600755E83 /* RecordLib in Frameworks */,
+				3ECD50CD2C97596500755E83 /* Blackbird in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -592,6 +680,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3ECD50CF2C97598800755E83 /* Blackbird in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -599,6 +688,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3ECD50D12C97598E00755E83 /* Blackbird in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -606,6 +696,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3ECD50C92C97595900755E83 /* Blackbird in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -613,6 +704,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3ECD50AF2C96E3FA00755E83 /* RecordLib in Frameworks */,
+				3ECD50C52C97594900755E83 /* Blackbird in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -620,6 +713,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3ECD50C12C974E5000755E83 /* RecordLib in Frameworks */,
+				3ECD50CB2C97595F00755E83 /* Blackbird in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -633,6 +728,18 @@
 				A594677E73BEF8AA1F7A859F /* ACKNOWLEDGMENTS.txt */,
 			);
 			path = LICENSE;
+			sourceTree = "<group>";
+		};
+		3E6BBB012C981DEB00F53B63 /* ProductType */ = {
+			isa = PBXGroup;
+			children = (
+				3E6BBAF92C981D9C00F53B63 /* ProductTypeMenu.swift */,
+				3E6BBB022C98217E00F53B63 /* ProductTypeList.swift */,
+				3E6BBB0A2C9F265700F53B63 /* ProductTypeRow.swift */,
+				3E6BBB1A2C9F3B8200F53B63 /* ProductTypeView.swift */,
+				3E6BBB222C9F3DBB00F53B63 /* ProductTypeHeaderView.swift */,
+			);
+			path = ProductType;
 			sourceTree = "<group>";
 		};
 		3ECD50932C8DFFF900755E83 /* Product */ = {
@@ -652,9 +759,17 @@
 			path = Product;
 			sourceTree = "<group>";
 		};
+		3ECD509F2C96372F00755E83 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		5E6123F7244E8B32004DDFF7 = {
 			isa = PBXGroup;
 			children = (
+				3ECD50AD2C96E3E000755E83 /* RecordLib */,
 				E036C2ED2633B2B200E15D26 /* README.md */,
 				5E6123FC244E8B32004DDFF7 /* Shared */,
 				5E612406244E8B32004DDFF7 /* iOS */,
@@ -663,6 +778,7 @@
 				5E612405244E8B32004DDFF7 /* Products */,
 				CC6C0F7AEF2D0CBC2E3EEFD6 /* Configuration */,
 				3CAE0E9B584C983E4E90807D /* LICENSE */,
+				3ECD509F2C96372F00755E83 /* Frameworks */,
 			);
 			indentWidth = 4;
 			sourceTree = "<group>";
@@ -678,6 +794,7 @@
 				6111A1DE26157D870046AAA9 /* Navigation */,
 				610F54652615818D001D3AA0 /* NutritionFacts */,
 				6111A1D826157D870046AAA9 /* Recipe */,
+				3E6BBB012C981DEB00F53B63 /* ProductType */,
 				3ECD50932C8DFFF900755E83 /* Product */,
 				6111A1D026157D870046AAA9 /* Styles */,
 				A3C268C0262FDAD50093B9DF /* Resources */,
@@ -804,9 +921,13 @@
 		6111A1E126157D870046AAA9 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				3ECD50D22C9759EF00755E83 /* MLModel.swift */,
 				6111A1E626157D870046AAA9 /* Account.swift */,
 				6111A1E426157D870046AAA9 /* Configuration.storekit */,
 				61A8CB8926166F2A002845E4 /* Model.swift */,
+				3ECD50DA2C975ADA00755E83 /* ProductType.swift */,
+				3E6BBB122C9F2D5500F53B63 /* ProductType+SwiftUI.swift */,
+				3E6BBAF12C977E5A00F53B63 /* DocumentType.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -864,6 +985,10 @@
 				612F3D922615A2F600137D77 /* PBXTargetDependency */,
 			);
 			name = "RecordThing iOS All";
+			packageProductDependencies = (
+				3ECD50BE2C974E4500755E83 /* RecordLib */,
+				3ECD50C62C97595000755E83 /* Blackbird */,
+			);
 			productName = "Smoothies iOS";
 			productReference = 610F550626158DDB001D3AA0 /* RecordThing iOS All.app */;
 			productType = "com.apple.product-type.application";
@@ -884,6 +1009,10 @@
 				610F55B7261592F9001D3AA0 /* PBXTargetDependency */,
 			);
 			name = "RecordThing macOS All";
+			packageProductDependencies = (
+				3ECD50C22C974E5600755E83 /* RecordLib */,
+				3ECD50CC2C97596500755E83 /* Blackbird */,
+			);
 			productName = "Smoothies macOS";
 			productReference = 610F554926158DE2001D3AA0 /* RecordThing.app */;
 			productType = "com.apple.product-type.application";
@@ -901,6 +1030,9 @@
 			dependencies = (
 			);
 			name = "RecordThing iOS Widgets";
+			packageProductDependencies = (
+				3ECD50CE2C97598800755E83 /* Blackbird */,
+			);
 			productName = "Fruta iOS WidgetsExtension";
 			productReference = 610F554F26158E0A001D3AA0 /* RecordThing iOS Widgets.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -918,6 +1050,9 @@
 			dependencies = (
 			);
 			name = "RecordThing macOS Widgets";
+			packageProductDependencies = (
+				3ECD50D02C97598E00755E83 /* Blackbird */,
+			);
 			productName = "Fruta macOS WidgetsExtension";
 			productReference = 610F55AA261592F8001D3AA0 /* RecordThing macOS Widgets.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -935,6 +1070,9 @@
 			dependencies = (
 			);
 			name = "RecordThing iOS Clip";
+			packageProductDependencies = (
+				3ECD50C82C97595900755E83 /* Blackbird */,
+			);
 			productName = "Fruta iOS Clip";
 			productReference = 612F3D842615A2F400137D77 /* RecordThing iOS Clip.app */;
 			productType = "com.apple.product-type.application.on-demand-install-capable";
@@ -954,6 +1092,10 @@
 			dependencies = (
 			);
 			name = "RecordThing iOS";
+			packageProductDependencies = (
+				3ECD50AE2C96E3FA00755E83 /* RecordLib */,
+				3ECD50C42C97594900755E83 /* Blackbird */,
+			);
 			productName = "Smoothies iOS";
 			productReference = E0DC7FE327B72FDC00A6417B /* RecordThing iOS.app */;
 			productType = "com.apple.product-type.application";
@@ -973,6 +1115,10 @@
 			dependencies = (
 			);
 			name = "RecordThing macOS";
+			packageProductDependencies = (
+				3ECD50C02C974E5000755E83 /* RecordLib */,
+				3ECD50CA2C97595F00755E83 /* Blackbird */,
+			);
 			productName = "Smoothies macOS";
 			productReference = E0DC802C27B7307600A6417B /* RecordThing macOS.app */;
 			productType = "com.apple.product-type.application";
@@ -1009,6 +1155,9 @@
 				Base,
 			);
 			mainGroup = 5E6123F7244E8B32004DDFF7;
+			packageReferences = (
+				3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */,
+			);
 			productRefGroup = 5E612405244E8B32004DDFF7 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1130,8 +1279,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3E6BBB0C2C9F265700F53B63 /* ProductTypeRow.swift in Sources */,
 				610F54C926158DDB001D3AA0 /* CountButton.swift in Sources */,
+				3E6BBB1C2C9F3B8200F53B63 /* ProductTypeView.swift in Sources */,
 				610F54CA26158DDB001D3AA0 /* CardActionButton.swift in Sources */,
+				3ECD50D42C9759EF00755E83 /* MLModel.swift in Sources */,
 				610F54CB26158DDB001D3AA0 /* ContentView.swift in Sources */,
 				610F54CC26158DDB001D3AA0 /* Ingredient.swift in Sources */,
 				610F54CE26158DDB001D3AA0 /* Nutritions.swift in Sources */,
@@ -1144,20 +1296,26 @@
 				610F54D626158DDB001D3AA0 /* RecordThingApp.swift in Sources */,
 				610F54D726158DDB001D3AA0 /* ProductFavoriteButton.swift in Sources */,
 				610F54D826158DDB001D3AA0 /* Account.swift in Sources */,
+				3E6BBAFB2C981D9C00F53B63 /* ProductTypeMenu.swift in Sources */,
 				610F54D926158DDB001D3AA0 /* StepperView.swift in Sources */,
+				3E6BBB242C9F3DBB00F53B63 /* ProductTypeHeaderView.swift in Sources */,
 				610F54DA26158DDB001D3AA0 /* NutritionFact+Decodable.swift in Sources */,
 				6182BAF126522B14006774BD /* CapsuleButtonStyle.swift in Sources */,
 				610F54DC26158DDB001D3AA0 /* MeasurementView.swift in Sources */,
 				610F54DD26158DDB001D3AA0 /* Product+SwiftUI.swift in Sources */,
 				610F54DE26158DDB001D3AA0 /* AppSidebarNavigation.swift in Sources */,
 				610F54DF26158DDB001D3AA0 /* UnitIcons.swift in Sources */,
+				3ECD50DC2C975ADA00755E83 /* ProductType.swift in Sources */,
 				610F54E026158DDB001D3AA0 /* Animations.swift in Sources */,
 				69734292265EC1390005A14C /* ProductCommands.swift in Sources */,
 				610F54E326158DDB001D3AA0 /* CircleToggleStyle.swift in Sources */,
 				610F54E526158DDB001D3AA0 /* ProductMenu.swift in Sources */,
 				610F54E626158DDB001D3AA0 /* NutritionRow.swift in Sources */,
+				3E6BBB042C98217E00F53B63 /* ProductTypeList.swift in Sources */,
 				610F54E726158DDB001D3AA0 /* DisplayableMeasurement.swift in Sources */,
 				610F54E826158DDB001D3AA0 /* NutritionFactView.swift in Sources */,
+				3E6BBB142C9F2D5500F53B63 /* ProductType+SwiftUI.swift in Sources */,
+				3E6BBAF32C977E5A00F53B63 /* DocumentType.swift in Sources */,
 				610F54E926158DDB001D3AA0 /* FlipView.swift in Sources */,
 				610F54EA26158DDB001D3AA0 /* BubbleView.swift in Sources */,
 				610F54EB26158DDB001D3AA0 /* IngredientGraphic.swift in Sources */,
@@ -1186,12 +1344,16 @@
 				610F550D26158DE2001D3AA0 /* CardActionButton.swift in Sources */,
 				610F550E26158DE2001D3AA0 /* ContentView.swift in Sources */,
 				610F550F26158DE2001D3AA0 /* Ingredient.swift in Sources */,
+				3E6BBB172C9F2D5500F53B63 /* ProductType+SwiftUI.swift in Sources */,
 				610F551126158DE2001D3AA0 /* Nutritions.swift in Sources */,
+				3E6BBB1F2C9F3B8200F53B63 /* ProductTypeView.swift in Sources */,
+				3ECD50DF2C975ADA00755E83 /* ProductType.swift in Sources */,
 				610F551226158DE2001D3AA0 /* NutritionFact.swift in Sources */,
 				610F551326158DE2001D3AA0 /* RecipeView.swift in Sources */,
 				610F551426158DE2001D3AA0 /* RecipeList.swift in Sources */,
 				610F551526158DE2001D3AA0 /* ProductList.swift in Sources */,
 				610F551626158DE2001D3AA0 /* ProductHeaderView.swift in Sources */,
+				3E6BBB272C9F3DBB00F53B63 /* ProductTypeHeaderView.swift in Sources */,
 				610F551826158DE2001D3AA0 /* ProductView.swift in Sources */,
 				610F551A26158DE2001D3AA0 /* ProductFavoriteButton.swift in Sources */,
 				610F551B26158DE2001D3AA0 /* Account.swift in Sources */,
@@ -1205,8 +1367,10 @@
 				610F552226158DE2001D3AA0 /* UnitIcons.swift in Sources */,
 				610F552326158DE2001D3AA0 /* Animations.swift in Sources */,
 				610F552626158DE2001D3AA0 /* CircleToggleStyle.swift in Sources */,
+				3E6BBB072C98217E00F53B63 /* ProductTypeList.swift in Sources */,
 				610F552826158DE2001D3AA0 /* ProductMenu.swift in Sources */,
 				610F552926158DE2001D3AA0 /* NutritionRow.swift in Sources */,
+				3ECD50D72C9759EF00755E83 /* MLModel.swift in Sources */,
 				610F552A26158DE2001D3AA0 /* DisplayableMeasurement.swift in Sources */,
 				610F552B26158DE2001D3AA0 /* NutritionFactView.swift in Sources */,
 				610F552C26158DE2001D3AA0 /* FlipView.swift in Sources */,
@@ -1223,9 +1387,12 @@
 				610F553826158DE2001D3AA0 /* Ingredient+NutritionFacts.swift in Sources */,
 				610F553926158DE2001D3AA0 /* IngredientCard.swift in Sources */,
 				610F553B26158DE2001D3AA0 /* NutritionFact+Energy.swift in Sources */,
+				3E6BBB0F2C9F265700F53B63 /* ProductTypeRow.swift in Sources */,
 				610F553C26158DE2001D3AA0 /* ProductRow.swift in Sources */,
+				3E6BBAF62C977E5A00F53B63 /* DocumentType.swift in Sources */,
 				610F553D26158DE2001D3AA0 /* SquishableButtonStyle.swift in Sources */,
 				610F553E26158DE2001D3AA0 /* AnimatableFontModifier.swift in Sources */,
+				3E6BBAFE2C981D9C00F53B63 /* ProductTypeMenu.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1246,8 +1413,11 @@
 				610F557626158F9A001D3AA0 /* Ingredient.swift in Sources */,
 				610F559226158FBC001D3AA0 /* RecipeView.swift in Sources */,
 				610F55A226158FEA001D3AA0 /* AppTabNavigation.swift in Sources */,
+				3E6BBB282C9F3DBB00F53B63 /* ProductTypeHeaderView.swift in Sources */,
 				610F559926158FC2001D3AA0 /* Product+SwiftUI.swift in Sources */,
+				3E6BBAFF2C981D9C00F53B63 /* ProductTypeMenu.swift in Sources */,
 				610F556F26158F97001D3AA0 /* CountButton.swift in Sources */,
+				3ECD50E02C975ADA00755E83 /* ProductType.swift in Sources */,
 				610F558826158FA8001D3AA0 /* DisplayableMeasurement.swift in Sources */,
 				610F559426158FBC001D3AA0 /* MeasuredIngredient.swift in Sources */,
 				610F557C26158F9D001D3AA0 /* Account.swift in Sources */,
@@ -1266,16 +1436,22 @@
 				610F558626158FA8001D3AA0 /* NutritionFact.swift in Sources */,
 				610F559126158FBC001D3AA0 /* RecipeList.swift in Sources */,
 				610F559B26158FC2001D3AA0 /* FavoriteProducts.swift in Sources */,
+				3E6BBB082C98217E00F53B63 /* ProductTypeList.swift in Sources */,
 				610F557E26158FA0001D3AA0 /* ContentView.swift in Sources */,
+				3ECD50D82C9759EF00755E83 /* MLModel.swift in Sources */,
 				610F557426158F97001D3AA0 /* FlipView.swift in Sources */,
+				3E6BBB102C9F265700F53B63 /* ProductTypeRow.swift in Sources */,
 				610F559626158FC2001D3AA0 /* ProductFavoriteButton.swift in Sources */,
 				610F558226158FA4001D3AA0 /* NutritionRow.swift in Sources */,
 				610F559D26158FC2001D3AA0 /* ProductMenu.swift in Sources */,
 				610F556B26158F7F001D3AA0 /* RecordThingWidgets.swift in Sources */,
 				610F559026158FBC001D3AA0 /* MeasurementView.swift in Sources */,
+				3E6BBB202C9F3B8200F53B63 /* ProductTypeView.swift in Sources */,
+				3E6BBAF72C977E5A00F53B63 /* DocumentType.swift in Sources */,
 				610F557526158F9A001D3AA0 /* Ingredient+NutritionFacts.swift in Sources */,
 				610F559F26158FC5001D3AA0 /* Animations.swift in Sources */,
 				610F558326158FA8001D3AA0 /* UnitIcons.swift in Sources */,
+				3E6BBB182C9F2D5500F53B63 /* ProductType+SwiftUI.swift in Sources */,
 				610F557326158F97001D3AA0 /* AnimatableFontModifier.swift in Sources */,
 				610F557126158F97001D3AA0 /* CardActionButton.swift in Sources */,
 				610F559E26158FC2001D3AA0 /* ProductHeaderView.swift in Sources */,
@@ -1292,14 +1468,17 @@
 				610F55D1261593C7001D3AA0 /* NutritionRow.swift in Sources */,
 				6182BAF526522B14006774BD /* CapsuleButtonStyle.swift in Sources */,
 				61C3378726559001001AAC1D /* PurchaseButtonStyle.swift in Sources */,
+				3E6BBB002C981D9C00F53B63 /* ProductTypeMenu.swift in Sources */,
 				61A8CB8E26166F2A002845E4 /* Model.swift in Sources */,
 				610F55F3261593DF001D3AA0 /* RecordThingWidgets.swift in Sources */,
+				3E6BBB092C98217E00F53B63 /* ProductTypeList.swift in Sources */,
 				610F55BD261593B9001D3AA0 /* StepperView.swift in Sources */,
 				610F55C8261593BC001D3AA0 /* IngredientGraphic.swift in Sources */,
 				610F55D9261593D1001D3AA0 /* DisplayableMeasurement.swift in Sources */,
 				610F55EE261593DC001D3AA0 /* SquishableButtonStyle.swift in Sources */,
 				610F55BF261593B9001D3AA0 /* FlipView.swift in Sources */,
 				610F55EB261593DA001D3AA0 /* ProductMenu.swift in Sources */,
+				3ECD50D92C9759EF00755E83 /* MLModel.swift in Sources */,
 				610F55F2261593DF001D3AA0 /* RewardsCardWidget.swift in Sources */,
 				610F55CC261593C1001D3AA0 /* Account.swift in Sources */,
 				610F55C7261593BC001D3AA0 /* Ingredient+SwiftUI.swift in Sources */,
@@ -1308,6 +1487,7 @@
 				610F55D6261593D1001D3AA0 /* Nutritions.swift in Sources */,
 				69734296265EC1390005A14C /* ProductCommands.swift in Sources */,
 				610F55D0261593C7001D3AA0 /* NutritionFact+Decodable.swift in Sources */,
+				3E6BBB212C9F3B8200F53B63 /* ProductTypeView.swift in Sources */,
 				610F55C5261593BC001D3AA0 /* Ingredient.swift in Sources */,
 				610F55EC261593DA001D3AA0 /* FavoriteProducts.swift in Sources */,
 				610F55EF261593DC001D3AA0 /* CircleToggleStyle.swift in Sources */,
@@ -1318,11 +1498,15 @@
 				610F55E7261593DA001D3AA0 /* ProductHeaderView.swift in Sources */,
 				610F55C1261593B9001D3AA0 /* CardActionButton.swift in Sources */,
 				610F55C6261593BC001D3AA0 /* Ingredient+NutritionFacts.swift in Sources */,
+				3E6BBB112C9F265700F53B63 /* ProductTypeRow.swift in Sources */,
 				610F55D7261593D1001D3AA0 /* NutritionFact.swift in Sources */,
 				610F55C2261593B9001D3AA0 /* CountButton.swift in Sources */,
+				3E6BBB192C9F2D5500F53B63 /* ProductType+SwiftUI.swift in Sources */,
 				610F55F0261593DC001D3AA0 /* Animations.swift in Sources */,
 				610F55E9261593DA001D3AA0 /* ProductRow.swift in Sources */,
+				3E6BBB292C9F3DBB00F53B63 /* ProductTypeHeaderView.swift in Sources */,
 				610F55E8261593DA001D3AA0 /* ProductList.swift in Sources */,
+				3E6BBAF82C977E5A00F53B63 /* DocumentType.swift in Sources */,
 				610F55CE261593C3001D3AA0 /* AppSidebarNavigation.swift in Sources */,
 				610F55C0261593B9001D3AA0 /* BubbleView.swift in Sources */,
 				610F55BE261593B9001D3AA0 /* AnimatableFontModifier.swift in Sources */,
@@ -1333,6 +1517,7 @@
 				610F55DA261593D1001D3AA0 /* UnitIcons.swift in Sources */,
 				610F55D5261593D1001D3AA0 /* NutritionFact+Energy.swift in Sources */,
 				610F55C3261593B9001D3AA0 /* BubbleBackground.swift in Sources */,
+				3ECD50E12C975ADA00755E83 /* ProductType.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1340,8 +1525,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3E6BBB0D2C9F265700F53B63 /* ProductTypeRow.swift in Sources */,
 				612F3DC52615A34700137D77 /* ProductView.swift in Sources */,
+				3E6BBB1D2C9F3B8200F53B63 /* ProductTypeView.swift in Sources */,
 				612F3DAE2615A33300137D77 /* NutritionRow.swift in Sources */,
+				3ECD50D52C9759EF00755E83 /* MLModel.swift in Sources */,
 				612F3DA62615A32A00137D77 /* Ingredient+NutritionFacts.swift in Sources */,
 				612F3D9D2615A32700137D77 /* BubbleView.swift in Sources */,
 				612F3DC92615A34700137D77 /* ProductDef.swift in Sources */,
@@ -1354,20 +1542,26 @@
 				612F3DC22615A34700137D77 /* ProductList.swift in Sources */,
 				612F3DC42615A34700137D77 /* ProductFavoriteButton.swift in Sources */,
 				612F3DAC2615A33000137D77 /* AppSidebarNavigation.swift in Sources */,
+				3E6BBAFC2C981D9C00F53B63 /* ProductTypeMenu.swift in Sources */,
 				6182BAF226522B14006774BD /* CapsuleButtonStyle.swift in Sources */,
+				3E6BBB252C9F3DBB00F53B63 /* ProductTypeHeaderView.swift in Sources */,
 				612F3DAF2615A33300137D77 /* NutritionFactView.swift in Sources */,
 				612F3D9F2615A32700137D77 /* CountButton.swift in Sources */,
 				612F3DAB2615A33000137D77 /* ContentView.swift in Sources */,
 				612F3DA02615A32700137D77 /* AnimatableFontModifier.swift in Sources */,
 				612F3DB82615A33E00137D77 /* DisplayableMeasurement.swift in Sources */,
 				612F3DBF2615A34400137D77 /* RecipeList.swift in Sources */,
+				3ECD50DD2C975ADA00755E83 /* ProductType.swift in Sources */,
 				69734293265EC1390005A14C /* ProductCommands.swift in Sources */,
 				612F3DD02615A35200137D77 /* AppTabNavigation.swift in Sources */,
 				612F3D9C2615A32700137D77 /* FlipView.swift in Sources */,
 				612F3DCC2615A34A00137D77 /* SquishableButtonStyle.swift in Sources */,
 				612F3DC72615A34700137D77 /* ProductMenu.swift in Sources */,
+				3E6BBB052C98217E00F53B63 /* ProductTypeList.swift in Sources */,
 				612F3D9B2615A32700137D77 /* StepperView.swift in Sources */,
 				612F3DB62615A33E00137D77 /* NutritionFact.swift in Sources */,
+				3E6BBB152C9F2D5500F53B63 /* ProductType+SwiftUI.swift in Sources */,
+				3E6BBAF42C977E5A00F53B63 /* DocumentType.swift in Sources */,
 				612F3DCB2615A34700137D77 /* ProductRow.swift in Sources */,
 				61A8CB8B26166F2A002845E4 /* Model.swift in Sources */,
 				612F3DA12615A32700137D77 /* CardActionButton.swift in Sources */,
@@ -1392,8 +1586,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3E6BBB0B2C9F265700F53B63 /* ProductTypeRow.swift in Sources */,
 				E0DC7F9E27B72FDC00A6417B /* CountButton.swift in Sources */,
+				3E6BBB1B2C9F3B8200F53B63 /* ProductTypeView.swift in Sources */,
 				E0DC7F9F27B72FDC00A6417B /* CardActionButton.swift in Sources */,
+				3ECD50D32C9759EF00755E83 /* MLModel.swift in Sources */,
 				E0DC7FA027B72FDC00A6417B /* ContentView.swift in Sources */,
 				E0DC7FA127B72FDC00A6417B /* Ingredient.swift in Sources */,
 				E0DC7FA227B72FDC00A6417B /* Nutritions.swift in Sources */,
@@ -1406,20 +1603,26 @@
 				E0DC7FAA27B72FDC00A6417B /* RecordThingApp.swift in Sources */,
 				E0DC7FAB27B72FDC00A6417B /* ProductFavoriteButton.swift in Sources */,
 				E0DC7FAC27B72FDC00A6417B /* Account.swift in Sources */,
+				3E6BBAFA2C981D9C00F53B63 /* ProductTypeMenu.swift in Sources */,
 				E0DC7FAD27B72FDC00A6417B /* StepperView.swift in Sources */,
+				3E6BBB232C9F3DBB00F53B63 /* ProductTypeHeaderView.swift in Sources */,
 				E0DC7FAE27B72FDC00A6417B /* NutritionFact+Decodable.swift in Sources */,
 				E0DC7FB027B72FDC00A6417B /* CapsuleButtonStyle.swift in Sources */,
 				E0DC7FB127B72FDC00A6417B /* MeasurementView.swift in Sources */,
 				E0DC7FB227B72FDC00A6417B /* Product+SwiftUI.swift in Sources */,
 				E0DC7FB327B72FDC00A6417B /* AppSidebarNavigation.swift in Sources */,
 				E0DC7FB427B72FDC00A6417B /* UnitIcons.swift in Sources */,
+				3ECD50DB2C975ADA00755E83 /* ProductType.swift in Sources */,
 				E0DC7FB527B72FDC00A6417B /* Animations.swift in Sources */,
 				E0DC7FB827B72FDC00A6417B /* ProductCommands.swift in Sources */,
 				E0DC7FB927B72FDC00A6417B /* CircleToggleStyle.swift in Sources */,
 				E0DC7FBA27B72FDC00A6417B /* ProductMenu.swift in Sources */,
 				E0DC7FBB27B72FDC00A6417B /* NutritionRow.swift in Sources */,
+				3E6BBB032C98217E00F53B63 /* ProductTypeList.swift in Sources */,
 				E0DC7FBC27B72FDC00A6417B /* DisplayableMeasurement.swift in Sources */,
 				E0DC7FBD27B72FDC00A6417B /* NutritionFactView.swift in Sources */,
+				3E6BBB132C9F2D5500F53B63 /* ProductType+SwiftUI.swift in Sources */,
+				3E6BBAF22C977E5A00F53B63 /* DocumentType.swift in Sources */,
 				E0DC7FBE27B72FDC00A6417B /* FlipView.swift in Sources */,
 				E0DC7FBF27B72FDC00A6417B /* BubbleView.swift in Sources */,
 				E0DC7FC027B72FDC00A6417B /* IngredientGraphic.swift in Sources */,
@@ -1448,12 +1651,16 @@
 				E0DC7FEB27B7307600A6417B /* CardActionButton.swift in Sources */,
 				E0DC7FEC27B7307600A6417B /* ContentView.swift in Sources */,
 				E0DC7FED27B7307600A6417B /* Ingredient.swift in Sources */,
+				3E6BBB162C9F2D5500F53B63 /* ProductType+SwiftUI.swift in Sources */,
 				E0DC7FEE27B7307600A6417B /* Nutritions.swift in Sources */,
+				3E6BBB1E2C9F3B8200F53B63 /* ProductTypeView.swift in Sources */,
+				3ECD50DE2C975ADA00755E83 /* ProductType.swift in Sources */,
 				E0DC7FEF27B7307600A6417B /* NutritionFact.swift in Sources */,
 				E0DC7FF027B7307600A6417B /* RecipeView.swift in Sources */,
 				E0DC7FF127B7307600A6417B /* RecipeList.swift in Sources */,
 				E0DC7FF227B7307600A6417B /* ProductList.swift in Sources */,
 				E0DC7FF327B7307600A6417B /* ProductHeaderView.swift in Sources */,
+				3E6BBB262C9F3DBB00F53B63 /* ProductTypeHeaderView.swift in Sources */,
 				E0DC7FF527B7307600A6417B /* ProductView.swift in Sources */,
 				E0DC7FF627B7307600A6417B /* ProductFavoriteButton.swift in Sources */,
 				E0DC7FF727B7307600A6417B /* Account.swift in Sources */,
@@ -1467,8 +1674,10 @@
 				E0DC800027B7307600A6417B /* UnitIcons.swift in Sources */,
 				E0DC800127B7307600A6417B /* Animations.swift in Sources */,
 				E0DC800427B7307600A6417B /* CircleToggleStyle.swift in Sources */,
+				3E6BBB062C98217E00F53B63 /* ProductTypeList.swift in Sources */,
 				E0DC800527B7307600A6417B /* ProductMenu.swift in Sources */,
 				E0DC800627B7307600A6417B /* NutritionRow.swift in Sources */,
+				3ECD50D62C9759EF00755E83 /* MLModel.swift in Sources */,
 				E0DC800727B7307600A6417B /* DisplayableMeasurement.swift in Sources */,
 				E0DC800827B7307600A6417B /* NutritionFactView.swift in Sources */,
 				E0DC800927B7307600A6417B /* FlipView.swift in Sources */,
@@ -1485,9 +1694,12 @@
 				E0DC801627B7307600A6417B /* Ingredient+NutritionFacts.swift in Sources */,
 				E0DC801727B7307600A6417B /* IngredientCard.swift in Sources */,
 				E0DC801827B7307600A6417B /* NutritionFact+Energy.swift in Sources */,
+				3E6BBB0E2C9F265700F53B63 /* ProductTypeRow.swift in Sources */,
 				E0DC801927B7307600A6417B /* ProductRow.swift in Sources */,
+				3E6BBAF52C977E5A00F53B63 /* DocumentType.swift in Sources */,
 				E0DC801A27B7307600A6417B /* SquishableButtonStyle.swift in Sources */,
 				E0DC801B27B7307600A6417B /* AnimatableFontModifier.swift in Sources */,
+				3E6BBAFD2C981D9C00F53B63 /* ProductTypeMenu.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2247,6 +2459,71 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/marcoarment/Blackbird";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3ECD50AE2C96E3FA00755E83 /* RecordLib */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RecordLib;
+		};
+		3ECD50BE2C974E4500755E83 /* RecordLib */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RecordLib;
+		};
+		3ECD50C02C974E5000755E83 /* RecordLib */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RecordLib;
+		};
+		3ECD50C22C974E5600755E83 /* RecordLib */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RecordLib;
+		};
+		3ECD50C42C97594900755E83 /* Blackbird */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */;
+			productName = Blackbird;
+		};
+		3ECD50C62C97595000755E83 /* Blackbird */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */;
+			productName = Blackbird;
+		};
+		3ECD50C82C97595900755E83 /* Blackbird */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */;
+			productName = Blackbird;
+		};
+		3ECD50CA2C97595F00755E83 /* Blackbird */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */;
+			productName = Blackbird;
+		};
+		3ECD50CC2C97596500755E83 /* Blackbird */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */;
+			productName = Blackbird;
+		};
+		3ECD50CE2C97598800755E83 /* Blackbird */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */;
+			productName = Blackbird;
+		};
+		3ECD50D02C97598E00755E83 /* Blackbird */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */;
+			productName = Blackbird;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5E6123F8244E8B32004DDFF7 /* Project object */;
 }

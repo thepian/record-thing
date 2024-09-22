@@ -7,6 +7,7 @@ A model representing all of the data the app needs to display in its interface.
 
 import Foundation
 import AuthenticationServices
+//import Blackbird
 
 class Model: ObservableObject {
     @Published var account: Account?
@@ -90,6 +91,10 @@ extension Model {
     
     func isFavorite(product: ProductDef) -> Bool {
         favoriteProductIDs.contains(product.id)
+    }
+    
+    func isFavorite(product: ProductType) -> Bool {
+        favoriteProductIDs.contains(product.fullName)
     }
     
     func createAccount() {
