@@ -18,3 +18,15 @@ There is a hugging face model for DINO v2, which is a self-supervised learning m
 
 - [MPS or MLX for Domestic AI? The Answer Will Surprise You](https://medium.com/@koypish/mps-or-mlx-for-domestic-ai-the-answer-will-surprise-you-df4b111de8a0)
 - 
+- 
+- 
+
+
+## Dataset
+
+ICDAR2019
+
+https://github.com/zzzDavid/ICDAR-2019-SROIE
+
+https://paperswithcode.com/dataset/sroie
+

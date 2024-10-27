@@ -97,6 +97,10 @@ extension Model {
         favoriteProductIDs.contains(product.fullName)
     }
     
+    func isFavorite(document: DocumentType) -> Bool {
+        favoriteProductIDs.contains(document.fullName)
+    }
+    
     func createAccount() {
         guard account == nil else { return }
         account = Account()

@@ -7,12 +7,16 @@
 //
 
 import SwiftUI
+import Blackbird
 
 struct ProductTypeMenu: View {
+    // Async-loading, auto-updating array of matching instances
+    @BlackbirdLiveModels({ try await ProductType.read(from: $0, orderBy: .ascending(\.$name)) }) var types
+
     @EnvironmentObject private var model: Model
 
     var body: some View {
-        ProductTypeList(products: ProductType.all())
+        ProductTypeList(results: types.$results)
             .navigationTitle(Text("Product Type", comment: "Title of the 'menu' app section showing the menu of available product types"))
     }
 }

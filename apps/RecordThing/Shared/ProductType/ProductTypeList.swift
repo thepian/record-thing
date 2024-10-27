@@ -11,9 +11,8 @@ import Blackbird
 
 struct ProductTypeList: View {
     
-    // Async-loading, auto-updating array of matching instances
-    @BlackbirdLiveModels({ try await ProductType.read(from: $0, orderBy: .ascending(\.$name)) }) var types
-
+    @Binding var results = Blackbird.LiveResults<DocumentType>()
+    
     var body: some View {
         if types.didLoad {
             ScrollViewReader { proxy in
