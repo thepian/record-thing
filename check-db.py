@@ -10,13 +10,12 @@ db_path = '/Users/henrikvendelbo/Library/Developer/CoreSimulator/Devices/AE31406
 try:
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
+
+        # Check if root types are inserted
         count_types = cursor.execute('SELECT COUNT(*) as count_types FROM ProductType')
         counted = count_types.fetchall()[0]
         if counted[0] == 0:
             print('Inserting root types')
-            # conn.execute("BEGIN TRANSACTION;")
-            # inserts = [f"INSERT INTO 'ProductType' VALUES ('{n}', '-', NULL);" for n in ROOT_NAMES]
-            # res = cursor.executescript('\n'.join(inserts))
             cursor.executemany('INSERT INTO ProductType VALUES (?, ?, ?)', [(n, '-', None) for n in ROOT_NAMES])
             conn.commit()
         else:

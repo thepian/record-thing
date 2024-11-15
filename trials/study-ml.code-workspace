@@ -1,0 +1,63 @@
+{
+	"folders": [
+		{
+			"path": "../../thepia-all"
+		},
+		{
+			"path": "../../thepia-all-dev"
+		},
+		{
+			"path": "../../../../Users/henrikvendelbo/Library/Mobile Documents/com~apple~CloudDocs/Downloads/langchain-nextjs-streaming-main"
+		},
+		{
+			"path": "../../scanner_test"
+		},
+		{
+			"path": "../../run-vicuna"
+		},
+		{
+			"path": "../../baspia"
+		},
+		{
+			"path": "../../thepia-net"
+		},
+		{
+			"path": "../../thepia-treasure-app"
+		},
+		{
+			"path": "../../camera-driven"
+		},
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"MicroPython.executeButton": [
+			{
+				"text": "▶",
+				"tooltip": "Run",
+				"alignment": "left",
+				"command": "extension.executeFile",
+				"priority": 3.5
+			}
+		],
+		"MicroPython.syncButton": [
+			{
+				"text": "$(sync)",
+				"tooltip": "sync",
+				"alignment": "left",
+				"command": "extension.execute",
+				"priority": 4
+			}
+		],
+		"jest.disabledWorkspaceFolders": [
+			"scanner_test",
+			"langchain-nextjs-streaming-main",
+			"baspia",
+			"run-vicuna",
+			"thepia-treasure-app",
+			"thepia-all",
+			"camera-driven"
+		]
+	}
+}
