@@ -1,7 +1,10 @@
 {
 	"folders": [
 		{
-			"path": ".."
+			"path": "."
+		},
+		{
+			"path": "../../../Building/snowfall"
 		}
 	],
 	"settings": {
@@ -22,15 +25,6 @@
 				"command": "extension.execute",
 				"priority": 4
 			}
-		],
-		"jest.disabledWorkspaceFolders": [
-			"scanner_test",
-			"langchain-nextjs-streaming-main",
-			"baspia",
-			"run-vicuna",
-			"thepia-treasure-app",
-			"thepia-all",
-			"camera-driven"
 		]
 	}
 }
