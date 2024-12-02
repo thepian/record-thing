@@ -7,38 +7,33 @@ import pyrqlite.dbapi2 as dbapi2
 from collections import namedtuple
 
 from typing import List, Tuple, Dict, Any
-import struct
 
 from .account import init_account
 from .assets import init_assets
+from .products import init_products
 
-# Connect to the database
-connection = dbapi2.connect(
-    host='localhost',
-    port=4001,
-)
+connection = None
 
 def init_db(disconnect=True):
-
+    global connection
+    if connection is None:
+        connection = dbapi2.connect(
+            host='localhost',
+            port=4001,
+        )
     try:
         with connection.cursor() as cursor:
             init_account(cursor)
-
-        with connection.cursor() as cursor:
-            # Read a single record with qmark parameter style
-            sql = "SELECT `id`, `name` FROM `foo` WHERE `name`=?"
-            cursor.execute(sql, ('a',))
-            result = cursor.fetchone()
-            print(result)
-            # Read a single record with named parameter style
-            sql = "SELECT `id`, `name` FROM `foo` WHERE `name`=:name"
-            cursor.execute(sql, {'name': 'b'})
-            result = cursor.fetchone()
-            print(result)
+            init_assets(cursor)
+            init_products(cursor)
     finally:
         if disconnect:
             connection.close()
 
-    "SELECT * FROM SAMPLE_TABLE ORDER BY ROWID ASC LIMIT 1"
 
 
+# def download_company_info(name: str) -> Dict[str, Any]:
+#     """Searches European Unions trademark database for a product or tradmark name and returns the results"""
+#     request = f"https://euipo.europa.eu/eSearch/#details/trademarks/{name}/"
+#     requests.get(request)
+    

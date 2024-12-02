@@ -13,7 +13,7 @@ from .vector import serialize_f32
 url = 'http://images.cocodataset.org/val2017/000000039769.jpg'
 image = Image.open(requests.get(url, stream=True).raw)
 
-from dinov2_model import hf_cache_dir
+from .dinov2_model import hf_cache_dir
 
 processor = AutoImageProcessor.from_pretrained('facebook/dinov2-base')
 model = AutoModel.from_pretrained('facebook/dinov2-base')

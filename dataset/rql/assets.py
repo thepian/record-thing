@@ -14,12 +14,12 @@ items = [
     CombinedClip(ksuid().encoded, "clip5", 5, [0.5, 0.5, 0.5, 0.5]),
 ]
 
-
 def init_assets(cursor):
 
     cursor.execute("""CREATE TABLE IF NOT EXISTS clip_assets (
             account TEXT,
             id TEXT, 
+            product_id TEXT,
             dino_vec_rowid INTEGER,
             md5 TEXT,
             name TEXT,

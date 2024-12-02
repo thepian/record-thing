@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../../../Building/snowfall"
+		},
+		{
+			"path": "../../../Datasets/evidentnet"
 		}
 	],
 	"settings": {

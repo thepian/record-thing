@@ -1,0 +1,31 @@
+version: '3.5'
+services:
+  refinery_rqlite:
+    container_name: rqlite_server
+    image: rqlite/rqlite
+    restart: unless-stopped
+    # networks:
+    #   - nextcloud
+    ports:
+      - 4001:4001
+    volumes:
+      - /Volumes/Datasets/refinery/rqlite.db:/rqlite/file/data
+    environment:
+      SQLITE_EXTENSIONS: sqlean,icu,sqlite-vec
+  #   depends_on:
+  #     - nextcloud_mariadb
+
+  # nextcloud_mariadb:
+  #   container_name: nextcloud_mariadb
+  #   image: mariadb
+  #   restart: unless-stopped
+  #   networks:
+  #     - nextcloud
+  #   volumes:
+  #     - ./data/mariadb:/var/lib/mysql
+  #   environment:
+  #     MARIADB_ROOT_PASSWORD: 'mariadb'
+
+# networks:
+#   nextcloud:
+#     name: nextcloud_docker_network

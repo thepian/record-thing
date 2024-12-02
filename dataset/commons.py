@@ -10,3 +10,4 @@ commons = {
 
 def create_uid() -> str:
     return str(ksuid())
+
