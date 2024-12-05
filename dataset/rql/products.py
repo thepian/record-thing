@@ -1,7 +1,7 @@
 def init_products(cursor):
-    cursor.execute("""CREATE TABLE IF NOT EXISTS product (
+    cursor.execute("""CREATE TABLE IF NOT EXISTS products (
             account TEXT,
-            id TEXT KEY,
+            id TEXT,
             upc TEXT,
             asin TEXT,
             elid TEXT,

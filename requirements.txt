@@ -1,4 +1,9 @@
-requests
-torch
-torchvision
-transformers
+requests>=2.25.0
+torch>=2.4.0
+torchvision>=0.19.0
+transformers>=4.40.0
+Pillow>=10.0.0
+cyksuid>=2.0.0
+sqlmodel>=0.0.20
+sqlite-vec>=0.1.0
+pyrqlite>=2.2.1

@@ -6,7 +6,7 @@ from dataset.commons import commons, create_uid
 import torch
 import hashlib
 from transformers import AutoImageProcessor, AutoModel
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 import requests
 from .vector import serialize_f32
 
@@ -22,7 +22,7 @@ model = AutoModel.from_pretrained('facebook/dinov2-base')
 
 
 class Ingestor:
-    def __init__(self, cursor, model = model, processor = processor, device = None):
+    def __init__(self, cursor, model = model, processor: AutoImageProcessor = processor, device: torch.device = None):
         self.device = device
         self.model = model.to(device) if device else model
         self.processor = processor
@@ -87,8 +87,11 @@ class Ingestor:
 
     def features(self, url = None, image = None):
         with torch.inference_mode():
-            if url:
-                image = Image.open(requests.get(url, stream=True).raw)
+            if url and image is None:
+                try:
+                    image = Image.open(requests.get(url, stream=True).raw)
+                except UnidentifiedImageError:
+                    return None
             inputs = self.processor(images=image, return_tensors="pt")
             if self.device:
                 inputs = inputs.to(self.device)
@@ -101,4 +104,4 @@ class Ingestor:
         The features in this case will be a PyTorch tensor of shape (batch_size, num_image_patches, embedding_dim). So one can turn them into a single vector by averaging over the image patches, like so:
         """
         features = self.features(url, image)
-        return features.mean(dim=1).squeeze()
+        return features.mean(dim=1).squeeze() if features is not None else None
