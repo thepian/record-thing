@@ -29,6 +29,8 @@ def init_db_rqlite(disconnect=True):
     finally:
         if disconnect:
             connection.close()
+            
+    return connection
 
 
 
