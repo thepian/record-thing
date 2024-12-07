@@ -1,5 +1,3 @@
-from account import *
-from assets import *
 from sqlmodel import create_engine
 
 # engine = create_engine('rqlite+pyrqlite://localhost:4001/', echo=True)

@@ -14,6 +14,9 @@ from .products import init_products
 
 connection = None
 
+def get_rqlite_cursor():
+    return connection.cursor()
+
 def init_db_rqlite(disconnect=True):
     global connection
     if connection is None:
@@ -29,7 +32,7 @@ def init_db_rqlite(disconnect=True):
     finally:
         if disconnect:
             connection.close()
-            
+
     return connection
 
 

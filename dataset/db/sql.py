@@ -1,4 +1,5 @@
 
+from contextlib import closing
 import sqlite3
 import sqlite_vec
 
@@ -7,6 +8,9 @@ from .assets import init_assets
 from .products import init_products
 
 db = None
+
+def get_sqlite_cursor():
+    return closing(db.cursor())
 
 def init_db_sqlite(disconnect=False):
     global db

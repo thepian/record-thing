@@ -2,8 +2,7 @@ from collections import namedtuple
 from typing import Optional
 
 from sqlmodel import Field, SQLModel
-from .uid import ksuid, parse
-import uuid 
+from .uid import ksuid, ksuid_encoded
 
 from ..vector import serialize_f32
 from ..commons import commons, ksuid, DINO_EMBEDDING_SIZE
@@ -30,7 +29,7 @@ class ClipAssets(SQLModel, table=True):
     __tablename__ = "clip_assets"
 
     account: str = Field(primary_key=True, foreign_key="accounts.id")
-    id: uuid.UUID = Field(primary_key=True, default_factory=uuid.uuid4)
+    id: str = Field(primary_key=True, default_factory=ksuid_encoded)
     name: str
     dino_vec_rowid: Optional[int] = None
     md5: str
