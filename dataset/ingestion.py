@@ -13,7 +13,7 @@ from .vector import serialize_f32
 url = 'http://images.cocodataset.org/val2017/000000039769.jpg'
 image = Image.open(requests.get(url, stream=True).raw)
 
-from .dinov2_model import hf_cache_dir
+from .models.dinov2_model import hf_cache_dir
 
 processor = AutoImageProcessor.from_pretrained('facebook/dinov2-base')
 model = AutoModel.from_pretrained('facebook/dinov2-base')
@@ -28,6 +28,12 @@ class Ingestor:
         self.processor = processor
         self.cursor = cursor
 
+    def __enter__(self):
+        return self
+    
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+        
     def ingest(self, dir = None, url = None, image = None, tags = []):
         if dir:
             self._ingest_dir(dir, tags = tags)
@@ -105,3 +111,12 @@ class Ingestor:
         """
         features = self.features(url, image)
         return features.mean(dim=1).squeeze() if features is not None else None
+    
+    def close(self):
+        """
+        from contextlib import closing
+        with closing(Ingestor(cursor)) as ingestor:
+            ingestor.ingest(url = url)
+        """
+        self.cursor.close()
+        self.cursor = None
