@@ -1,4 +1,5 @@
 from typing import Optional
+import os
 
 from dataset.commons import commons
 from sqlmodel import Field, SQLModel
@@ -11,6 +12,7 @@ from .account import Account
 
 class Products(SQLModel, table=True):
     __tablename__ = "products"
+    __abstract__ = True
 
     account: str = Field(primary_key=True, foreign_key="accounts.id")
     id: str = Field(primary_key=True, default_factory=ksuid_encoded)
@@ -20,12 +22,13 @@ class Products(SQLModel, table=True):
     brand: str
     model: str
     color: str
-    tags: str
     category: str
     title: str
     description: str
 
+    # User provided name and tags
     name: str
+    tags: str
 
     def from_json(json):
         pass
@@ -67,26 +70,11 @@ class Products(SQLModel, table=True):
         return product
         
 
-
-
 def init_products(cursor):
-    cursor.execute("""CREATE TABLE IF NOT EXISTS products (
-            account TEXT,
-            id TEXT,
-            upc TEXT,
-            asin TEXT,
-            elid TEXT,
-            brand TEXT,
-            model TEXT,
-            color TEXT,
-            tags TEXT,
-            category TEXT,
-            title TEXT,
-            description TEXT,                   
-            name TEXT,
-
-            PRIMARY KEY (account, id)
-            );""")
+    with open(os.path.join(os.path.dirname(__file__), './products.sql'), 'r') as sql_file:
+        sql_script = sql_file.read()
+        cursor.executescript(sql_script)
+        
 
 # product images
 

@@ -101,6 +101,8 @@ def save_product(product: Mapping, ingestor: Ingestor) -> str:
                    tags, product["category"], product["title"], 
                    product["description"], 
                    name)
+    
+    # TODO use scrapy to download images, save them to organised image repository and save the embeddings to the dino_embedding table
 
     return product_id
 

@@ -1,5 +1,6 @@
 # ©2024 Thepia GmbH
 
+from typing import Optional, List, Annotated
 import os
 import io
 from dataset.commons import commons, create_uid
@@ -9,6 +10,12 @@ from transformers import AutoImageProcessor, AutoModel
 from PIL import Image, UnidentifiedImageError
 import requests
 from .vector import serialize_f32
+
+# from sqlmodel import Field, SQLModel, Relationship, Column, JSON, Binary
+# from datetime import date, datetime
+# from pydantic import validator, BaseModel
+# from torchvision import transforms
+
 
 url = 'http://images.cocodataset.org/val2017/000000039769.jpg'
 image = Image.open(requests.get(url, stream=True).raw)
@@ -66,15 +73,15 @@ class Ingestor:
 
     def _ingest_image(self, content, tags, original_url = None):
         tags_as_text = f",{','.join(tags)},"
-        md5 = hashlib.md5(content).hexdigest()
+        sha1 = hashlib.sha1(content).hexdigest()
 
         # does it already exist?
-        found = self.cursor.execute("SELECT id FROM clip_assets WHERE md5 = ?", [md5]).fetchone()
+        found = self.cursor.execute("SELECT id FROM clip_assets WHERE sha1 = ?", [sha1]).fetchone()
         id = None
         if not found:
             id = create_uid()
-            self.cursor.execute("INSERT INTO clip_assets(account, id, dino_vec_rowid, name, tags, md5) VALUES (?, ?, ?, ?, ?, ?)", 
-                [commons['account_id'], id, None, "clip1", tags_as_text, md5])
+            self.cursor.execute("INSERT INTO clip_assets(account, id, dino_vec_rowid, name, tags, sha1) VALUES (?, ?, ?, ?, ?, ?)", 
+                [commons['account_id'], id, None, "clip1", tags_as_text, sha1])
         else:
             id = found[0]
             print("already exists,", id)

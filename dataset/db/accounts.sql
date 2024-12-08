@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS accounts (
     username TEXT UNIQUE,
     email TEXT UNIQUE,
     sms TEXT UNIQUE, 
-    region TEXT -- e.g., 'US', 'EU', 'APAC' for legal compliance
+    region TEXT, -- e.g., 'US', 'EU', 'APAC' for legal compliance
     password_hash TEXT, -- Optional, for backward compatibility
     registration_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     is_active BOOLEAN DEFAULT 1,
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS accounts (
 -- The account_id used to create new data on this node
 CREATE TABLE IF NOT EXISTS owners (
     account_id TEXT PRIMARY KEY, -- KSUID
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Passkey Credentials Table
