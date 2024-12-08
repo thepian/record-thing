@@ -64,7 +64,7 @@ def lookup_product(upc: str, ingestor: Ingestor, save=True, update=False) -> Opt
     product = select_product(ingestor.cursor, upc=upc)   
     if product:
         # print("Product found:", product)
-        missing_images = ingestor.cursor.execute("SELECT * FROM product_images WHERE id = ?", [product.id]).fetchone() is None
+        missing_images = ingestor.cursor.execute("SELECT * FROM product_images WHERE product_id = ?", [product.id]).fetchone() is None
         if update or missing_images:
             update_product(product, lookup_upc(upc, ingestor), ingestor=ingestor)
         return product
@@ -111,7 +111,7 @@ def save_product(product_dict: Mapping, ingestor: Ingestor) -> str:
     for product_image in product_dict["images"]:
         create_product_image(ingestor.cursor, product_id, product_image.url, product_image.embedding, product_image.sha1)
 
-    ingestor.cursor.commit()
+    # ingestor.cursor.commit()
 
     return product_id
 
@@ -128,6 +128,8 @@ def update_product(product: Products, product_dict: Mapping, ingestor: Ingestor)
 
 def create_product_image(cursor, product_id: str, url: str, embedding: torch.tensor, sha1: str):
     embedding_id = create_uid() # TODO asset_id is the same as embedding_id
+
+    # TODO check existing sha1 & URLs
 
     # TODO use existing embedding_id if it exists
     if embedding is not None:
