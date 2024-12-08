@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS trusted_devices (
 );
 
 -- Indexes for performance and security
+CREATE INDEX idx_accounts_email ON accounts(email);
 CREATE INDEX idx_passkey_account ON passkey_credentials(account_id);
 CREATE INDEX idx_auth_attempts_account ON authentication_attempts(account_id);
 CREATE INDEX idx_trusted_devices_account ON trusted_devices(account_id);

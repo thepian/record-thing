@@ -1,11 +1,15 @@
 from typing import Mapping, Optional
 import requests
+import torch
 
-from .commons import commons
+from dataset.db.uid import ksuid_encoded
+from dataset.vector import serialize_f32
+
+from .commons import commons, create_uid
 from .ingestion import Ingestor
 from .db.products import Products, create_product, select_product
 
-def lookup_upc(upc: str) -> Mapping:
+def lookup_upc(upc: str, ingestor: Ingestor) -> Mapping:
     product = requests.get(url="https://api.upcitemdb.com/prod/trial/lookup", params={"upc": upc}).json()
     if product["code"] == "OK":
         number_matches = product["total"]
@@ -24,7 +28,8 @@ def lookup_upc(upc: str) -> Mapping:
         model = item["model"]
         color = item["color"]
 
-        images = item["images"]
+        urls = item["images"]
+        images = [ingestor.product_image(url=url) for url in urls]
 
         # Google product taxonomy, https://www.google.com/basepages/producttype/taxonomy.en-US.txt.
         category = item["category"]
@@ -49,6 +54,7 @@ def lookup_upc(upc: str) -> Mapping:
             "description": description,
             "upc_link": upc_link,
             "domain": domain,
+            "urls": urls,
             "images": images
         }
     else:
@@ -58,16 +64,13 @@ def lookup_product(upc: str, ingestor: Ingestor, save=True, update=False) -> Opt
     product = select_product(ingestor.cursor, upc=upc)   
     if product:
         # print("Product found:", product)
-        if update:
-            update_product(product)
+        missing_images = ingestor.cursor.execute("SELECT * FROM product_images WHERE id = ?", [product.id]).fetchone() is None
+        if update or missing_images:
+            update_product(product, lookup_upc(upc, ingestor), ingestor=ingestor)
         return product
     
-    result = lookup_upc(upc)
+    result = lookup_upc(upc, ingestor)
     if result:
-        images = result["images"]
-        embeddings = [ingestor.embeddings(url=url) for url in images]
-        result["embeddings"] = embeddings
-
         if save:
             # TODO update products table if save is True
             product_id = save_product(result, ingestor)
@@ -79,7 +82,7 @@ def lookup_product(upc: str, ingestor: Ingestor, save=True, update=False) -> Opt
         return Products.from_dict(result)
     return None
 
-def save_product(product: Mapping, ingestor: Ingestor) -> str:
+def save_product(product_dict: Mapping, ingestor: Ingestor) -> str:
     """
     'upc_link': 'https://www.upcitemdb.com/norob/alink/?id=v2p2z213v2x28474u2&tid=1&seq=1733392205&plt=cf7aa6eb9640d9edc6d6eda877e8e47a', 
     'domain': 'newegg.com', 
@@ -92,20 +95,56 @@ def save_product(product: Mapping, ingestor: Ingestor) -> str:
             
     """
 
-    name = product["title"] # User consensus?
+    name = product_dict["title"] # User consensus?
     tags = ",,"
-    print("Creating product:", name, product.keys())
+    print("Creating product:", name, product_dict.keys())
     product_id = create_product(ingestor.cursor, 
-                   product["upc"], product["asin"], product["elid"], 
-                   product["brand"], product["model"], product["color"], 
-                   tags, product["category"], product["title"], 
-                   product["description"], 
+                   product_dict["upc"], product_dict["asin"], product_dict["elid"], 
+                   product_dict["brand"], product_dict["model"], product_dict["color"], 
+                   tags, product_dict["category"], product_dict["title"], 
+                   product_dict["description"], 
                    name)
     
     # TODO use scrapy to download images, save them to organised image repository and save the embeddings to the dino_embedding table
 
+    print("Creating product images:", product_dict["images"])
+    for product_image in product_dict["images"]:
+        create_product_image(ingestor.cursor, product_id, product_image.url, product_image.embedding, product_image.sha1)
+
+    ingestor.cursor.commit()
+
     return product_id
 
-def update_product(product: Products):
-    # TODO lookup upc and update the product
-    pass
+def update_product(product: Products, product_dict: Mapping, ingestor: Ingestor):
+    product_id = product.id
+
+    print("Creating product images:", product_dict["images"])
+    for product_image in product_dict["images"]:
+        create_product_image(ingestor.cursor, product_id, product_image.url, product_image.embedding, product_image.sha1)
+
+    # TODO ingestor.cursor.commit()
+
+    return product_id
+
+def create_product_image(cursor, product_id: str, url: str, embedding: torch.tensor, sha1: str):
+    embedding_id = create_uid() # TODO asset_id is the same as embedding_id
+
+    # TODO use existing embedding_id if it exists
+    if embedding is not None:
+        cursor.execute("INSERT INTO dino_embedding(asset_id, sha1, url, embedding) VALUES (?, ?, ?, ?)", 
+            [embedding_id, sha1, url, serialize_f32(embedding)])    
+
+        pi_id = create_uid()
+        cursor.execute("INSERT INTO product_images(id, product_id, url, embedding_id, sha1, is_public, image_type) VALUES (?, ?, ?, ?, ?, ?, ?)", 
+            [pi_id, product_id, url, embedding_id, sha1, 1, 'web_scraped'])
+    
+    # account TEXT NOT NULL,
+    # id TEXT PRIMARY KEY, -- KSUID
+    # product_id TEXT NOT NULL,
+    # url TEXT,
+    # sha1 TEXT, 
+    # cache_path TEXT,
+    # is_public BOOLEAN DEFAULT 0,
+    # image_type TEXT, -- 'original', 'user_added', 'web_scraped'
+    # parse_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    

@@ -12,9 +12,9 @@ from .account import Account
 
 class Products(SQLModel, table=True):
     __tablename__ = "products"
-    __abstract__ = True
+    # __abstract__ = True
+    __table_args__ = { "info": dict(is_view=True)}
 
-    account: str = Field(primary_key=True, foreign_key="accounts.id")
     id: str = Field(primary_key=True, default_factory=ksuid_encoded)
     upc: str
     asin: str
@@ -35,7 +35,6 @@ class Products(SQLModel, table=True):
 
     def from_dict(product_dict: dict[str, any]):
         product = Products()
-        product.account = product_dict["account"]
         product.id = product_dict["id"]
         product.upc = product_dict["upc"]
         product.asin = product_dict["asin"]
@@ -52,20 +51,20 @@ class Products(SQLModel, table=True):
         return product
 
     def from_row(row):
-        product = Products()
-        product.account = row[0]
-        product.id = row[1]
-        product.upc = row[2]
-        product.asin = row[3]
-        product.elid = row[4]
-        product.brand = row[5]
-        product.model = row[6]
-        product.color = row[7]
-        product.tags = row[8]
-        product.category = row[9]
-        product.title = row[10]
-        product.description = row[11]
-        product.name = row[12]
+        product = Products(
+            id=row[0],
+            upc=row[1],
+            asin=row[2],
+            elid=row[3],
+            brand=row[4],
+            model=row[5],
+            color=row[6],
+            tags=row[7],
+            category=row[8],
+            title=row[9],
+            description=row[10],
+            name=row[11]
+        )
 
         return product
         
@@ -98,11 +97,10 @@ def create_product(cursor,
                    brand: str, model: str, color: str, 
                    tags: str, category: str, title: str, 
                    description: str, name: str) -> str:
-    account_id = commons["account_id"]
     id = ksuid().encoded
     cursor.execute("""
-        INSERT INTO products (account, id, upc, asin, elid, brand, model, color, tags, category, title, description, name) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", 
-        [account_id, id, upc, asin, elid, brand, model, color, tags, category, title, description, name])
+        INSERT INTO products (id, upc, asin, elid, brand, model, color, tags, category, title, description, name) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", 
+        [id, upc, asin, elid, brand, model, color, tags, category, title, description, name])
         
     return id
