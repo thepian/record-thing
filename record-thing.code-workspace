@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../../../Datasets/evidentnet"
+		},
+		{
+			"path": "../../../Datasets/stanford_cars"
 		}
 	],
 	"settings": {
@@ -28,6 +31,9 @@
 				"command": "extension.execute",
 				"priority": 4
 			}
+		],
+		"python.autoComplete.extraPaths": [
+			"/Users/henrikvendelbo/.vscode/extensions/rt-thread.rt-thread-micropython-1.0.11/microExamples/code-completion"
 		]
 	}
 }

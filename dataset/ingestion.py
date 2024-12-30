@@ -17,13 +17,8 @@ from .vector import serialize_f32
 # from torchvision import transforms
 
 
-url = 'http://images.cocodataset.org/val2017/000000039769.jpg'
-image = Image.open(requests.get(url, stream=True).raw)
-
-from .models.dinov2_model import hf_cache_dir
-
-processor = AutoImageProcessor.from_pretrained('facebook/dinov2-base')
-model = AutoModel.from_pretrained('facebook/dinov2-base')
+# url = 'http://images.cocodataset.org/val2017/000000039769.jpg'
+# image = Image.open(requests.get(url, stream=True).raw)
 
 # create AutoImageProcessor for a specific device:
 
@@ -72,7 +67,7 @@ def compute_sha1_from_raw(raw_stream):
 
 
 class Ingestor:
-    def __init__(self, cursor, model = model, processor: AutoImageProcessor = processor, device: torch.device = None):
+    def __init__(self, cursor, model: AutoModel, processor: AutoImageProcessor, device: torch.device = None):
         self.device = device
         self.model = model.to(device) if device else model
         self.processor = processor
@@ -175,7 +170,7 @@ class Ingestor:
     def close(self):
         """
         from contextlib import closing
-        with closing(Ingestor(cursor)) as ingestor:
+        with closing(Ingestor(cursor, model, processor)) as ingestor:
             ingestor.ingest(url = url)
         """
         self.cursor.close()
