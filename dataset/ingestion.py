@@ -34,6 +34,8 @@ class ImageAssetDescription:
         return f"ImageAssetDescription(url={self.url}, image={repr(self.image)})"
     
     def download(self):
+        if self.image:
+            return
         # response = requests.get(self.url, stream=True)
         # self.image = Image.open(response.raw)
 

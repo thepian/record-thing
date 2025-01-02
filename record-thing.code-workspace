@@ -11,6 +11,12 @@
 		},
 		{
 			"path": "../../../Datasets/stanford_cars"
+		},
+		{
+			"path": "../../dinov2_vits_webcam_demo"
+		},
+		{
+			"path": "../../dinov2"
 		}
 	],
 	"settings": {

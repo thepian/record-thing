@@ -1,4 +1,3 @@
-version: '3.5'
 services:
   refinery_rqlite:
     container_name: rqlite_server
