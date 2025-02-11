@@ -1,4 +1,4 @@
-# Fruta: Building a Feature-Rich App with SwiftUI
+# Record Thing: Building a Feature-Rich App with SwiftUI
 
 Create a shared codebase to build a multiplatform app that offers widgets and an App Clip.
 

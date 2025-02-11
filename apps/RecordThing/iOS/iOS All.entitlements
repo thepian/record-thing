@@ -8,7 +8,7 @@
 	</array>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.example.recordthing</string>
+		<string>group.thepia.recordthing</string>
 	</array>
 </dict>
 </plist>

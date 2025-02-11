@@ -1,5 +1,5 @@
 /*
-See LICENSE folder for this sample’s licensing information.
+See LICENSE folder for this sample's licensing information.
 
 Abstract:
 The single entry point for the RecordThing app on iOS and macOS.
@@ -9,11 +9,21 @@ import SwiftUI
 import Blackbird
 
 var dbPath = {
+    // First check for test database on external volume
+    let testPath = "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite"
+    if FileManager.default.fileExists(atPath: testPath) {
+        print("Using test database at", testPath)
+        return URL(fileURLWithPath: testPath)
+    }
+    
+    // Fall back to documents directory
     if let documentsPathURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-        //This gives you the URL of the path
-        print("DB documents path", documentsPathURL)
+        print("Using database in documents path:", documentsPathURL)
         return documentsPathURL.appendingPathComponent("record-thing.sqlite")
     }
+    
+    // Last resort fallback
+    print("Using fallback database path: /tmp/record-thing.sqlite")
     return URL(fileURLWithPath: "/tmp/record-thing.sqlite")
 }()
 
@@ -33,6 +43,10 @@ struct RecordThingApp: App {
             ContentView()
                 .environmentObject(model)
                 .environment(\.blackbirdDatabase, database)
+                .task {
+                    // Initialize translations when app starts
+                    await DynamicLocalizer.shared.registerTranslations(from: database)
+                }
                 .onChange(of: scenePhase) { phase in
 //                    visionService.onScenePhase(phase)
                     
@@ -54,7 +68,7 @@ struct RecordThingApp: App {
         }
         .commands {
             SidebarCommands()
-            ProductCommands(model: model)
+//            ProductCommands(model: model)
         }
     }
 }

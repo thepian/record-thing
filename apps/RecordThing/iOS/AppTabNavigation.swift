@@ -6,6 +6,7 @@ Tab based app structure.
 */
 
 import SwiftUI
+import Blackbird
 
 struct AppTabNavigation: View {
 
@@ -21,10 +22,10 @@ struct AppTabNavigation: View {
     var body: some View {
         TabView(selection: $selection) {
             NavigationView {
-                ProductMenu()
+                ThingsMenu()
             }
             .tabItem {
-                let menuText = Text("Menu", comment: "Smoothie menu tab title")
+                let menuText = Text("Things", comment: "Smoothie menu tab title")
                 Label {
                     menuText
                 } icon: {
@@ -34,7 +35,7 @@ struct AppTabNavigation: View {
             .tag(Tab.menu)
             
             NavigationView {
-                FavoriteProducts()
+                ProductTypeMenu()
             }
             .tabItem {
                 Label {
@@ -60,11 +61,11 @@ struct AppTabNavigation: View {
             .tag(Tab.rewards)
             
             NavigationView {
-                RecipeList()
+                RequestsMenu()
             }
             .tabItem {
                 Label {
-                    Text("Recipes",
+                    Text("Requests",
                          comment: "Smoothie recipes tab title")
                 } icon: {
                     Image(systemName: "book.closed.fill")
@@ -78,6 +79,11 @@ struct AppTabNavigation: View {
 
 struct AppTabNavigation_Previews: PreviewProvider {
     static var previews: some View {
+        @Previewable @StateObject var database = try! Blackbird.Database(path: "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite")
+        @Previewable @StateObject var model = Model()
+
         AppTabNavigation()
+            .environment(\.blackbirdDatabase, database)
+            .environmentObject(model)
     }
 }

@@ -6,10 +6,12 @@ The app's navigation with a configuration that offers a sidebar, content list, a
 */
 
 import SwiftUI
+import Blackbird
 
 struct AppSidebarNavigation: View {
 
     enum NavigationItem {
+        case things
         case productType
         case documentType
         case recent
@@ -24,6 +26,12 @@ struct AppSidebarNavigation: View {
     var body: some View {
         NavigationView {
             List {
+                NavigationLink(tag: NavigationItem.things, selection: $selection) {
+                    ThingsMenu()
+                } label: {
+                    Label("Things", systemImage: "list.bullet")
+                }
+                
                 NavigationLink(tag: NavigationItem.productType, selection: $selection) {
                     ProductTypeMenu()
                 } label: {
@@ -31,42 +39,35 @@ struct AppSidebarNavigation: View {
                 }
                 
                 NavigationLink(tag: NavigationItem.documentType, selection: $selection) {
-                    ProductMenu()
+                    DocumentTypeList()
                 } label: {
                     Label("Documents", systemImage: "doc")
                 }
                 
                 NavigationLink(tag: NavigationItem.recent, selection: $selection) {
-                    ProductMenu()
+                    RequestsMenu()
                 } label: {
                     Label("Recent", systemImage: "clock")
                 }
                 
                 NavigationLink(tag: NavigationItem.favorites, selection: $selection) {
-                    FavoriteProducts()
+                    RequestsMenu()
                 } label: {
-                    Label("Flagged", systemImage: "flag")
+                    Label("Requests", systemImage: "flag")
                 }
             
                 NavigationLink(tag: NavigationItem.favorites, selection: $selection) {
-                    FavoriteProducts()
+                    RequestsMenu()
                 } label: {
                     Label("Favorites", systemImage: "heart")
                 }
 
                 NavigationLink(tag: NavigationItem.recipes, selection: $selection) {
-                    RecipeList()
+                    RequestsMenu()
                 } label: {
                     Label("ML Models", systemImage: "book.closed")
                 }
 
-                #if EXTENDED_ALL
-                NavigationLink(tag: NavigationItem.recipes, selection: $selection) {
-                    RecipeList()
-                } label: {
-                    Label("Recipes", systemImage: "book.closed")
-                }
-                #endif
             }
             .navigationTitle("Record Thing")
             #if EXTENDED_ALL
@@ -87,9 +88,9 @@ struct AppSidebarNavigation: View {
                 .background()
                 .ignoresSafeArea()
                 .toolbar {
-                    ProductFavoriteButton()
-                        .environmentObject(model)
-                        .disabled(true)
+//                    ProductFavoriteButton()
+//                        .environmentObject(model)
+//                        .disabled(true)
                 }
         }
     }
@@ -114,7 +115,11 @@ struct AppSidebarNavigation: View {
 
 struct AppSidebarNavigation_Previews: PreviewProvider {
     static var previews: some View {
+        @Previewable @StateObject var database = try! Blackbird.Database(path: "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite")
+        @Previewable @StateObject var model = Model()
+
         AppSidebarNavigation()
+            .environment(\.blackbirdDatabase, database)
             .environmentObject(Model())
     }
 }
