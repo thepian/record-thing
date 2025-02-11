@@ -26,63 +26,55 @@ struct AppSidebarNavigation: View {
     var body: some View {
         NavigationView {
             List {
-                NavigationLink(tag: NavigationItem.things, selection: $selection) {
-                    ThingsMenu()
-                } label: {
-                    Label("Things", systemImage: "list.bullet")
-                }
-                
-                NavigationLink(tag: NavigationItem.productType, selection: $selection) {
-                    ProductTypeMenu()
-                } label: {
+                NavigationLink(destination: { ThingsMenu() }, label: {  Label("Things", systemImage: "list.bullet") })
+//                NavigationLink(tag: NavigationItem.things, selection: $selection) { }
+                NavigationLink(destination: { ProductTypeMenu() }, label: {
                     Label("Products", systemImage: "list.bullet")
-                }
-                
-                NavigationLink(tag: NavigationItem.documentType, selection: $selection) {
-                    DocumentTypeList()
-                } label: {
-                    Label("Documents", systemImage: "doc")
-                }
-                
-                NavigationLink(tag: NavigationItem.recent, selection: $selection) {
+                })
+//                NavigationLink(tag: NavigationItem.productType, selection: $selection) { }
+                NavigationLink(destination: { DocumentTypeList()
+                }, label: { Label("Documents", systemImage: "doc") })
+//                NavigationLink(tag: NavigationItem.documentType, selection: $selection)
+                NavigationLink(destination: {
                     RequestsMenu()
-                } label: {
-                    Label("Recent", systemImage: "clock")
-                }
-                
-                NavigationLink(tag: NavigationItem.favorites, selection: $selection) {
+                }, label: {
+                    Label("nav.recent", systemImage: "clock")
+                })
+//                NavigationLink(tag: NavigationItem.recent, selection: $selection)  label:
+                NavigationLink(destination: {
                     RequestsMenu()
-                } label: {
-                    Label("Requests", systemImage: "flag")
-                }
-            
-                NavigationLink(tag: NavigationItem.favorites, selection: $selection) {
+                }, label: {
+                    Label("nav.requests", systemImage: "flag")
+                })
+//                NavigationLink(tag: NavigationItem.favorites, selection: $selection)  label:
+                NavigationLink(destination: {
                     RequestsMenu()
-                } label: {
-                    Label("Favorites", systemImage: "heart")
-                }
-
-                NavigationLink(tag: NavigationItem.recipes, selection: $selection) {
+                }, label: {
+                    Label("nav.favorites", systemImage: "heart")
+                })
+//                NavigationLink(tag: NavigationItem.favorites, selection: $selection)  label:
+                NavigationLink(destination: {
                     RequestsMenu()
-                } label: {
+                }, label: {
                     Label("ML Models", systemImage: "book.closed")
-                }
+                })
+//                NavigationLink(tag: NavigationItem.recipes, selection: $selection)  label:
 
             }
-            .navigationTitle("Record Thing")
+            .navigationTitle("nav.appname")
             #if EXTENDED_ALL
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 Pocket()
             }
             #endif
             
-            Text("Select a category")
+            Text("ui.select.category")
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background()
                 .ignoresSafeArea()
             
-            Text("Select a product")
+            Text("ui.select.product")
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background()
@@ -101,7 +93,7 @@ struct AppSidebarNavigation: View {
         
         var body: some View {
             Button(action: { presentingRewards = true }) {
-                Label("Rewards", systemImage: "seal")
+                Label("nav.rewards", systemImage: "seal")
             }
             .controlSize(.large)
             .buttonStyle(.capsule)

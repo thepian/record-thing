@@ -7,23 +7,29 @@ The single entry point for the RecordThing app on iOS and macOS.
 
 import SwiftUI
 import Blackbird
+import os
+
+private let logger = Logger(
+    subsystem: Bundle.main.bundleIdentifier ?? "com.thepia.RecordThing",
+    category: "App"
+)
 
 var dbPath = {
     // First check for test database on external volume
     let testPath = "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite"
     if FileManager.default.fileExists(atPath: testPath) {
-        print("Using test database at", testPath)
+        logger.info("Using test database at \(testPath)")
         return URL(fileURLWithPath: testPath)
     }
     
     // Fall back to documents directory
     if let documentsPathURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-        print("Using database in documents path:", documentsPathURL)
+        logger.info("Using database in documents path: \(documentsPathURL.path)")
         return documentsPathURL.appendingPathComponent("record-thing.sqlite")
     }
     
     // Last resort fallback
-    print("Using fallback database path: /tmp/record-thing.sqlite")
+    logger.warning("Using fallback database path: /tmp/record-thing.sqlite")
     return URL(fileURLWithPath: "/tmp/record-thing.sqlite")
 }()
 
@@ -47,23 +53,17 @@ struct RecordThingApp: App {
                     // Initialize translations when app starts
                     await DynamicLocalizer.shared.registerTranslations(from: database)
                 }
-                .onChange(of: scenePhase) { phase in
-//                    visionService.onScenePhase(phase)
-                    
-//                    public func onScenePhase(_ phase: ScenePhase) {
-                        switch(phase) {
-                        case .active: // On application startup or resume
-                            if let documentsPathURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-                                //This gives you the URL of the path
-//                                print("documents path", documentsPathURL)
-                            }
-                            break
-                        case .inactive:
-                            break
-                        default:
-                            break
+                .onChange(of: scenePhase) { oldPhase, newPhase in
+                    switch(newPhase) {
+                    case .active: // On application startup or resume
+                        if let documentsPathURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                            logger.debug("Documents directory path: \(documentsPathURL.path)")
                         }
-//                    }
+                    case .inactive:
+                        logger.debug("Application became inactive")
+                    default:
+                        break
+                    }
                 }
         }
         .commands {

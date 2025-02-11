@@ -810,7 +810,7 @@
 			mainGroup = 5E6123F7244E8B32004DDFF7;
 			packageReferences = (
 				3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */,
-				3E8287F22D4FB1E500E80D09 /* XCLocalSwiftPackageReference "../libs/RecordLib" */,
+				3EDF3F382D5BD94300B08DAD /* XCLocalSwiftPackageReference "../libs/RecordLib" */,
 			);
 			productRefGroup = 5E612405244E8B32004DDFF7 /* Products */;
 			projectDirPath = "";
@@ -1622,7 +1622,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		3E8287F22D4FB1E500E80D09 /* XCLocalSwiftPackageReference "../libs/RecordLib" */ = {
+		3EDF3F382D5BD94300B08DAD /* XCLocalSwiftPackageReference "../libs/RecordLib" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../libs/RecordLib;
 		};

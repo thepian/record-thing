@@ -7,11 +7,13 @@ import requests
 from .taxonomy.taxonomy_parser import generate_product_type
 import requests_cache
 import random
+from .db.schema import migrate_schema, init_db_tables, ensure_owner_account
 from .db.test_data import (
     BRANDS, RETAILERS, DOCUMENT_PROVIDERS, 
     USE_CASES, TEST_SCENARIOS, VARIATIONS,
     THING_EVIDENCE_TYPES, REQUEST_TYPES,
-    Status, Condition, Region, DEFAULT_TRANSLATIONS
+    Status, Condition, Region, DEFAULT_TRANSLATIONS,
+    LUXURY_ITEMS, DeliveryMethod
 )
 
 from .commons import commons, create_uid
@@ -120,7 +122,7 @@ def generate_evidence_for_requests(cursor, request_ids: list) -> None:
             ORDER BY RANDOM() 
             LIMIT ?
         )
-        """, (request_id[0], random.randint(1, 3)))
+        """, (request_id, random.randint(1, 3)))
 
 def generate_universe_records(cursor, use_cases: dict) -> int:
     """Generate universe records for each use case if they don't exist."""
@@ -217,37 +219,51 @@ def generate_document_types(cursor) -> int:
     return cursor.fetchone()[0]
 
 def generate_requests(cursor, scenario: dict, universe_count: int) -> list:
-    """
-    Generate and insert request records.
+    """Generate and insert request records."""
+    # Get highest existing ID
+    cursor.execute("SELECT MAX(id) FROM requests")
+    max_id = cursor.fetchone()[0] or 0
     
-    Args:
-        cursor: Database cursor
-        scenario: Test scenario containing request count
-        universe_count: Number of universes to reference
-    
-    Returns:
-        list: List of request IDs
-    """
-    request_data = []
+    requests_data = []
     for i in range(scenario["requests"]):
-        request_type, required_docs = random.choice(REQUEST_TYPES)
-        request_data.append((
-            f"https://example.com/request/{create_uid()}",
-            random.randint(1, universe_count),
-            random.choice([s.value for s in Status]),
-            random.choice(['email', 'http_post']),
-            f"user{i}@example.com" if random.random() > 0.5 else f"https://api.example.com/webhook/{i}"
+        new_id = max_id + i + 1
+        request_type, required_evidence = random.choice(REQUEST_TYPES)
+        
+        # Generate a unique URL for the request
+        request_url = f"https://example.com/requests/{new_id}"
+        
+        # Select random delivery method from enum
+        delivery_method = random.choice(list(DeliveryMethod))
+        # Get corresponding target for this delivery method
+        delivery_target = random.choice(VARIATIONS["delivery_targets"][delivery_method.value])
+        
+        requests_data.append((
+            new_id,  # id
+            commons['owner_id'],  # account_id
+            request_url,  # url (required)
+            random.randint(1, universe_count),  # universe_id
+            request_type,  # type
+            json.dumps({
+                "required_evidence": required_evidence,
+                "priority": random.choice(VARIATIONS["priorities"]),
+                "due_date": (datetime.now(timezone.utc) + timedelta(days=random.randint(1, 30))).isoformat(),
+                "notes": f"Request for {request_type}"
+            }),  # data
+            random.choice(list(Status)).value,  # status
+            delivery_method.value,  # delivery_method
+            delivery_target  # delivery_target
         ))
-
-    cursor.executemany("""
-    INSERT INTO requests (
-        url, universe_id, status, delivery_method, delivery_target
-    ) VALUES (?, ?, ?, ?, ?)
-    """, request_data)
     
-    # Get and return the created request IDs
-    cursor.execute("SELECT id FROM requests")
-    return cursor.fetchall()
+    if requests_data:
+        cursor.executemany("""
+        INSERT INTO requests (
+            id, account_id, url, universe_id, type, data, status,
+            delivery_method, delivery_target
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, requests_data)
+
+    # Return request IDs for evidence generation
+    return [r[0] for r in requests_data]
 
 def generate_things(cursor, scenario: dict, product_type_count: int, document_type_count: int) -> list:
     """Generate and insert thing records up to planned quantity."""
@@ -259,8 +275,39 @@ def generate_things(cursor, scenario: dict, product_type_count: int, document_ty
     remaining_count = max(0, scenario["things_count"] - existing_count)
     
     if remaining_count > 0:
-        things_data = [
-            (
+        things_data = []
+        
+        # Generate luxury items
+        for category, brands in LUXURY_ITEMS:
+            for brand_name, models in brands:
+                for model in models:
+                    if len(things_data) >= remaining_count:
+                        break
+                        
+                    # Generate a unique identifier based on brand and model
+                    serial = f"{brand_name[:3]}{random.randint(100000, 999999)}"
+                    
+                    things_data.append((
+                        create_uid(),  # id
+                        commons['owner_id'],  # account_id
+                        serial,  # upc (using as serial number)
+                        None,  # asin
+                        None,  # elid
+                        brand_name,
+                        model,
+                        random.choice(["Black", "Silver", "Gold", "Platinum"]) if "Watch" in category 
+                        else random.choice(["Natural", "Classic", "Limited Edition"]),
+                        json.dumps([category.lower(), brand_name.lower(), model.lower()]),  # tags
+                        category,  # category
+                        random.randint(1, product_type_count),
+                        random.randint(1, document_type_count),
+                        f"{brand_name} {model}",  # title
+                        f"Authentic {brand_name} {model} - {category}"  # description
+                    ))
+
+        # Fill remaining with regular items if needed
+        while len(things_data) < remaining_count:
+            things_data.append((
                 create_uid(),
                 commons['owner_id'],
                 f"{random.choice(RETAILERS)[2]}{random.randint(1000, 9999)}",
@@ -273,10 +320,9 @@ def generate_things(cursor, scenario: dict, product_type_count: int, document_ty
                 random.choice(sum([data["things"] for data in USE_CASES.values()], [])),
                 random.randint(1, product_type_count),
                 random.randint(1, document_type_count),
-                f"Sample Thing {existing_count + i}",
-                f"Description for sample thing {existing_count + i}"
-            ) for i in range(remaining_count)
-        ]
+                f"Sample Thing {existing_count + len(things_data)}",
+                f"Description for sample thing {existing_count + len(things_data)}"
+            ))
 
         cursor.executemany("""
         INSERT INTO things (
@@ -343,131 +389,6 @@ def insert_sample_data(dbp: Path = DBP) -> None:
                 con.close()
             except Exception as e:
                 print(f"Error closing connection: {e}")
-
-# TODO this needs to always be called
-def ensure_owner_account(con) -> None:
-    """
-    Scenarios:
-    1) No owners or accounts exist
-    2) No owner exist, but accounts exist
-    3) Owner exists, but no accounts exist
-    4) Owner and accounts exist
-    """
-    cursor = con.cursor()
-    cursor.execute("SELECT * FROM owners LIMIT 1")
-    one_owner = cursor.fetchone()
-    cursor.execute("SELECT * FROM accounts LIMIT 1")
-    one_account = cursor.fetchone()
-
-    if one_owner is None and one_account is None:
-        cursor.execute("""
-            INSERT INTO accounts(account_id, name, username, email, sms, region) VALUES (?, ?, ?, ?, ?, ?);
-            """, 
-            [commons['account_id'], "Joe Schmoe", "joe", "joe@schmoe.com", "+0", "EU"], 
-        )
-        cursor.execute("INSERT INTO owners(account_id) VALUES (?);", [commons['owner_id']])
-    elif one_owner is None and one_account is not None:
-        commons['account_id'] = one_account[0]
-        commons['owner_id'] = one_account[0]
-        cursor.execute("INSERT INTO owners(account_id) VALUES (?);", [commons['owner_id']])
-    elif one_owner is not None and one_account is None:
-        commons['account_id'] = one_owner[0]
-        commons['owner_id'] = one_owner[0]
-        cursor.execute("""
-            INSERT INTO accounts(account_id, name, username, email, sms, region) VALUES (?, ?, ?, ?, ?, ?);
-            """, 
-            [commons['account_id'], "Joe Schmoe", "joe", "joe@schmoe.com", "+0", "EU"], 
-        )
-    else:
-        commons['account_id'] = one_owner[0]
-        commons['owner_id'] = one_owner[0]
-    cursor.close()
-
-def init_account(con) -> None:
-    """
-    Initialize account tables.
-    
-    Args:
-        con: Database connection
-    """
-    with open(Path(__file__).parent / 'db/account.sql', 'r') as sql_file:
-        sql_script = sql_file.read()
-        if "executescript" in dir(con):
-            con.executescript(sql_script)
-        else:
-            con.execute(sql_script)
-    
-    ensure_owner_account(con)
-
-def init_categories(con) -> None:
-    """
-    Initialize category tables.
-    
-    Args:
-        con: Database connection
-    """
-    with open(Path(__file__).parent / 'db/categories.sql', 'r') as sql_file:
-        sql_script = sql_file.read()
-        if "executescript" in dir(con):
-            con.executescript(sql_script)
-        else:
-            con.execute(sql_script)
-
-def init_evidence(con) -> None:
-    """
-    Initialize evidence-related tables.
-    
-    Args:
-        con: Database connection
-    """
-    with open(Path(__file__).parent / 'db/evidence.sql', 'r') as sql_file:
-        sql_script = sql_file.read()
-        if "executescript" in dir(con):
-            con.executescript(sql_script)
-        else:
-            con.execute(sql_script)
-
-def init_assets(con) -> None:
-    """
-    Initialize asset-related tables.
-    
-    Args:
-        con: Database connection
-    """
-    with open(Path(__file__).parent / 'db/assets.sql', 'r') as sql_file:
-        sql_script = sql_file.read()
-        if "executescript" in dir(con):
-            con.executescript(sql_script)
-        else:
-            con.execute(sql_script)
-
-def init_translations(con) -> None:
-    """
-    Initialize translations table.
-    
-    Args:
-        con: Database connection
-    """
-    with open(Path(__file__).parent / 'db/translations.sql', 'r') as sql_file:
-        sql_script = sql_file.read()
-        if "executescript" in dir(con):
-            con.executescript(sql_script)
-        else:
-            con.execute(sql_script)
-
-def init_db_tables(con) -> None:
-    """
-    Initialize all database tables in the correct order.
-    
-    Args:
-        con: Database connection
-    """
-    # Initialize tables in dependency order
-    init_account(con)
-    init_categories(con)
-    init_evidence(con)
-    init_assets(con)
-    init_translations(con)  # Add translations initialization
 
 def create_database(dbp: Path = DBP) -> None:
     """

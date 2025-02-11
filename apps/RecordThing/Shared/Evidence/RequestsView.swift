@@ -121,8 +121,8 @@ struct RequestsView: View {
              @BlackbirdColumn private var description: String?  // Backing field for description
              */
             VStack(alignment: .leading) {
-                Text("Evidence.menu",
-                     tableName: "Evidence",
+                Text("nav.evidence",
+                     tableName: "evidence",
                      comment: "Evidence in a smoothie. For languages that have different words for \"Ingredient\" based on semantic context.")
                     .font(Font.title).bold()
                     .foregroundStyle(.secondary)

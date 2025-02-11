@@ -48,8 +48,11 @@ CREATE TABLE IF NOT EXISTS things (
 -- Requests table
 CREATE TABLE IF NOT EXISTS requests (
     id INTEGER PRIMARY KEY,
-    url TEXT UNIQUE NOT NULL,
+    account_id TEXT NOT NULL DEFAULT '',
+    url TEXT UNIQUE NOT NULL, -- The URL is used to identify the request
     universe_id INTEGER,
+    type TEXT NOT NULL, -- What process does the request belong to?
+    data TEXT, -- JSON object containing request data
     status TEXT NOT NULL,  -- e.g., 'pending', 'completed'
     -- created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     -- completed_at TIMESTAMP,
@@ -68,6 +71,7 @@ CREATE TABLE IF NOT EXISTS evidence (
     -- created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     product_type INTEGER,
     document_type INTEGER,
+    evidence_type INTEGER,
     data TEXT, -- JSON object containing evidence data
     local_file TEXT -- Path to local file (.jpg or .png), starts with '/images/
     -- , FOREIGN KEY (thing_account_id, thing_id) REFERENCES things(account_id, id),

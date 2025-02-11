@@ -14,7 +14,7 @@ struct ThingsMenu: View {
 
     var body: some View {
         ThingsList()
-            .navigationTitle(Text("Things", comment: "Title of the 'menu' app section showing the menu of available things"))
+            .navigationTitle(Text("nav.things", comment: "Title of the 'menu' app section showing the menu of available things"))
     }
 }
 

@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Blackbird
 
 // Custom modifier for older SwiftUI versions that don't have .alternatingRowBackgrounds()
 struct AlternatingRowModifier: ViewModifier {
@@ -120,9 +121,26 @@ struct FieldItem: Identifiable {
     init(label: String, value: Any, indent: Int = 0, labelTemplate: String? = nil) {
         self.id = UUID().uuidString
         self.label = labelTemplate?.replacingOccurrences(of: "{field}", with: label) ?? label
+        
+        // For direct struct properties, skip array complexity check
+        if let array = value as? [Any], !array.isEmpty {
+            if !array.contains(where: { 
+                $0 is [String: Any] || 
+                $0 is [Any] ||
+                Mirror(reflecting: $0).children.isEmpty == false 
+            }) {
+                self.value = array.map { String(describing: $0) }.joined(separator: ", ")
+                self.isNested = false  // Simple arrays are not nested
+            } else {
+                self.value = String(describing: value)
+                self.isNested = true
+            }
+        } else {
         self.value = String(describing: value)
+            self.isNested = Mirror(reflecting: value).children.isEmpty == false
+        }
+        
         self.indent = indent
-        self.isNested = Mirror(reflecting: value).children.isEmpty == false
     }
 }
 
@@ -133,6 +151,8 @@ struct StructureFieldTableView<T>: View {
     let rightAlignValues: Bool
     let fieldColumnName: String
     let valueColumnName: String
+    let excludedFields: Set<String>
+    let maxLines: Int?
     
     init(
         _ title: String,
@@ -140,7 +160,9 @@ struct StructureFieldTableView<T>: View {
         labelTemplate: String? = nil,
         rightAlignValues: Bool = false,
         fieldColumnName: String = "Field",
-        valueColumnName: String = "Value"
+        valueColumnName: String = "Value",
+        excluding: [String] = [],
+        maxLines: Int? = nil
     ) {
         self.title = title
         self.item = item
@@ -148,14 +170,63 @@ struct StructureFieldTableView<T>: View {
         self.rightAlignValues = rightAlignValues
         self.fieldColumnName = fieldColumnName
         self.valueColumnName = valueColumnName
+        self.excludedFields = Set(excluding)
+        self.maxLines = maxLines
+    }
+    
+    private var effectiveExcludedFields: Set<String> {
+        var fields = excludedFields
+        
+        // Add any field containing "internalNameInSchemaGenerator"
+        let mirror = Mirror(reflecting: item)
+        
+        // Check if this is a SchemaGenerator-generated object
+        mirror.children.forEach { child in
+            if let columnWrapper = child.value as? any ColumnWrapper,
+               let internalName = columnWrapper.internalNameInSchemaGenerator.value {
+                // If we find a BlackbirdColumn wrapper with an internal name,
+                // use that name for exclusion checking
+                if excludedFields.contains(internalName) {
+                    fields.insert(internalName)
+                }
+            } else if let label = child.label,
+                      label.contains("internalNameInSchemaGenerator") {
+                fields.insert(label)
+            }
+        }
+        
+        return fields
     }
     
     func extractFields(from value: Any, indent: Int = 0) -> [FieldItem] {
-        let mirror = Mirror(reflecting: value)
         var fields: [FieldItem] = []
         
+        // Handle struct/class using Mirror
+        let mirror = Mirror(reflecting: value)
         for child in mirror.children {
+            // Handle BlackbirdColumn wrappers
+            if let columnWrapper = child.value as? any ColumnWrapper,
+               let internalName = columnWrapper.internalNameInSchemaGenerator.value {
+                // Skip excluded fields
+                guard !effectiveExcludedFields.contains(internalName) else { continue }
+                
+                let fieldItem = FieldItem(
+                    label: internalName,
+                    value: columnWrapper.value,
+                    indent: indent,
+                    labelTemplate: labelTemplate
+                )
+                fields.append(fieldItem)
+                
+                if Mirror(reflecting: columnWrapper.value).children.isEmpty == false {
+                    fields.append(contentsOf: extractFields(from: columnWrapper.value, indent: indent + 1))
+                }
+                continue
+            }
+            
+            // Handle regular properties
             guard let label = child.label else { continue }
+            guard !effectiveExcludedFields.contains(label) else { continue }
             
             let fieldItem = FieldItem(
                 label: label,
@@ -165,12 +236,63 @@ struct StructureFieldTableView<T>: View {
             )
             fields.append(fieldItem)
             
-            if fieldItem.isNested {
+            if Mirror(reflecting: child.value).children.isEmpty == false {
                 fields.append(contentsOf: extractFields(from: child.value, indent: indent + 1))
             }
         }
         
+        // Handle Dictionary
+        if let dict = value as? [String: Any] {
+            for (key, value) in dict {
+                // Skip excluded fields and internal fields
+                guard !effectiveExcludedFields.contains(key) else { continue }
+                
+                let fieldItem = FieldItem(
+                    label: key,
+                    value: value,
+                    indent: indent,
+                    labelTemplate: labelTemplate
+                )
+                fields.append(fieldItem)
+                
+                if value is [String: Any] || isComplexArray(value) {
+                    fields.append(contentsOf: extractFields(from: value, indent: indent + 1))
+                }
+            }
+            return fields
+        }
+        
+        // Handle Array
+        if let array = value as? [Any] {
+            if isComplexArray(array) {
+                for (index, value) in array.enumerated() {
+                    let fieldItem = FieldItem(
+                        label: "[\(index)]",
+                        value: value,
+                        indent: indent,
+                        labelTemplate: labelTemplate
+                    )
+                    fields.append(fieldItem)
+                    
+                    if value is [String: Any] || value is [Any] {
+                        fields.append(contentsOf: extractFields(from: value, indent: indent + 1))
+                    }
+                }
+            }
+            return fields
+        }
+        
         return fields
+    }
+    
+    // Helper function to determine if an array contains complex types
+    private func isComplexArray(_ value: Any) -> Bool {
+        guard let array = value as? [Any] else { return false }
+        return array.contains { item in
+            item is [String: Any] || 
+            item is [Any] ||
+            Mirror(reflecting: item).children.isEmpty == false
+        }
     }
     
     var fields: [FieldItem] {
@@ -183,7 +305,7 @@ struct StructureFieldTableView<T>: View {
                 .font(.headline)
                 .padding(.bottom, 8)
             
-            Table(fields, selection: .constant(nil)) {
+        Table(fields, selection: .constant(nil)) {
                 TableColumn(LocalizedStringKey(fieldColumnName)) { item in
                     HStack {
                         if item.indent > 0 {
@@ -201,14 +323,24 @@ struct StructureFieldTableView<T>: View {
                             if rightAlignValues {
                                 Spacer()
                             }
-                            Text(item.value)
-                                .textSelection(.enabled)
+                Text(item.value)
+                    .textSelection(.enabled)
                                 .foregroundColor(.primary)
                         }
                     }
                 }
                 .alignment(rightAlignValues ? .trailing : .leading)
             }
+            .frame(height: min(CGFloat(fields.count) * 44, CGFloat(maxLines ?? fields.count) * 44)) // 44 is default row height, limit to maxLines rows
+            .clipped()
+//            .modify { view in
+//                if let maxLines = maxLines {
+//                    view.frame(height: min(CGFloat(fields.count) * 44, CGFloat(maxLines) * 44))
+//                        .clipped()
+//                } else {
+//                    view
+//                }
+//            }
             .headerProminence(.increased)
         }
         .padding()
@@ -266,6 +398,51 @@ struct StructureFieldTableView_Previews: PreviewProvider {
         }
     }
     
+    // Sample JSON structure
+    static let jsonString = """
+    {
+        "metrics": {
+            "totalRequests": 1234,
+            "averageLatency": 42.5,
+            "errorRate": 0.01
+        },
+        "status": {
+            "isHealthy": true,
+            "lastCheck": "2024-03-14T15:09:26Z",
+            "nodes": ["us-east", "eu-west"]
+        }
+    }
+    """
+    
+    struct JsonExample: View {
+        let jsonData: Any
+        
+        init() {
+            let data = Data(jsonString.utf8)
+            do {
+                // Use options to preserve number types
+                self.jsonData = try JSONSerialization.jsonObject(
+                    with: data,
+                    options: [.fragmentsAllowed]
+                )
+            } catch {
+                self.jsonData = ["error": "Failed to parse JSON"]
+            }
+        }
+        
+        var body: some View {
+            StructureFieldTableView(
+                "API Metrics",
+                item: jsonData,
+                rightAlignValues: true,
+                fieldColumnName: "Metric",
+                valueColumnName: "Value",
+                excluding: ["isHealthy"]
+            )
+            .padding()
+        }
+    }
+    
     static var previews: some View {
         Group {
             LeftAlignedExamples()
@@ -273,6 +450,15 @@ struct StructureFieldTableView_Previews: PreviewProvider {
             
             RightAlignedExample()
                 .previewDisplayName("Right Aligned Example")
+            
+            JsonExample()
+                .previewDisplayName("JSON Data Example")
         }
     }
+}
+
+// Protocol to match Blackbird's ColumnWrapper type
+protocol ColumnWrapper {
+    var internalNameInSchemaGenerator: Blackbird.Locked<String?> { get }
+    var value: Any { get }
 }

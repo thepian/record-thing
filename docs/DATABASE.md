@@ -34,7 +34,7 @@ The Primary Key is a locally generated integer.
 
 ## Things
 
-Things belonging to the user. It has been identified by the user by scanning and recording.
+Things belonging to the user. It has been identified by the user by scanning and recording. They tend to be luxury goods or high status belongings that the user wants to keep track of for insurance purposes.
 Multiple records can be made for the same thing.
 The owner of the thing is identified by the account_id.
 
@@ -43,9 +43,10 @@ The Things Primary Key is the account_id plus a locally generated text id(KSUID)
 
 ## Evidence
 
-Evidence is a set of records that are evidence of the thing.
+Evidence is a set of records that are evidence of the thing or event.
 Evidence will often relate to a thing.
 Evidence can relate to a request.
+Evidence can relate to an event.
 
 
 

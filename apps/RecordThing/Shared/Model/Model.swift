@@ -8,6 +8,12 @@ A model representing all of the data the app needs to display in its interface.
 import Foundation
 import AuthenticationServices
 //import Blackbird
+import os
+
+private let logger = Logger(
+    subsystem: Bundle.main.bundleIdentifier ?? "com.thepia.RecordThing",
+    category: "App"
+)
 
 class Model: ObservableObject {
     @Published var account: AccountModel?
@@ -69,7 +75,7 @@ class Model: ObservableObject {
     func authorizeUser(_ result: Result<ASAuthorization, Error>) {
         guard case .success(let authorization) = result, let credential = authorization.credential as? ASAuthorizationAppleIDCredential else {
             if case .failure(let error) = result {
-                print("Authentication error: \(error.localizedDescription)")
+                logger.error("Authentication error: \(error.localizedDescription)")
             }
             return
         }

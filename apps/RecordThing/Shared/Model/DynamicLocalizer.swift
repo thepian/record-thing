@@ -8,6 +8,12 @@
 
 import Foundation
 import Blackbird
+import os
+
+private let logger = Logger(
+    subsystem: Bundle.main.bundleIdentifier ?? "com.thepia.RecordThing",
+    category: "App"
+)
 
 class DynamicLocalizer {
     static let shared = DynamicLocalizer()
@@ -49,14 +55,14 @@ class DynamicLocalizer {
 //                Bundle.main.setLocalizationDictionary(dict, for: lang)
 //                Bundle.main.set
             }
-            
+            logger.info("Loaded translations from Database.")
         } catch {
-            print("Error loading translations: \(error)")
+            logger.error("Error loading translations: \(error)")
         }
     }
     
     func translate(_ key: String, locale: Locale = .current) -> String {
-        let lang = locale.languageCode ?? "en"
+        let lang = locale.language.languageCode?.identifier ?? "en"
         return translations[lang]?[key] ?? key
     }
 }
