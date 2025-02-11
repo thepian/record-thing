@@ -3,7 +3,7 @@
 //  RecordThing
 //
 //  Created by Henrik Vendelbo on 23.09.2024.
-//  Copyright © 2024 Apple. All rights reserved.
+//  Copyright © 2025 Thepia. All rights reserved.
 //
 
 import SwiftUI
@@ -30,8 +30,8 @@ struct DocumentTypeView: View {
             .background()
             .navigationTitle(document.fullName)
             .toolbar {
-                ProductFavoriteButton()
-                    .environmentObject(model)
+//                ProductFavoriteButton()
+//                    .environmentObject(model)
             }
             .sheet(isPresented: $presentingOrderPlacedSheet) {
             }
@@ -82,7 +82,7 @@ struct DocumentTypeView: View {
 }
 
 
-#Preview {
+#Preview(traits: .sizeThatFitsLayout) {
     Group {
         NavigationView {
             DocumentTypeView(document: .Receipt)
@@ -90,7 +90,6 @@ struct DocumentTypeView: View {
         
         ForEach([DocumentType.Document, .Receipt, .Card]) { document in
             DocumentTypeView(document: document)
-                .previewLayout(.sizeThatFits)
                 .frame(height: 700)
         }
     }

@@ -21,6 +21,10 @@ There is a hugging face model for DINO v2, which is a self-supervised learning m
 - 
 - 
 
+## Apple Developer Account
+
+apps@thepia.com
+
 
 ## Dataset
 

@@ -1,0 +1,17 @@
+/*
+See LICENSE folder for this sample’s licensing information.
+
+Abstract:
+TODO
+*/
+
+/*
+  Ingredients.strings
+  RecordThing
+*/
+
+/* Ingredients of a smoothie. For languages that have different words for "Ingredient" based on semantic context */
+"Evidence.menu" = "Evidence";
+
+/* Ingredients in a recipe. For languages that have different words for "Ingredient" based on semantic context */
+"Evidence.recipe" = "Evidence";

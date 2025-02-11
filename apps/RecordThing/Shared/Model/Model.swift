@@ -10,7 +10,7 @@ import AuthenticationServices
 //import Blackbird
 
 class Model: ObservableObject {
-    @Published var account: Account?
+    @Published var account: AccountModel?
     
     var hasAccount: Bool {
         #if targetEnvironment(simulator)
@@ -20,14 +20,16 @@ class Model: ObservableObject {
         #endif
     }
     
-    @Published var favoriteProductIDs = Set<ProductDef.ID>()
-    @Published var selectedProductID: ProductDef.ID?
-    
+    @Published var favoriteProductIDs = Set<Things.ID>()
+    @Published var selectedThingID: Things.ID?
+    @Published var selectedRequestID: Requests.ID?
+    @Published var selectedTypeID: ProductType.ID?
+
     @Published var searchString = ""
     
     @Published var isApplePayEnabled = true
     @Published var allRecipesUnlocked = false
-    @Published var unlockAllRecipesProduct: ProductDef?
+//    @Published var unlockAllRecipesProduct: ProductDef?
     
     let defaults = UserDefaults(suiteName: "group.example.recordthing")
     
@@ -37,7 +39,7 @@ class Model: ObservableObject {
     }
     
     private let allProductIdentifiers = Set([Model.unlockAllRecipesIdentifier])
-    private var fetchedProducts: [ProductDef] = []
+//    private var fetchedProducts: [ProductDef] = []
     private var updatesHandler: Task<Void, Error>? = nil
     
     init() {
@@ -78,10 +80,10 @@ class Model: ObservableObject {
     }
 }
 
-// MARK: - Products & Account
+// MARK: - Products & AccountModel
 
 extension Model {
-    func toggleFavorite(smoothieID: ProductDef.ID) {
+    func toggleFavorite(smoothieID: Things.ID) {
         if favoriteProductIDs.contains(smoothieID) {
             favoriteProductIDs.remove(smoothieID)
         } else {
@@ -89,9 +91,9 @@ extension Model {
         }
     }
     
-    func isFavorite(product: ProductDef) -> Bool {
-        favoriteProductIDs.contains(product.id)
-    }
+//    func isFavorite(product: ProductDef) -> Bool {
+//        favoriteProductIDs.contains(product.id)
+//    }
     
     func isFavorite(product: ProductType) -> Bool {
         favoriteProductIDs.contains(product.fullName)
@@ -103,15 +105,15 @@ extension Model {
     
     func createAccount() {
         guard account == nil else { return }
-        account = Account()
+        account = AccountModel()
     }
     
     func clearUnstampedPoints() {
         account?.clearUnstampedPoints()
     }
 
-    var searchSuggestions: [Ingredient] {
-        Ingredient.all.filter {
+    var searchSuggestions: [Evidence] {
+        Evidence.all.filter {
             $0.name.localizedCaseInsensitiveContains(searchString) &&
             $0.name.localizedCaseInsensitiveCompare(searchString) != .orderedSame
         }
@@ -123,9 +125,9 @@ extension Model {
 extension Model {
     static let unlockAllRecipesIdentifier = "com.example.apple-samplecode.recordthing.unlock-recipes"
     
-    func product(for identifier: String) -> ProductDef? {
-        return fetchedProducts.first(where: { $0.id == identifier })
-    }
+//    func product(for identifier: String) -> ProductDef? {
+//        return fetchedProducts.first(where: { $0.id == identifier })
+//    }
         
 }
 
@@ -136,8 +138,8 @@ extension Model {
     private func fetchProducts() {
         Task { @MainActor in
 //            self.fetchedProducts = try await ProductDef.products(for: allProductIdentifiers)
-            self.unlockAllRecipesProduct = self.fetchedProducts
-                .first { $0.id == Model.unlockAllRecipesIdentifier }
+//            self.unlockAllRecipesProduct = self.fetchedProducts
+//                .first { $0.id == Model.unlockAllRecipesIdentifier }
             // Check if the user owns all recipes at app launch.
             await self.updateAllRecipesOwned()
         }
@@ -145,10 +147,10 @@ extension Model {
     
     @MainActor
     private func updateAllRecipesOwned() async {
-        guard let product = self.unlockAllRecipesProduct else {
-            self.allRecipesUnlocked = false
-            return
-        }
+//        guard let product = self.unlockAllRecipesProduct else {
+//            self.allRecipesUnlocked = false
+//            return
+//        }
 //        guard let entitlement = await product.currentEntitlement,
 //              case .verified(_) = entitlement else {
 //                  self.allRecipesUnlocked = false

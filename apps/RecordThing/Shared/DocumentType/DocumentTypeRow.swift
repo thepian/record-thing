@@ -3,7 +3,7 @@
 //  RecordThing
 //
 //  Created by Henrik Vendelbo on 23.09.2024.
-//  Copyright © 2024 Apple. All rights reserved.
+//  Copyright © 2025 Thepia. All rights reserved.
 //
 
 import SwiftUI
@@ -45,14 +45,13 @@ struct DocumentTypeRow: View {
     }
 }
 
-#Preview {
+#Preview(traits: .sizeThatFitsLayout) {
     Group {
         DocumentTypeRow(document: .Card)
         DocumentTypeRow(document: .Receipt)
     }
     .frame(width: 250, alignment: .leading)
     .padding(.horizontal)
-    .previewLayout(.sizeThatFits)
     .environmentObject(Model())
 
 }

@@ -3,7 +3,7 @@
 //  RecordThing
 //
 //  Created by Henrik Vendelbo on 21.09.2024.
-//  Copyright © 2024 Apple. All rights reserved.
+//  Copyright © 2025 Thepia. All rights reserved.
 //
 
 import SwiftUI

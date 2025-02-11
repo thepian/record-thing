@@ -3,7 +3,7 @@
 //  RecordThing
 //
 //  Created by Henrik Vendelbo on 23.09.2024.
-//  Copyright © 2024 Apple. All rights reserved.
+//  Copyright © 2025 Thepia. All rights reserved.
 //
 
 import SwiftUI
@@ -11,21 +11,20 @@ import Blackbird
 
 struct DocumentTypeMenu: View {
     // Async-loading, auto-updating array of matching instances
-    @BlackbirdLiveModels({ try await DocumentType.read(from: $0, orderBy: .ascending(\.$name)) }) var types
 
     var body: some View {
-        if types.didLoad {
-            DocumentTypeList(results: types.$results)
-                .navigationTitle(Text("Document Type", comment: "Title of the 'menu' app section showing the menu of available document types"))
-        } else {
-            Group {
-                ProgressView()
-                Text("Loading")
-            }
-        }
+        DocumentTypeList()
+            .navigationTitle(Text("Document Type", comment: "Title of the 'menu' app section showing the menu of available document types"))
     }
 }
 
 #Preview {
-    DocumentTypeMenu().environmentObject(Model())
+    @Previewable @StateObject var database = try! Blackbird.Database(path: "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite")
+    @Previewable @StateObject var model = Model()
+
+    NavigationView {
+        DocumentTypeMenu()
+    }
+        .environment(\.blackbirdDatabase, database)
+        .environmentObject(model)
 }
