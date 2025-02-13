@@ -14,45 +14,21 @@ private let logger = Logger(
     category: "App"
 )
 
-var dbPath = {
-    // First check for test database on external volume
-    let testPath = "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite"
-    if FileManager.default.fileExists(atPath: testPath) {
-        logger.info("Using test database at \(testPath)")
-        return URL(fileURLWithPath: testPath)
-    }
-    
-    // Fall back to documents directory
-    if let documentsPathURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-        logger.info("Using database in documents path: \(documentsPathURL.path)")
-        return documentsPathURL.appendingPathComponent("record-thing.sqlite")
-    }
-    
-    // Last resort fallback
-    logger.warning("Using fallback database path: /tmp/record-thing.sqlite")
-    return URL(fileURLWithPath: "/tmp/record-thing.sqlite")
-}()
-
 /// - Tag: SingleAppDefinitionTag
 @main
 struct RecordThingApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
     @Environment(\.scenePhase) private var scenePhase
 
-    @StateObject private var model = Model()
-    
-    // The database that all child views will automatically use
-//    @StateObject var database = try! Blackbird.Database.inMemoryDatabase()
-    @StateObject var database = try! Blackbird.Database(path: dbPath.absoluteString)
+    @StateObject var datasource = AppDatasource.shared // Important for triggering updates after translation loaded.
+    @StateObject private var model = Model(loadedLang: AppDatasource.shared.$loadedLang)
     
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(model)
-                .environment(\.blackbirdDatabase, database)
-                .task {
-                    // Initialize translations when app starts
-                    await DynamicLocalizer.shared.registerTranslations(from: database)
-                }
+                .environment(\.blackbirdDatabase, AppDatasource.shared.db)
                 .onChange(of: scenePhase) { oldPhase, newPhase in
                     switch(newPhase) {
                     case .active: // On application startup or resume

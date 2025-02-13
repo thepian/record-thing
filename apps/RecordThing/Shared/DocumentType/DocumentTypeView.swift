@@ -93,5 +93,5 @@ struct DocumentTypeView: View {
                 .frame(height: 700)
         }
     }
-    .environmentObject(Model())
+    .environmentObject(Model(loadedLangConst: "en"))
 }

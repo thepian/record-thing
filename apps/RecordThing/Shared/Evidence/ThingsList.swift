@@ -42,16 +42,12 @@ struct ThingsList: View {
 }
 
 #Preview {
-    @Previewable @StateObject var database = try! Blackbird.Database(path: "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite")
-    @Previewable @StateObject var model = Model()
+    @Previewable @StateObject var datasource = AppDatasource.shared
+    @Previewable @StateObject var model = Model(loadedLangConst: "en")
 
     NavigationView {
-        ThingsList().navigationTitle("nav.things")
+        ThingsList().navigationTitle(LocalizedStringKey(stringLiteral: "nav.things"))
     }
-    .task {
-        // Initialize translations when app starts
-        await DynamicLocalizer.shared.registerTranslations(from: database)
-    }
-    .environment(\.blackbirdDatabase, database)
+    .environment(\.blackbirdDatabase, datasource.db)
     .environmentObject(model)
 }

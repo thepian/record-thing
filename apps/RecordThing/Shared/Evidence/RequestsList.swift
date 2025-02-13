@@ -37,12 +37,12 @@ struct RequestsList: View {
 }
 
 #Preview {
-    @Previewable @StateObject var database = try! Blackbird.Database(path: "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite")
-    @Previewable @StateObject var model = Model()
+    @Previewable @StateObject var datasource = AppDatasource.shared
+    @Previewable @StateObject var model = Model(loadedLangConst: "en")
 
     NavigationView {
-        RequestsList().navigationTitle("Navigation Title")
+        RequestsList().navigationTitle(LocalizedStringKey(stringLiteral: "nav.requests"))
     }
-    .environment(\.blackbirdDatabase, database)
+    .environment(\.blackbirdDatabase, datasource.db)
     .environmentObject(model)
 }

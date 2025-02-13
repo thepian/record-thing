@@ -121,7 +121,7 @@ struct RequestsView: View {
              @BlackbirdColumn private var description: String?  // Backing field for description
              */
             VStack(alignment: .leading) {
-                Text("nav.evidence",
+                Text(LocalizedStringKey(stringLiteral: "nav.evidence"),
                      tableName: "evidence",
                      comment: "Evidence in a smoothie. For languages that have different words for \"Ingredient\" based on semantic context.")
                     .font(Font.title).bold()
@@ -181,7 +181,7 @@ struct RequestsView: View {
 
 #Preview(traits: .sizeThatFitsLayout) {
     @Previewable @StateObject var database = try! Blackbird.Database(path: "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite")
-    @Previewable @StateObject var model = Model()
+    @Previewable @StateObject var model = Model(loadedLangConst: "en")
 
     Group {
         NavigationStack {

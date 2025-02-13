@@ -98,7 +98,7 @@ struct ThingsView: View {
             ThingsHeaderView(thing: thing)
             
             VStack(alignment: .leading) {
-                Text("nav.evidence",
+                Text(LocalizedStringKey(stringLiteral: "nav.evidence"),
                      tableName: "evidence",
                      comment: "Evidence in a smoothie. For languages that have different words for \"Ingredient\" based on semantic context.")
                     .font(Font.title).bold()
@@ -157,8 +157,8 @@ struct ThingsView: View {
 
 
 #Preview(traits: .sizeThatFitsLayout) {
-    @Previewable @StateObject var database = try! Blackbird.Database(path: "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite")
-    @Previewable @StateObject var model = Model()
+    @Previewable @StateObject var datasource = AppDatasource.shared
+    @Previewable @StateObject var model = Model(loadedLangConst: "en")
 
     NavigationStack {
         ThingsView(thing: .Sports)
@@ -168,7 +168,7 @@ struct ThingsView: View {
 //struct ThingsView_Previews: PreviewProvider {
 //    static var previews: some View {
 //        @Previewable @StateObject var database = try! Blackbird.Database(path: "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite")
-//        @Previewable @StateObject var model = Model()
+//        @Previewable @StateObject var model = Model(loadedLangConst: "en")
 //
 //        Group {
 //            NavigationView {
@@ -182,6 +182,6 @@ struct ThingsView: View {
 //            }
 //        }
 //        .environment(\.blackbirdDatabase, database)
-//        .environmentObject(Model())
+//        .environmentObject(Model(loadedLangConst: "en"))
 //    }
 //}

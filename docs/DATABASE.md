@@ -87,3 +87,6 @@ Global document types with common identifiers and iconic images.
 DocumentTypes are categories of documents identified by various naming conventions. They are tied to individual images.
 
 
+## Translations
+
+I would like to extend the translations in a SwiftUI application by loading them from a SQLite table. The database(record-thing.sqlite) is stored in the App Documents folder. If no database is found a default image is copied from the App Resources. How do I do it so the application loads fast and translations are applied to all translated texts in the application. I want to use the text localisation built into SwiftUI labels. Use Blackbird to access the SQLite Database.

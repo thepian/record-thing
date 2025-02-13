@@ -20,7 +20,7 @@ struct DocumentTypeMenu: View {
 
 #Preview {
     @Previewable @StateObject var database = try! Blackbird.Database(path: "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite")
-    @Previewable @StateObject var model = Model()
+    @Previewable @StateObject var model = Model(loadedLangConst: "en")
 
     NavigationView {
         DocumentTypeMenu()

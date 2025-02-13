@@ -21,5 +21,5 @@ struct ProductTypeMenu: View {
 }
 
 //#Preview {
-//    ProductTypeMenu().environmentObject(Model())
+//    ProductTypeMenu().environmentObject(Model(loadedLangConst: "en"))
 //}

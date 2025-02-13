@@ -7,8 +7,8 @@ A model representing all of the data the app needs to display in its interface.
 
 import Foundation
 import AuthenticationServices
-//import Blackbird
 import os
+import Combine
 
 private let logger = Logger(
     subsystem: Bundle.main.bundleIdentifier ?? "com.thepia.RecordThing",
@@ -16,6 +16,8 @@ private let logger = Logger(
 )
 
 class Model: ObservableObject {
+    private var cancellables = Set<AnyCancellable>()
+    
     @Published var account: AccountModel?
     
     var hasAccount: Bool {
@@ -48,6 +50,8 @@ class Model: ObservableObject {
 //    private var fetchedProducts: [ProductDef] = []
     private var updatesHandler: Task<Void, Error>? = nil
     
+    @Published var loadedLang: String?
+    
     init() {
         // Start listening for transaction info updates, like if the user
         // refunds the purchase or if a parent approves a child's request to
@@ -66,6 +70,23 @@ class Model: ObservableObject {
                 }
             }
         }
+
+    }
+    
+    convenience init(loadedLang _loadedLang: Published<String?>.Publisher?) {
+        self.init()
+        
+        if let _loadedLang = _loadedLang {
+            _loadedLang.sink { [weak self] newValue in
+                self?.loadedLang = newValue
+            }
+            .store(in: &cancellables)
+        }
+    }
+    
+    convenience init(loadedLangConst _loadedLang: String) {
+        self.init()
+        loadedLang = _loadedLang
     }
     
     deinit {

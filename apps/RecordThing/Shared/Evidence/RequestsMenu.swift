@@ -14,17 +14,17 @@ struct RequestsMenu: View {
 
     var body: some View {
         RequestsList()
-            .navigationTitle(Text("nav.requests", comment: "Title of the 'menu' app section showing the menu of available things"))
+            .navigationTitle(Text(LocalizedStringKey(stringLiteral: "nav.requests"), comment: "Title of the 'menu' app section showing the menu of available things"))
     }
 }
 
 #Preview {
-    @Previewable @StateObject var database = try! Blackbird.Database(path: "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite")
-    @Previewable @StateObject var model = Model()
+    @Previewable @StateObject var datasource = AppDatasource.shared
+    @Previewable @StateObject var model = Model(loadedLangConst: "en")
 
     NavigationView {
         RequestsMenu()
     }
-    .environment(\.blackbirdDatabase, database)
+    .environment(\.blackbirdDatabase, datasource.db)
     .environmentObject(model)
 }
