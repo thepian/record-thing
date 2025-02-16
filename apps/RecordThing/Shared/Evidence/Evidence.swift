@@ -25,8 +25,7 @@ struct Evidence: BlackbirdModel, Identifiable {
 //    -- created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     // Type references
-    @BlackbirdColumn var product_type: Int?
-    @BlackbirdColumn var document_type: Int?
+    @BlackbirdColumn var evidence_type: Int?
 
     // Product identifiers
 //    @BlackbirdColumn var upc: String?  // Universal Product Code

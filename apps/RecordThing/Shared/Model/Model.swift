@@ -31,7 +31,7 @@ class Model: ObservableObject {
     @Published var favoriteProductIDs = Set<Things.ID>()
     @Published var selectedThingID: Things.ID?
     @Published var selectedRequestID: Requests.ID?
-    @Published var selectedTypeID: ProductType.ID?
+    @Published var selectedTypeID: EvidenceType.ID?
 
     @Published var searchString = ""
     
@@ -122,12 +122,8 @@ extension Model {
 //        favoriteProductIDs.contains(product.id)
 //    }
     
-    func isFavorite(product: ProductType) -> Bool {
+    func isFavorite(product: EvidenceType) -> Bool {
         favoriteProductIDs.contains(product.fullName)
-    }
-    
-    func isFavorite(document: DocumentType) -> Bool {
-        favoriteProductIDs.contains(document.fullName)
     }
     
     func createAccount() {

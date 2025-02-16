@@ -1,11 +1,10 @@
 from pathlib import Path
+from typing import Generator
 import duckdb
 import sqlite3
 from datetime import datetime, timezone, timedelta
 import json
-import requests
-from .taxonomy.taxonomy_parser import generate_product_type
-import requests_cache
+from .taxonomy.category import EvidenceType, generate_evidence_types
 import random
 from .db.schema import migrate_schema, init_db_tables, ensure_owner_account
 from .db.test_data import (
@@ -98,7 +97,7 @@ def generate_evidence_for_things(cursor, things: list, scenario: dict) -> None:
             ))
 
     cursor.executemany("""
-    INSERT INTO evidence (
+    INSERT OR IGNORE INTO evidence (
         id, thing_account_id, thing_id, request_id,
         product_type, document_type, data, local_file
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -153,7 +152,7 @@ def generate_universe_records(cursor, use_cases: dict) -> int:
     
     if universe_data:
         cursor.executemany("""
-        INSERT INTO universe (
+        INSERT OR IGNORE INTO universe (
             url, name, description, version, date,
             checksum, checksum_type, is_downloaded, is_installed,
             is_running, is_paused, is_stopped, is_failed,
@@ -166,28 +165,6 @@ def generate_universe_records(cursor, use_cases: dict) -> int:
     cursor.execute("SELECT COUNT(*) FROM universe")
     return cursor.fetchone()[0]
 
-def generate_product_types(cursor) -> int:
-    """Generate and insert product type records if they don't exist."""
-    # Check existing product types
-    cursor.execute("SELECT rootName FROM product_type WHERE lang = 'en'")
-    existing_types = {row[0] for row in cursor.fetchall()}
-    
-    # Filter out types that already exist
-    product_types = [
-        pt for pt in generate_product_type()
-        if pt[1] not in existing_types  # pt[1] is rootName
-    ]
-    
-    if product_types:
-        cursor.executemany("""
-        INSERT INTO product_type (
-            lang, rootName, name, url, gpcRoot, gpcName, gpcCode, unspscID
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """, product_types)
-    
-    # Return total count
-    cursor.execute("SELECT COUNT(*) FROM product_type WHERE lang = 'en'")
-    return cursor.fetchone()[0]
 
 def generate_document_types(cursor) -> int:
     """Generate and insert document type records if they don't exist."""
@@ -210,7 +187,7 @@ def generate_document_types(cursor) -> int:
     
     if document_types:
         cursor.executemany("""
-        INSERT INTO document_type (lang, rootName, name, url)
+        INSERT OR IGNORE INTO document_type (lang, rootName, name, url)
         VALUES (?, ?, ?, ?)
         """, document_types)
     
@@ -222,7 +199,8 @@ def generate_requests(cursor, scenario: dict, universe_count: int) -> list:
     """Generate and insert request records."""
     # Get highest existing ID
     cursor.execute("SELECT MAX(id) FROM requests")
-    max_id = cursor.fetchone()[0] or 0
+    max_id = int(cursor.fetchone()[0] or 0)
+    # print("max_id for requests:", max_id, type(max_id))
     
     requests_data = []
     for i in range(scenario["requests"]):
@@ -256,7 +234,7 @@ def generate_requests(cursor, scenario: dict, universe_count: int) -> list:
     
     if requests_data:
         cursor.executemany("""
-        INSERT INTO requests (
+        INSERT OR IGNORE INTO requests (
             id, account_id, url, universe_id, type, data, status,
             delivery_method, delivery_target
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -325,7 +303,7 @@ def generate_things(cursor, scenario: dict, product_type_count: int, document_ty
             ))
 
         cursor.executemany("""
-        INSERT INTO things (
+        INSERT OR IGNORE INTO things (
             id, account_id, upc, asin, elid, brand, model, color,
             tags, category, product_type, document_type, title, description
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -334,6 +312,17 @@ def generate_things(cursor, scenario: dict, product_type_count: int, document_ty
     # Return all things for evidence generation
     cursor.execute("SELECT account_id, id FROM things")
     return cursor.fetchall()
+
+def insert_evidence_types(evidences: Generator[EvidenceType, None, None], cursor) -> None:
+    """Insert evidence type records."""
+    # for e in list(evidences):
+    #     print(e)
+
+    cursor.executemany("""
+    INSERT OR IGNORE INTO evidence_type (
+        lang, rootName, name, url, gpcRoot, gpcName, gpcCode, unspscID
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, list(evidences))
 
 def generate_testdata_records(con, cursor, dbp = DBP) -> None:
     """
@@ -346,7 +335,9 @@ def generate_testdata_records(con, cursor, dbp = DBP) -> None:
         
         # Generate all types of records
         universe_count = generate_universe_records(cursor, USE_CASES)
-        product_type_count = generate_product_types(cursor)
+        
+        evidence_type_count = insert_evidence_types(generate_evidence_types(), cursor)
+
         document_type_count = generate_document_types(cursor)
         
         # Generate translations after product and document types
@@ -354,7 +345,7 @@ def generate_testdata_records(con, cursor, dbp = DBP) -> None:
         
         # Generate things and their evidence
         scenario = TEST_SCENARIOS[0]
-        things = generate_things(cursor, scenario, product_type_count, document_type_count)
+        things = generate_things(cursor, scenario, evidence_type_count, document_type_count)
         generate_evidence_for_things(cursor, things, scenario)
         
         # Generate requests and link evidence
@@ -421,74 +412,6 @@ def create_database(dbp: Path = DBP) -> None:
     # After creating the database, insert sample data
     insert_sample_data(dbp)
 
-def download_gpc_dataset() -> list[tuple[str, str]]:
-    """
-    Downloads the Google Product Taxonomy and converts it to GPC-like codes.
-    Returns a list of tuples containing (gpcRoot, gpcName).
-    Uses requests-cache for automatic caching.
-    """
-    # Setup cache
-    cache_dir = Path(__file__).parent / ".cache"
-    cache_dir.mkdir(exist_ok=True)
-    cache_file = cache_dir / "taxonomy_cache"
-    
-    # Install cache with 7-day expiry
-    requests_cache.install_cache(
-        str(cache_file),
-        expire_after=timedelta(days=7),
-        allowable_methods=('GET',)
-    )
-    
-    url = "https://www.google.com/basepages/producttype/taxonomy.en-US.txt"
-    
-    try:
-        # Download the taxonomy file (will use cache if available)
-        print("Fetching Google Product Taxonomy...")
-        response = requests.get(url)
-        response.raise_for_status()
-        
-        if response.from_cache:
-            print("Using cached taxonomy...")
-        else:
-            print("Downloaded fresh taxonomy...")
-        
-        # Parse the text file, skipping the header line
-        lines = response.text.split('\n')[1:]
-        
-        # Convert to GPC-like format
-        gpc_data = []
-        for i, line in enumerate(lines):
-            if line.strip():  # Skip empty lines
-                code = str(50000000 + i).zfill(8)
-                name = line.strip()
-                gpc_data.append((code, name))
-        
-        print(f"Loaded {len(gpc_data)} product categories")
-        return gpc_data
-        
-    except Exception as e:
-        print(f"Error downloading taxonomy: {e}")
-        print("Falling back to sample GPC codes")
-        return GPC_SAMPLES
-
-# Update the existing GPC_SAMPLES to be populated from the download
-try:
-    GPC_SAMPLES = download_gpc_dataset()
-except Exception:
-    # Fallback to existing sample data if download fails
-    GPC_SAMPLES = [
-        ("50000000", "Food/Beverage/Tobacco"),
-        ("50100000", "Fruits/Vegetables/Nuts/Seeds"),
-        ("50160000", "Fresh Food"),
-        ("50180000", "Dairy Products"),
-        ("50200000", "Meat/Poultry"),
-        ("50260000", "Seafood"),
-        ("53000000", "Beauty/Personal Care/Hygiene"),
-        ("54000000", "Baby Care"),
-        ("55000000", "Healthcare"),
-        ("56000000", "Household/Office Furniture/Furnishings")
-    ]
-
 def generate_translations(cursor) -> None:
     """Generate and insert translation records if they don't exist."""
     # Check existing translations
@@ -530,12 +453,12 @@ def generate_translations(cursor) -> None:
     
     if translations:
         cursor.executemany("""
-        INSERT INTO translations (
+        INSERT OR IGNORE INTO translations (
             lang, key, value, context
         ) VALUES (?, ?, ?, ?)
         """, translations)
         # cursor.executemany("""
-        # INSERT INTO translations (
+        # INSERT OR IGNORE INTO translations (
         #     lang, key, value, context, created_at, updated_at
         # ) VALUES (?, ?, ?, ?, ?, ?)
         # """, translations)

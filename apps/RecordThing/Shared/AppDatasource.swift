@@ -11,6 +11,11 @@ import Blackbird
 import Foundation
 import os
 
+#if os(macOS)
+import AppKit
+#endif
+
+
 private let logger = Logger(
     subsystem: Bundle.main.bundleIdentifier ?? "com.thepia.RecordThing",
     category: "App"
@@ -107,7 +112,7 @@ extension Bundle {
 
 // MARK: - App Datasource
 class AppDatasource: ObservableObject {
-    static let shared = AppDatasource()
+    static let shared = AppDatasource() // (debugDb: true)
 
     var db: Blackbird.Database?
     @Published private(set) var translations: [String: String] = [:]
@@ -118,12 +123,27 @@ class AppDatasource: ObservableObject {
     init() {
         setupDatabase()
     }
+    init(debugDb: Bool = true) {
+        setupDatabase(debugDb: debugDb)
+    }
     
     func forceLocalizeReload() {
         loadedLang = nil
     }
     
-    private func setupDatabase() {
+    private func setupDatabase(debugDb: Bool = false) {
+        if (debugDb) {
+            let debugPath = "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing-debug.sqlite"
+            logger.info("Using test database at \(debugPath)")
+            let url = URL(fileURLWithPath: debugPath)
+            
+            do {
+                db = try Blackbird.Database(path: url.absoluteString)
+            } catch {
+                logger.error("\(url.absoluteString)\nDatabase connection error: \(error)")
+            }
+            return
+        }
         // First check for test database on external volume
         let testPath = "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite"
         if FileManager.default.fileExists(atPath: testPath) {
@@ -219,24 +239,80 @@ extension EnvironmentValues {
 }
 
 // MARK: - App Delegate
-class AppDelegate: NSObject, UIApplicationDelegate {
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+
+class RecordAppDelegate : NSObject {
+#if os(macOS)
+    var window: NSWindow?
+#endif
+    
+    func loadTranslations(for locale: String) {
         if !Bundle._installedBlackbirdTranslations {
             Bundle._installedBlackbirdTranslations = true
             Bundle.installBlackbirdTranslations()
         }
         Task(priority: .userInitiated) {
-            let locale = Locale.current.language.languageCode?.identifier ?? "en"
             await AppDatasource.shared.loadTranslations(for: locale)
         }
-        return true
     }
 }
 
+#if os(iOS)
+extension RecordAppDelegate: UIApplicationDelegate {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        let locale = Locale.current.language.languageCode?.identifier ?? "en"
+        loadTranslations(for: locale)
+        return true
+    }
+}
+#endif
+#if os(macOS)
+extension RecordAppDelegate: NSApplicationDelegate {
+    
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        // Create the window and set the content view
+        window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 1000, height: 600),
+            styleMask: [.titled, .closable, .miniaturizable, .resizable],
+            backing: .buffered,
+            defer: false
+        )
+        
+        window?.center()
+        window?.setFrameAutosaveName("Main Window")
+        window?.title = "Record Thing"
+        
+        // Set the content view
+        window?.contentView = NSHostingView(
+            rootView: ContentView()
+                .environment(\.blackbirdDatabase, AppDatasource.shared.db)
+                .environmentObject(Model(loadedLangConst: "en"))
+        )
+        
+        window?.makeKeyAndOrderFront(nil)
+    }
+    
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        return true
+    }
+    
+//    func application(_ application: NSApplication, didFinishLaunchingWithOptions launchOptions: [NSApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+//        let locale = Locale.current.language.languageCode?.identifier ?? "en"
+//        loadTranslations(for: locale)
+//        return true
+//    }
+}
+#endif
+
+
 // Preview wrapper that mimics your app structure
 struct AppDelegatePreviewWrapper: View {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    
+#if os(macOS)
+    @NSApplicationDelegateAdaptor(RecordAppDelegate.self) var appDelegate
+#endif
+#if os(iOS)
+    @UIApplicationDelegateAdaptor(RecordAppDelegate.self) var appDelegate
+#endif
+
     let content: AnyView
     
     var body: some View {

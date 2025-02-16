@@ -9,6 +9,10 @@ import SwiftUI
 import Blackbird
 import os
 
+#if os(macOS)
+import AppKit
+#endif
+
 private let logger = Logger(
     subsystem: Bundle.main.bundleIdentifier ?? "com.thepia.RecordThing",
     category: "App"
@@ -17,7 +21,12 @@ private let logger = Logger(
 /// - Tag: SingleAppDefinitionTag
 @main
 struct RecordThingApp: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    #if os(macOS)
+    @NSApplicationDelegateAdaptor(RecordAppDelegate.self) var appDelegate
+    #endif
+    #if os(iOS)
+    @UIApplicationDelegateAdaptor(RecordAppDelegate.self) var appDelegate
+    #endif
     
     @Environment(\.scenePhase) private var scenePhase
 
@@ -48,3 +57,4 @@ struct RecordThingApp: App {
         }
     }
 }
+

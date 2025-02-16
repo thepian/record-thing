@@ -29,6 +29,8 @@ struct ThingsView: View {
     @State private var presentingAppStoreOverlay = false
     #endif
 
+    @State private var showingActionSheet = false
+
     var body: some View {
         container
             #if os(macOS)
@@ -37,9 +39,30 @@ struct ThingsView: View {
             .background()
             .navigationTitle(thing.title ?? "<title>")
             .toolbar {
-                Text(" ")
 //                ProductFavoriteButton()
 //                    .environmentObject(model)
+                Menu {
+                    Button(action: { /* Share action */ }) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                    
+                    Button(action: { /* Export action */ }) {
+                        Label("Export", systemImage: "arrow.up.doc")
+                    }
+                    
+                    Divider()
+                    
+                    Button(action: { /* Edit action */ }) {
+                        Label("Edit Details", systemImage: "pencil")
+                    }
+                    
+                    Button(role: .destructive, action: { /* Delete action */ }) {
+                        Label("Delete", systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                        .imageScale(.large)
+                }
             }
             .sheet(isPresented: $presentingOrderPlacedSheet) {
             }

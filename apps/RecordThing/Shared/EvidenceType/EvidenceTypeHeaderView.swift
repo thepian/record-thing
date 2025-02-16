@@ -1,15 +1,15 @@
 //
-//  DocumentTypeHeaderView.swift
+//  EvidenceTypeHeaderView.swift
 //  RecordThing
 //
-//  Created by Henrik Vendelbo on 23.09.2024.
+//  Created by Henrik Vendelbo on 21.09.2024.
 //  Copyright © 2025 Thepia. All rights reserved.
 //
 
 import SwiftUI
 
-struct DocumentTypeHeaderView: View {
-    var document: DocumentType
+struct EvidenceTypeHeaderView: View {
+    var type: EvidenceType
     
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -36,13 +36,13 @@ struct DocumentTypeHeaderView: View {
     
     var fullBleedContent: some View {
         VStack(spacing: 0) {
-            document.image
+            type.image
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .accessibility(hidden: true)
             
             VStack(alignment: .leading) {
-                Text(document.description)
+                Text(type.description)
             }
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -55,17 +55,17 @@ struct DocumentTypeHeaderView: View {
         HStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 4) {
                 #if os(macOS)
-                Text(document.fullName)
+                Text(type.description)
                     .font(Font.largeTitle.bold())
                 #endif
-                Text(document.description)
+                Text(type.description)
                     .font(.title2)
             }
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .background()
             
-            document.image
+            type.image
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .frame(width: 220, height: 250)
@@ -82,5 +82,5 @@ struct DocumentTypeHeaderView: View {
 }
 
 #Preview {
-    DocumentTypeHeaderView(document: .Card)
+    EvidenceTypeHeaderView(type: .Electronics)
 }

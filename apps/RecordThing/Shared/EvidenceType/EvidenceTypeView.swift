@@ -1,15 +1,15 @@
 //
-//  DocumentTypeView.swift
+//  EvidenceTypeView.swift
 //  RecordThing
 //
-//  Created by Henrik Vendelbo on 23.09.2024.
-//  Copyright © 2025 Thepia. All rights reserved.
+//  Created by Henrik Vendelbo on 21.09.2024.
+//  Copyright © 2025 Thepia.. All rights reserved.
 //
 
 import SwiftUI
 
-struct DocumentTypeView: View {
-    var document: DocumentType
+struct EvidenceTypeView: View {
+    var type: EvidenceType
     
     @State private var presentingOrderPlacedSheet = false
     @State private var presentingSecurityAlert = false
@@ -21,6 +21,8 @@ struct DocumentTypeView: View {
     #if APPCLIP
     @State private var presentingAppStoreOverlay = false
     #endif
+    
+    @State private var showingActionSheet = false
 
     var body: some View {
         container
@@ -28,10 +30,32 @@ struct DocumentTypeView: View {
             .frame(minWidth: 500, idealWidth: 700, maxWidth: .infinity, minHeight: 400, maxHeight: .infinity)
             #endif
             .background()
-            .navigationTitle(document.fullName)
+            .navigationTitle(type.fullName)
             .toolbar {
 //                ProductFavoriteButton()
 //                    .environmentObject(model)
+                Menu {
+                    Button(action: { /* Share action */ }) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                    
+                    Button(action: { /* Export action */ }) {
+                        Label("Export", systemImage: "arrow.up.doc")
+                    }
+                    
+                    Divider()
+                    
+                    Button(action: { /* Edit action */ }) {
+                        Label("Edit Details", systemImage: "pencil")
+                    }
+                    
+                    Button(role: .destructive, action: { /* Delete action */ }) {
+                        Label("Delete", systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                        .imageScale(.large)
+                }
             }
             .sheet(isPresented: $presentingOrderPlacedSheet) {
             }
@@ -64,7 +88,7 @@ struct DocumentTypeView: View {
     
     var content: some View {
         VStack(spacing: 0) {
-            DocumentTypeHeaderView(document: document)
+            EvidenceTypeHeaderView(type: type)
                 
         }
     }
@@ -85,11 +109,11 @@ struct DocumentTypeView: View {
 #Preview(traits: .sizeThatFitsLayout) {
     Group {
         NavigationView {
-            DocumentTypeView(document: .Receipt)
+            EvidenceTypeView(type: .Electronics)
         }
         
-        ForEach([DocumentType.Document, .Receipt, .Card]) { document in
-            DocumentTypeView(document: document)
+        ForEach([EvidenceType.Electronics, .Pet, .Room]) { type in
+            EvidenceTypeView(type: type)
                 .frame(height: 700)
         }
     }

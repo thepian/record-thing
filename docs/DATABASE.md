@@ -22,6 +22,10 @@ The database is a SQLite database, created by running(in order):
 * `dataset/db/assets.sql`
 * `dataset/db/auth.sql`
 
+## Feed
+
+The Feed is a table that contains the user's feed. It is used to show the main feed for a user in the app. A feed entry can be a Thing, a Request, an Agreement, an Event, a single piece of evidence, or a Chat.
+
 ## Universe
 
 Each universe is defined by a downloading a ZIP file that contains a description and assets. It describes a complete set of functionality for the App.
@@ -31,6 +35,20 @@ Universes are remote sources of MLPrograms, Processes and Configuration. They ar
 The URL field is unique per record.
 The Primary Key is a locally generated integer.
 
+## Products
+
+Products in the world are identified by a ProductType and a Brand. The cannonical descriptions is constructed by a node in the network. Descriptions are compared by text embedding to merge duplicate products. A central product database is maintained and replicated among users based on their reference from things.
+
+A thing might be constructed and be tied to a product later.
+The product might be constructed based on the first piece of evidence after which the thing is created.
+
+## Brands
+
+Brands are the manufacturers of products. They are identified by a name and an iconic image.
+The website of the brand is a URL with a DNS domain that has been verified to belong to the correct company.
+The record can hold contact information, support information, legal status, etc.
+Brands can be grouped under a common name by a parent_brand_id.
+The brand description is a text field that can be used to store information about the brand. The description is used to merge duplicate brand records.
 
 ## Things
 
@@ -40,17 +58,12 @@ The owner of the thing is identified by the account_id.
 
 The Things Primary Key is the account_id plus a locally generated text id(KSUID)
 
-
 ## Evidence
 
 Evidence is a set of records that are evidence of the thing or event.
 Evidence will often relate to a thing.
 Evidence can relate to a request.
 Evidence can relate to an event.
-
-
-
-
 
 ## Requests
 
@@ -63,6 +76,9 @@ It works like a Universe with refinements. The outcome of the request is a set o
 The URL field is unique per record.
 The Requests Primary Key is a locally generated integer.
 
+## Agreements
+
+Agreements are rights and obligations the user is involved in. It can be insurance, lease, purchase, etc. They will be valid for a period of time, and have renewal dates.
 
 ## Accounts, Owners, Passkey_credentials
 
@@ -74,19 +90,48 @@ The Owners Primary Key(account_id) is a locally generated text KSUID
 
 The Passkey_credentials Primary Key is a locally generated text KSUID
 
-
 ## ProductType
 
 Global product types with common identifiers and iconic images.
 ProductTypes are categories of objects identified by various naming conventions. They are tied to individual images.
-
 
 ## DocumentType
 
 Global document types with common identifiers and iconic images.
 DocumentTypes are categories of documents identified by various naming conventions. They are tied to individual images.
 
-
 ## Translations
 
 I would like to extend the translations in a SwiftUI application by loading them from a SQLite table. The database(record-thing.sqlite) is stored in the App Documents folder. If no database is found a default image is copied from the App Resources. How do I do it so the application loads fast and translations are applied to all translated texts in the application. I want to use the text localisation built into SwiftUI labels. Use Blackbird to access the SQLite Database.
+
+
+# Generating examples
+
+Add brand lists in addition to types for brand names that produce  the types of products
+
+Add 10 showcase product examples to each group with name, product description, designed year, product shot description (pose, background, subject, style)
+
+
+# Generating examples
+
+Add 10 showcase product examples to each group with name, product description, designed year, product shot description (pose, background, subject, style)
+
+I'll help add showcase examples for each category. Let's start with watches and cameras as examples:
+documentation
+
+Add showcase product examples to watches with name, product description, designed year, product shot description (pose, background, subject, style)
+
+Add showcase product examples to cameras with name, product description, designed year, product shot description (pose, background, subject, style)
+
+Add showcase product examples to musical instruments with name, product description, designed year, product shot description (pose, background, subject, style)
+
+Add showcase product examples to art with name, product description, designed year, product shot description (pose, background, subject, style)
+
+Add showcase product examples to collectibles with name, product description, designed year, product shot description (pose, background, subject, style)
+
+Add showcase product examples to fine jewelry with name, product description, designed year, product shot description (pose, background, subject, style)
+
+Add showcase product examples to vehicles with name, product description, designed year, product shot description (pose, background, subject, style)
+
+TODO the rest...
+

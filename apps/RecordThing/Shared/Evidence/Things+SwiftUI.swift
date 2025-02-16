@@ -1,5 +1,5 @@
 //
-//  ProductType+SwiftUI.swift
+//  Things+SwiftUI.swift
 //  RecordThing
 //
 //  Created by Henrik Vendelbo on 21.09.2024.

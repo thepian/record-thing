@@ -45,20 +45,20 @@ def ensure_owner_account(con, dummy_account_data = True) -> None:
 
     if one_owner is None and one_account is None:
         cursor.execute("""
-            INSERT INTO accounts(account_id, name, username, email, sms, region) VALUES (?, ?, ?, ?, ?, ?);
+            INSERT OR IGNORE INTO accounts(account_id, name, username, email, sms, region) VALUES (?, ?, ?, ?, ?, ?);
             """, 
             [commons['account_id'], "Joe Schmoe", "joe", "joe@schmoe.com", "+0", "EU"], 
         )
-        cursor.execute("INSERT INTO owners(account_id) VALUES (?);", [commons['owner_id']])
+        cursor.execute("INSERT OR IGNORE INTO owners(account_id) VALUES (?);", [commons['owner_id']])
     elif one_owner is None and one_account is not None:
         commons['account_id'] = one_account[0]
         commons['owner_id'] = one_account[0]
-        cursor.execute("INSERT INTO owners(account_id) VALUES (?);", [commons['owner_id']])
+        cursor.execute("INSERT OR IGNORE INTO owners(account_id) VALUES (?);", [commons['owner_id']])
     elif one_owner is not None and one_account is None:
         commons['account_id'] = one_owner[0]
         commons['owner_id'] = one_owner[0]
         cursor.execute("""
-            INSERT INTO accounts(account_id, name, username, email, sms, region) VALUES (?, ?, ?, ?, ?, ?);
+            INSERT OR IGNORE INTO accounts(account_id, name, username, email, sms, region) VALUES (?, ?, ?, ?, ?, ?);
             """, 
             [commons['account_id'], "Joe Schmoe", "joe", "joe@schmoe.com", "+0", "EU"], 
         )
@@ -306,7 +306,7 @@ def migrate_schema(con) -> None:
                     
                     # Record the migration
                     cursor.execute(
-                        "INSERT INTO schema_migrations (version, description) VALUES (?, ?)",
+                        "INSERT OR IGNORE INTO schema_migrations (version, description) VALUES (?, ?)",
                         (version, description)
                     )
                     

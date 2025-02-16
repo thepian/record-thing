@@ -219,7 +219,7 @@ DEFAULT_TRANSLATIONS = [
     ("en", "ui.description.empty", "<description>", "ui"),
     ("en", "ui.select.category", "Select Category", "ui"),
     ("en", "ui.select.brand", "Select Brand", "ui"),
-    ("en", "ui.select.product", "Select Product", "ui"),
+    ("en", "ui.select.product", "Select Something", "ui"),
     
     # Navigation
     ("en", "nav.appname", "Record Thing", "navigation"),
@@ -227,6 +227,8 @@ DEFAULT_TRANSLATIONS = [
     ("en", "nav.things", "Things", "navigation"),
     ("en", "nav.evidence", "Evidence", "navigation"),
     ("en", "nav.requests", "Requests", "navigation"),
+    ("en", "nav.types", "Types", "navigation"),
+    ("en", "nav.feed", "Feed", "navigation"),
     ("en", "nav.settings", "Settings", "navigation"),
     ("en", "nav.favorites", "Favorites", "navigation"),
     ("en", "nav.recent", "Recent", "navigation"),

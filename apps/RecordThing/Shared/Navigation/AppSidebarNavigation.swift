@@ -32,12 +32,12 @@ struct AppSidebarNavigation: View {
                     Label(LocalizedStringKey(stringLiteral: "nav.things"), systemImage: "list.bullet")
                 })
                 NavigationLink(destination: {
-                    ProductTypeMenu()
+                    EvidenceTypeMenu()
                 }, label: {
-                    Label("Products", systemImage: "list.bullet")
+                    Label("Types", systemImage: "list.bullet")
                 })
-                NavigationLink(destination: { DocumentTypeList()
-                }, label: { Label("Documents", systemImage: "doc") })
+//                NavigationLink(destination: { DocumentTypeList()
+//                }, label: { Label("Documents", systemImage: "doc") })
                 NavigationLink(destination: {
                     RequestsMenu()
                 }, label: {
@@ -79,7 +79,6 @@ struct AppSidebarNavigation: View {
                 .background()
                 .ignoresSafeArea()
                 .toolbar {
-                    Text("\(model.loadedLang ?? "<nil>")")
 //                    ProductFavoriteButton()
 //                        .environmentObject(model)
 //                        .disabled(true)

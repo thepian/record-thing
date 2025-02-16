@@ -30,8 +30,8 @@ struct Things: BlackbirdModel, Identifiable {
     @BlackbirdColumn var category: String?
     
     // Type references
-    @BlackbirdColumn var product_type: Int?
-    @BlackbirdColumn var document_type: Int?
+    @BlackbirdColumn var evidence_type: String?
+    @BlackbirdColumn var evidence_type_name: String?
     
     // Description fields
     @BlackbirdColumn var title: String?
