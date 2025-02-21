@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import RecordLib
 
 struct ThingsHeaderView: View {
     var thing: Things
@@ -43,14 +44,14 @@ struct ThingsHeaderView: View {
             VStack(alignment: .leading) {
                 Text(thing.description ?? "<description>")
                 
-                StructureFieldTableView(
-                    "Details",
-                    item: thing,
-                    rightAlignValues: true,
-                    fieldColumnName: "Property",
-                    valueColumnName: "Value",
-                    maxLines: 5
-                )
+//                StructureFieldTableView(
+//                    "Details",
+//                    item: thing,
+//                    rightAlignValues: true,
+//                    fieldColumnName: "Property",
+//                    valueColumnName: "Value",
+//                    maxLines: 5
+//                )
             }
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -87,15 +88,15 @@ struct ThingsHeaderView: View {
                 wideClipShape.strokeBorder(.quaternary, lineWidth: 0.5)
             }
             
-            StructureFieldTableView(
-                "Details",
-                item: thing,
-                rightAlignValues: true,
-                fieldColumnName: "Property",
-                valueColumnName: "Value",
-                excluding: ["description"],
-                maxLines: 5
-            )
+//            StructureFieldTableView(
+//                "Details",
+//                item: thing,
+//                rightAlignValues: true,
+//                fieldColumnName: "Property",
+//                valueColumnName: "Value",
+//                excluding: ["description"],
+//                maxLines: 5
+//            )
         }
         .padding()
     }

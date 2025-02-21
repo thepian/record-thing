@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -47,10 +47,6 @@
 		3ECD50BF2C974E4500755E83 /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50BE2C974E4500755E83 /* RecordLib */; };
 		3ECD50C12C974E5000755E83 /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50C02C974E5000755E83 /* RecordLib */; };
 		3ECD50C32C974E5600755E83 /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50C22C974E5600755E83 /* RecordLib */; };
-		3ECD50C52C97594900755E83 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50C42C97594900755E83 /* Blackbird */; };
-		3ECD50C72C97595000755E83 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50C62C97595000755E83 /* Blackbird */; };
-		3ECD50CB2C97595F00755E83 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50CA2C97595F00755E83 /* Blackbird */; };
-		3ECD50CD2C97596500755E83 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50CC2C97596500755E83 /* Blackbird */; };
 		3ECD50D32C9759EF00755E83 /* MLModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50D22C9759EF00755E83 /* MLModel.swift */; };
 		3ECD50D42C9759EF00755E83 /* MLModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50D22C9759EF00755E83 /* MLModel.swift */; };
 		3ECD50D62C9759EF00755E83 /* MLModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50D22C9759EF00755E83 /* MLModel.swift */; };
@@ -99,10 +95,6 @@
 		3ED6C49C2D59558300FF632C /* RequestsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ED6C49A2D59558300FF632C /* RequestsList.swift */; };
 		3ED6C49D2D59558300FF632C /* RequestsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ED6C49A2D59558300FF632C /* RequestsList.swift */; };
 		3ED6C49E2D59558300FF632C /* RequestsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ED6C49A2D59558300FF632C /* RequestsList.swift */; };
-		3ED6C4A02D5B54D000FF632C /* StructureFieldTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ED6C49F2D5B54C100FF632C /* StructureFieldTableView.swift */; };
-		3ED6C4A12D5B54D000FF632C /* StructureFieldTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ED6C49F2D5B54C100FF632C /* StructureFieldTableView.swift */; };
-		3ED6C4A22D5B54D000FF632C /* StructureFieldTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ED6C49F2D5B54C100FF632C /* StructureFieldTableView.swift */; };
-		3ED6C4A32D5B54D000FF632C /* StructureFieldTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ED6C49F2D5B54C100FF632C /* StructureFieldTableView.swift */; };
 		3ED6C4A52D5B6F3C00FF632C /* Evidence+Facts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ED6C4A42D5B6F3500FF632C /* Evidence+Facts.swift */; };
 		3ED6C4A62D5B6F3C00FF632C /* Evidence+Facts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ED6C4A42D5B6F3500FF632C /* Evidence+Facts.swift */; };
 		3ED6C4A72D5B6F3C00FF632C /* Evidence+Facts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ED6C4A42D5B6F3500FF632C /* Evidence+Facts.swift */; };
@@ -239,6 +231,16 @@
 		E0DC802427B7307600A6417B /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = A3C268FE262FE0060093B9DF /* Localizable.stringsdict */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		3E5A35B22D68C27100069A95 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5E6123F8244E8B32004DDFF7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E0DC7F9727B72FDC00A6417B;
+			remoteInfo = "RecordThing iOS";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		610F550226158DDB001D3AA0 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -340,7 +342,9 @@
 		3E3C4D4B2D5FA9EA009F5E3B /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		3E3C4D4C2D5FA9EA009F5E3B /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = da; path = da.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		3E3C4D4D2D5FA9EA009F5E3B /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Evidence.strings; sourceTree = "<group>"; };
+		3E5A35AE2D68C27100069A95 /* RecordThing iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "RecordThing iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3E61E6322D64B56800E5749D /* TestList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestList.swift; sourceTree = "<group>"; };
+		3E61E6592D688C2F00E5749D /* Blackbird */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Blackbird; path = ../../../Blackbird; sourceTree = "<group>"; };
 		3E6BBAF92C981D9C00F53B63 /* EvidenceTypeMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvidenceTypeMenu.swift; sourceTree = "<group>"; };
 		3E6BBB022C98217E00F53B63 /* EvidenceTypeList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvidenceTypeList.swift; sourceTree = "<group>"; };
 		3E6BBB0A2C9F265700F53B63 /* EvidenceTypeRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvidenceTypeRow.swift; sourceTree = "<group>"; };
@@ -360,7 +364,6 @@
 		3ED6C4902D59545700FF632C /* RequestsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestsView.swift; sourceTree = "<group>"; };
 		3ED6C4952D59553F00FF632C /* RequestsMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestsMenu.swift; sourceTree = "<group>"; };
 		3ED6C49A2D59558300FF632C /* RequestsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestsList.swift; sourceTree = "<group>"; };
-		3ED6C49F2D5B54C100FF632C /* StructureFieldTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructureFieldTableView.swift; sourceTree = "<group>"; };
 		3ED6C4A42D5B6F3500FF632C /* Evidence+Facts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Evidence+Facts.swift"; sourceTree = "<group>"; };
 		3EE0BDB82D560C2A00AD1085 /* ThingsMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThingsMenu.swift; sourceTree = "<group>"; };
 		3EE0BDBD2D560E6800AD1085 /* ThingsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThingsList.swift; sourceTree = "<group>"; };
@@ -414,13 +417,23 @@
 		E0DC802C27B7307600A6417B /* RecordThing macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RecordThing macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		3E61E6472D674D1B00E5749D /* Tests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Tests; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
+		3E5A35AB2D68C27100069A95 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		610F54FC26158DDB001D3AA0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				3ECD50BF2C974E4500755E83 /* RecordLib in Frameworks */,
-				3ECD50C72C97595000755E83 /* Blackbird in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -429,7 +442,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				3ECD50C32C974E5600755E83 /* RecordLib in Frameworks */,
-				3ECD50CD2C97596500755E83 /* Blackbird in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -438,7 +450,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				3ECD50AF2C96E3FA00755E83 /* RecordLib in Frameworks */,
-				3ECD50C52C97594900755E83 /* Blackbird in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -447,7 +458,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				3ECD50C12C974E5000755E83 /* RecordLib in Frameworks */,
-				3ECD50CB2C97595F00755E83 /* Blackbird in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -482,6 +492,7 @@
 		3ECD509F2C96372F00755E83 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3E61E6592D688C2F00E5749D /* Blackbird */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -518,6 +529,7 @@
 				3ECD50AD2C96E3E000755E83 /* RecordLib */,
 				E036C2ED2633B2B200E15D26 /* README.md */,
 				5E6123FC244E8B32004DDFF7 /* Shared */,
+				3E61E6472D674D1B00E5749D /* Tests */,
 				5E612406244E8B32004DDFF7 /* iOS */,
 				5E61240D244E8B32004DDFF7 /* macOS */,
 				6111A1D426157D870046AAA9 /* Widgets */,
@@ -553,6 +565,7 @@
 				610F554926158DE2001D3AA0 /* RecordThing.app */,
 				E0DC7FE327B72FDC00A6417B /* RecordThing iOS.app */,
 				E0DC802C27B7307600A6417B /* RecordThing macOS.app */,
+				3E5A35AE2D68C27100069A95 /* RecordThing iOSTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -581,7 +594,6 @@
 		6111A1C826157D870046AAA9 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				3ED6C49F2D5B54C100FF632C /* StructureFieldTableView.swift */,
 				6111A1CF26157D870046AAA9 /* AnimatableFontModifier.swift */,
 				6111A1C926157D870046AAA9 /* BubbleBackground.swift */,
 				6111A1CC26157D870046AAA9 /* BubbleView.swift */,
@@ -660,6 +672,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		3E5A35AD2D68C27100069A95 /* RecordThing iOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3E5A35B42D68C27100069A95 /* Build configuration list for PBXNativeTarget "RecordThing iOSTests" */;
+			buildPhases = (
+				3E5A35AA2D68C27100069A95 /* Sources */,
+				3E5A35AB2D68C27100069A95 /* Frameworks */,
+				3E5A35AC2D68C27100069A95 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3E5A35B32D68C27100069A95 /* PBXTargetDependency */,
+			);
+			name = "RecordThing iOSTests";
+			packageProductDependencies = (
+			);
+			productName = "RecordThing iOSTests";
+			productReference = 3E5A35AE2D68C27100069A95 /* RecordThing iOSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		610F54C626158DDB001D3AA0 /* RecordThing iOS All */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 610F550326158DDB001D3AA0 /* Build configuration list for PBXNativeTarget "RecordThing iOS All" */;
@@ -678,7 +710,6 @@
 			name = "RecordThing iOS All";
 			packageProductDependencies = (
 				3ECD50BE2C974E4500755E83 /* RecordLib */,
-				3ECD50C62C97595000755E83 /* Blackbird */,
 			);
 			productName = "Smoothies iOS";
 			productReference = 610F550626158DDB001D3AA0 /* RecordThing iOS All.app */;
@@ -701,7 +732,6 @@
 			name = "RecordThing macOS All";
 			packageProductDependencies = (
 				3ECD50C22C974E5600755E83 /* RecordLib */,
-				3ECD50CC2C97596500755E83 /* Blackbird */,
 			);
 			productName = "Smoothies macOS";
 			productReference = 610F554926158DE2001D3AA0 /* RecordThing.app */;
@@ -724,7 +754,6 @@
 			name = "RecordThing iOS";
 			packageProductDependencies = (
 				3ECD50AE2C96E3FA00755E83 /* RecordLib */,
-				3ECD50C42C97594900755E83 /* Blackbird */,
 			);
 			productName = "Smoothies iOS";
 			productReference = E0DC7FE327B72FDC00A6417B /* RecordThing iOS.app */;
@@ -747,7 +776,6 @@
 			name = "RecordThing macOS";
 			packageProductDependencies = (
 				3ECD50C02C974E5000755E83 /* RecordLib */,
-				3ECD50CA2C97595F00755E83 /* Blackbird */,
 			);
 			productName = "Smoothies macOS";
 			productReference = E0DC802C27B7307600A6417B /* RecordThing macOS.app */;
@@ -761,9 +789,15 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				DefaultBuildSystemTypeForWorkspace = Latest;
-				LastSwiftUpdateCheck = 1330;
+				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1620;
 				ORGANIZATIONNAME = Apple;
+				TargetAttributes = {
+					3E5A35AD2D68C27100069A95 = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = E0DC7F9727B72FDC00A6417B;
+					};
+				};
 			};
 			buildConfigurationList = 5E6123FB244E8B32004DDFF7 /* Build configuration list for PBXProject "RecordThing" */;
 			compatibilityVersion = "Xcode 9.3";
@@ -776,8 +810,9 @@
 			);
 			mainGroup = 5E6123F7244E8B32004DDFF7;
 			packageReferences = (
-				3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */,
 				3EDF3F382D5BD94300B08DAD /* XCLocalSwiftPackageReference "../libs/RecordLib" */,
+				3E61E6372D65F7EC00E5749D /* XCRemoteSwiftPackageReference "SparqlQuery_swift" */,
+				3E5A35A82D68915C00069A95 /* XCRemoteSwiftPackageReference "Blackbird" */,
 			);
 			productRefGroup = 5E612405244E8B32004DDFF7 /* Products */;
 			projectDirPath = "";
@@ -787,11 +822,19 @@
 				610F54C626158DDB001D3AA0 /* RecordThing iOS All */,
 				E0DC7FE527B7307600A6417B /* RecordThing macOS */,
 				610F550826158DE2001D3AA0 /* RecordThing macOS All */,
+				3E5A35AD2D68C27100069A95 /* RecordThing iOSTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		3E5A35AC2D68C27100069A95 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		610F54FD26158DDB001D3AA0 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -847,6 +890,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		3E5A35AA2D68C27100069A95 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		610F54C726158DDB001D3AA0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -855,7 +905,6 @@
 				3E6BBB0C2C9F265700F53B63 /* EvidenceTypeRow.swift in Sources */,
 				610F54C926158DDB001D3AA0 /* CountButton.swift in Sources */,
 				3E6BBB1C2C9F3B8200F53B63 /* EvidenceTypeView.swift in Sources */,
-				3ED6C4A22D5B54D000FF632C /* StructureFieldTableView.swift in Sources */,
 				610F54CA26158DDB001D3AA0 /* CardActionButton.swift in Sources */,
 				3ED6C47F2D59399800FF632C /* Requests.swift in Sources */,
 				3ECD50D42C9759EF00755E83 /* MLModel.swift in Sources */,
@@ -911,7 +960,6 @@
 				3ED6C4A62D5B6F3C00FF632C /* Evidence+Facts.swift in Sources */,
 				3EE0BDF12D56B4A700AD1085 /* Evidence.swift in Sources */,
 				610F550C26158DE2001D3AA0 /* CountButton.swift in Sources */,
-				3ED6C4A12D5B54D000FF632C /* StructureFieldTableView.swift in Sources */,
 				3EE0BDE72D566EB400AD1085 /* Things+SwiftUI.swift in Sources */,
 				610F550D26158DE2001D3AA0 /* CardActionButton.swift in Sources */,
 				610F550E26158DE2001D3AA0 /* ContentView.swift in Sources */,
@@ -968,7 +1016,6 @@
 				3E6BBB0B2C9F265700F53B63 /* EvidenceTypeRow.swift in Sources */,
 				E0DC7F9E27B72FDC00A6417B /* CountButton.swift in Sources */,
 				3E6BBB1B2C9F3B8200F53B63 /* EvidenceTypeView.swift in Sources */,
-				3ED6C4A32D5B54D000FF632C /* StructureFieldTableView.swift in Sources */,
 				E0DC7F9F27B72FDC00A6417B /* CardActionButton.swift in Sources */,
 				3ED6C47D2D59399800FF632C /* Requests.swift in Sources */,
 				3ECD50D32C9759EF00755E83 /* MLModel.swift in Sources */,
@@ -1024,7 +1071,6 @@
 				3ED6C4A82D5B6F3C00FF632C /* Evidence+Facts.swift in Sources */,
 				3EE0BDF02D56B4A700AD1085 /* Evidence.swift in Sources */,
 				E0DC7FEA27B7307600A6417B /* CountButton.swift in Sources */,
-				3ED6C4A02D5B54D000FF632C /* StructureFieldTableView.swift in Sources */,
 				3EE0BDE62D566EB400AD1085 /* Things+SwiftUI.swift in Sources */,
 				E0DC7FEB27B7307600A6417B /* CardActionButton.swift in Sources */,
 				E0DC7FEC27B7307600A6417B /* ContentView.swift in Sources */,
@@ -1075,6 +1121,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		3E5A35B32D68C27100069A95 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E0DC7F9727B72FDC00A6417B /* RecordThing iOS */;
+			targetProxy = 3E5A35B22D68C27100069A95 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
 		A3C268F5262FE0030093B9DF /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
@@ -1115,6 +1169,56 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		3E5A35B52D68C27100069A95 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = K9294FDYPP;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.thepia.RecordThing-iOSTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RecordThing iOS.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RecordThing iOS";
+			};
+			name = Debug;
+		};
+		3E5A35B62D68C27100069A95 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = K9294FDYPP;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.thepia.RecordThing-iOSTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RecordThing iOS.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RecordThing iOS";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		5E612416244E8B32004DDFF7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C640196161A8E05832EA149C /* SampleCode.xcconfig */;
@@ -1525,6 +1629,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		3E5A35B42D68C27100069A95 /* Build configuration list for PBXNativeTarget "RecordThing iOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3E5A35B52D68C27100069A95 /* Debug */,
+				3E5A35B62D68C27100069A95 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		5E6123FB244E8B32004DDFF7 /* Build configuration list for PBXProject "RecordThing" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1580,12 +1693,20 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */ = {
+		3E5A35A82D68915C00069A95 /* XCRemoteSwiftPackageReference "Blackbird" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/thepia/Blackbird";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.5.0;
+				branch = main;
+				kind = branch;
+			};
+		};
+		3E61E6372D65F7EC00E5749D /* XCRemoteSwiftPackageReference "SparqlQuery_swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/thepian/SparqlQuery_swift.git";
+			requirement = {
+				branch = main;
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -1606,26 +1727,6 @@
 		3ECD50C22C974E5600755E83 /* RecordLib */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RecordLib;
-		};
-		3ECD50C42C97594900755E83 /* Blackbird */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */;
-			productName = Blackbird;
-		};
-		3ECD50C62C97595000755E83 /* Blackbird */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */;
-			productName = Blackbird;
-		};
-		3ECD50CA2C97595F00755E83 /* Blackbird */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */;
-			productName = Blackbird;
-		};
-		3ECD50CC2C97596500755E83 /* Blackbird */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */;
-			productName = Blackbird;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
