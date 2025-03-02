@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3E5A35BF2D75F04900069A95 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3E5A35BE2D75F04900069A95 /* Blackbird */; };
+		3E5A35C12D75F05200069A95 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3E5A35C02D75F05200069A95 /* Blackbird */; };
+		3E5A35C32D75F05A00069A95 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3E5A35C22D75F05A00069A95 /* Blackbird */; };
+		3E5A35C52D75F06000069A95 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3E5A35C42D75F06000069A95 /* Blackbird */; };
 		3E6BBAF22C977E5A00F53B63 /* DocumentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBAF12C977E5A00F53B63 /* DocumentType.swift */; };
 		3E6BBAF32C977E5A00F53B63 /* DocumentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBAF12C977E5A00F53B63 /* DocumentType.swift */; };
 		3E6BBAF52C977E5A00F53B63 /* DocumentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BBAF12C977E5A00F53B63 /* DocumentType.swift */; };
@@ -63,10 +67,6 @@
 		3ECD50BF2C974E4500755E83 /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50BE2C974E4500755E83 /* RecordLib */; };
 		3ECD50C12C974E5000755E83 /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50C02C974E5000755E83 /* RecordLib */; };
 		3ECD50C32C974E5600755E83 /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50C22C974E5600755E83 /* RecordLib */; };
-		3ECD50C52C97594900755E83 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50C42C97594900755E83 /* Blackbird */; };
-		3ECD50C72C97595000755E83 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50C62C97595000755E83 /* Blackbird */; };
-		3ECD50CB2C97595F00755E83 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50CA2C97595F00755E83 /* Blackbird */; };
-		3ECD50CD2C97596500755E83 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50CC2C97596500755E83 /* Blackbird */; };
 		3ECD50D32C9759EF00755E83 /* MLModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50D22C9759EF00755E83 /* MLModel.swift */; };
 		3ECD50D42C9759EF00755E83 /* MLModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50D22C9759EF00755E83 /* MLModel.swift */; };
 		3ECD50D62C9759EF00755E83 /* MLModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50D22C9759EF00755E83 /* MLModel.swift */; };
@@ -441,7 +441,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3ECD50BF2C974E4500755E83 /* RecordLib in Frameworks */,
-				3ECD50C72C97595000755E83 /* Blackbird in Frameworks */,
+				3E5A35C12D75F05200069A95 /* Blackbird in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -450,7 +450,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3ECD50C32C974E5600755E83 /* RecordLib in Frameworks */,
-				3ECD50CD2C97596500755E83 /* Blackbird in Frameworks */,
+				3E5A35C52D75F06000069A95 /* Blackbird in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -459,7 +459,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3ECD50AF2C96E3FA00755E83 /* RecordLib in Frameworks */,
-				3ECD50C52C97594900755E83 /* Blackbird in Frameworks */,
+				3E5A35BF2D75F04900069A95 /* Blackbird in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -468,7 +468,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3ECD50C12C974E5000755E83 /* RecordLib in Frameworks */,
-				3ECD50CB2C97595F00755E83 /* Blackbird in Frameworks */,
+				3E5A35C32D75F05A00069A95 /* Blackbird in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -712,7 +712,7 @@
 			name = "RecordThing iOS All";
 			packageProductDependencies = (
 				3ECD50BE2C974E4500755E83 /* RecordLib */,
-				3ECD50C62C97595000755E83 /* Blackbird */,
+				3E5A35C02D75F05200069A95 /* Blackbird */,
 			);
 			productName = "Smoothies iOS";
 			productReference = 610F550626158DDB001D3AA0 /* RecordThing iOS All.app */;
@@ -735,7 +735,7 @@
 			name = "RecordThing macOS All";
 			packageProductDependencies = (
 				3ECD50C22C974E5600755E83 /* RecordLib */,
-				3ECD50CC2C97596500755E83 /* Blackbird */,
+				3E5A35C42D75F06000069A95 /* Blackbird */,
 			);
 			productName = "Smoothies macOS";
 			productReference = 610F554926158DE2001D3AA0 /* RecordThing.app */;
@@ -758,7 +758,7 @@
 			name = "RecordThing iOS";
 			packageProductDependencies = (
 				3ECD50AE2C96E3FA00755E83 /* RecordLib */,
-				3ECD50C42C97594900755E83 /* Blackbird */,
+				3E5A35BE2D75F04900069A95 /* Blackbird */,
 			);
 			productName = "Smoothies iOS";
 			productReference = E0DC7FE327B72FDC00A6417B /* RecordThing iOS.app */;
@@ -781,7 +781,7 @@
 			name = "RecordThing macOS";
 			packageProductDependencies = (
 				3ECD50C02C974E5000755E83 /* RecordLib */,
-				3ECD50CA2C97595F00755E83 /* Blackbird */,
+				3E5A35C22D75F05A00069A95 /* Blackbird */,
 			);
 			productName = "Smoothies macOS";
 			productReference = E0DC802C27B7307600A6417B /* RecordThing macOS.app */;
@@ -809,8 +809,8 @@
 			);
 			mainGroup = 5E6123F7244E8B32004DDFF7;
 			packageReferences = (
-				3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */,
 				3E8287F22D4FB1E500E80D09 /* XCLocalSwiftPackageReference "../libs/RecordLib" */,
+				3E5A35BD2D75EFE400069A95 /* XCRemoteSwiftPackageReference "Blackbird" */,
 			);
 			productRefGroup = 5E612405244E8B32004DDFF7 /* Products */;
 			projectDirPath = "";
@@ -1629,17 +1629,37 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */ = {
+		3E5A35BD2D75EFE400069A95 /* XCRemoteSwiftPackageReference "Blackbird" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/thepia/Blackbird";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.5.0;
+				minimumVersion = 0.5.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		3E5A35BE2D75F04900069A95 /* Blackbird */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3E5A35BD2D75EFE400069A95 /* XCRemoteSwiftPackageReference "Blackbird" */;
+			productName = Blackbird;
+		};
+		3E5A35C02D75F05200069A95 /* Blackbird */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3E5A35BD2D75EFE400069A95 /* XCRemoteSwiftPackageReference "Blackbird" */;
+			productName = Blackbird;
+		};
+		3E5A35C22D75F05A00069A95 /* Blackbird */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3E5A35BD2D75EFE400069A95 /* XCRemoteSwiftPackageReference "Blackbird" */;
+			productName = Blackbird;
+		};
+		3E5A35C42D75F06000069A95 /* Blackbird */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3E5A35BD2D75EFE400069A95 /* XCRemoteSwiftPackageReference "Blackbird" */;
+			productName = Blackbird;
+		};
 		3ECD50AE2C96E3FA00755E83 /* RecordLib */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RecordLib;
@@ -1655,26 +1675,6 @@
 		3ECD50C22C974E5600755E83 /* RecordLib */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RecordLib;
-		};
-		3ECD50C42C97594900755E83 /* Blackbird */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */;
-			productName = Blackbird;
-		};
-		3ECD50C62C97595000755E83 /* Blackbird */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */;
-			productName = Blackbird;
-		};
-		3ECD50CA2C97595F00755E83 /* Blackbird */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */;
-			productName = Blackbird;
-		};
-		3ECD50CC2C97596500755E83 /* Blackbird */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 3ECD509C2C9636AA00755E83 /* XCRemoteSwiftPackageReference "Blackbird" */;
-			productName = Blackbird;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

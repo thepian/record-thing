@@ -4,8 +4,6 @@ Recording things and learn to recognise them.
 
 Exploration of DINO v2
 
-
-
 Using VSCode extension for Jupyter notebooks. The iPython kernel must be installed and point to a conda python install.
 
 ## Technologies
@@ -15,16 +13,11 @@ The section on [Hugging Face](https://huggingface.co/docs/hub/en/mlx) is a good 
 
 There is a hugging face model for DINO v2, which is a self-supervised learning model. The model is available [here](https://huggingface.co/mlx-vision/vit_small_patch14_518.dinov2-mlxim).
 
-
-- [MPS or MLX for Domestic AI? The Answer Will Surprise You](https://medium.com/@koypish/mps-or-mlx-for-domestic-ai-the-answer-will-surprise-you-df4b111de8a0)
-- 
-- 
-- 
+* [MPS or MLX for Domestic AI? The Answer Will Surprise You](https://medium.com/@koypish/mps-or-mlx-for-domestic-ai-the-answer-will-surprise-you-df4b111de8a0) 
 
 ## Apple Developer Account
 
 apps@thepia.com
-
 
 ## Dataset
 

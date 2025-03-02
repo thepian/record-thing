@@ -10,7 +10,7 @@ Philosophy:
 * Automatic migrations.
 * Async by default.
 * Use Swift’s type system and key-paths instead of strings whenever possible.
- 
+
 ## Project status
 
 Blackbird is a __beta__.
