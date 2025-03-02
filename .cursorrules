@@ -1,0 +1,67 @@
+You are building an ML Vision focused App that takes a Camera input and computes a DINO embedding. 
+This embedding is used to do KNN based scene recognition. Based on the general scene recognised additional ML Programs will be run,
+such as Open OCR.
+
+# Important rules you HAVE TO FOLLOW
+
+- Always add debug logs & comments in the code for easier debug & readability.
+- Every time you choose to apply a rule(s), explicitly state the rule(s) in the output. You can abbreviate the rule description to a single word or phrase.
+- By default new SwiftUI components should be added to the RecordLib library.
+- By default new Views and ViewModels should be added to the RecordLib library.
+- By default new Models should be added to the RecordLib library.
+- By default new Services should be added to the RecordLib library.
+
+
+# Project structure
+
+Generated with tree -L 3
+
+.
+├── apps/
+│   ├── README.md
+│   ├── RecordThing/
+│   │   └── Shared/
+│   │       └── Evidence/
+│   │           ├── ThingsView.swift
+│   │           ├── ThingsHeaderView.swift
+│   │           ├── RequestsView.swift
+│   │           └── RequestsHeaderView.swift
+│   └── libs/
+│       └── RecordLib/
+│           ├── Package.swift
+│           ├── Sources/
+│           │   └── RecordLib/
+│           │       └── ... (library source files)
+│           └── Tests/
+│               └── RecordLibTests/
+│                   └── ... (test files)
+├── libs/
+│   └── record_thing/
+│       ├── db/
+│       │   ├── evidence.sql
+│       │   ├── categories.sql
+│       │   ├── test_data.py
+│       │   └── product_types.yaml
+│       ├── taxonomy/
+│       │   ├── google_product.py
+│       │   └── category.py
+│       ├── db_setup.py
+│       └── record-thing.sqlite
+└── docs/
+    └── DATABASE.md
+
+# Tech Stack
+
+- SwiftUI
+- Swift
+- Blackbird
+- SQLite with Vector Extensions
+- DINO v2
+- KNN
+- Open OCR
+- Vision
+- CoreML
+- CoreMLTools
+- CoreMLData
+- CoreMLDataTools
+

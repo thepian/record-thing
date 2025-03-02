@@ -17,7 +17,8 @@
                 "command": "extension.execute",
                 "priority": 4
             }
-        ]
+        ],
+        "sweetpad.build.xcodeWorkspacePath": "apps/RecordThing/RecordThing.xcodeproj/project.xcworkspace"
     },
     "folders": [
         {
@@ -28,9 +29,6 @@
         },
         {
             "path": "../Blackbird"
-        },
-        {
-            "path": "../../../Building/Library/Developer/Xcode/DerivedData/RecordThing-eefdzxztehdbsdfqdpmaenxhenqb/SourcePackages/checkouts/Blackbird/Sources/Blackbird"
         }
     ]
 }

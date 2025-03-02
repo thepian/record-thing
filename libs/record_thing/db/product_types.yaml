@@ -1,0 +1,1165 @@
+# Product Types for Record Thing
+# Maps internal categories to Google Product Taxonomy codes
+
+watches:
+  name: "Luxury Watches"
+  brands:
+    - "Rolex"
+    - "Patek Philippe"
+    - "Audemars Piguet"
+    - "A. Lange & Söhne"
+    - "Vacheron Constantin"
+    - "Jaeger-LeCoultre"
+    - "IWC"
+    - "Omega"
+    - "Cartier"
+    - "Breitling"
+  types:
+    - name: "Mechanical Watch"
+      gpc: "Apparel & Accessories > Jewelry > Watches > Analog Watches"
+    - name: "Chronograph Watch" 
+      gpc: "Apparel & Accessories > Jewelry > Watches > Chronograph Watches"
+    - name: "Smart Watch"
+      gpc: "Electronics > Electronics Accessories > Watch Accessories > Smart Watch Accessories"
+  showcase:
+    - name: "Patek Philippe Nautilus 5711/1A-010"
+      description: "Iconic steel sports watch with blue dial, integrated bracelet, and hobnail pattern. Final production year model of the legendary reference that commanded unprecedented waitlists."
+      year: 2006
+      shot_desc: "3/4 view on black background, crown at 3 o'clock position, bracelet arranged in S-curve to show articulation, macro detail of dial texture, date window visible at 3 o'clock"
+    
+    - name: "Rolex Daytona 6239 'Paul Newman'"
+      description: "Legendary chronograph with exotic dial variant, featuring art deco style numerals and step subdials. The specific model worn by Paul Newman, making it the most expensive wristwatch ever sold at auction."
+      year: 1963
+      shot_desc: "Straight on view, cream dial with black subdials, natural lighting to highlight contrast, bracelet laid flat, pushers visible at 2 and 4 o'clock"
+    
+    - name: "A. Lange & Söhne Datograph Perpetual Tourbillon"
+      description: "Pinnacle of German watchmaking, combining perpetual calendar, chronograph, and tourbillon. Pink gold case with black dial and multiple complications displayed harmoniously."
+      year: 2016
+      shot_desc: "Multiple angles required: dial front view showing calendar displays, side view showing case profile, caseback showing hand-finished movement with gold chatons"
+    
+    - name: "Vacheron Constantin 57260"
+      description: "Most complicated mechanical watch ever made, featuring 57 complications. Unique piece commissioned by a collector, taking 8 years to complete."
+      year: 2015
+      shot_desc: "Studio lighting with multiple setups: full watch profile, close-ups of major complications, movement details through display windows, size comparison with common objects"
+    
+    - name: "Omega Speedmaster CK2915-1"
+      description: "First generation Speedmaster with broad arrow hands and tachymeter scale on the bezel. Original 'Moonwatch' configuration before NASA selection."
+      year: 1957
+      shot_desc: "45-degree angle showing case profile, focus on original broad arrow hands, tachymeter bezel detail, original bracelet configuration, tritium patina on indices"
+    
+    - name: "Cartier Tank Louis Cartier Collection Privée"
+      description: "Pure expression of the Art Deco Tank design in platinum, part of the exclusive Collection Privée series. Manual wind movement with sapphire caseback."
+      year: 1998
+      shot_desc: "Profile emphasizing rectangular case shape, roman numerals crisp and visible, deployant buckle detail, movement visibility through caseback, original box and papers in frame"
+    
+    - name: "Philippe Dufour Simplicity"
+      description: "37mm hand-finished masterpiece representing the pinnacle of independent watchmaking. Only 200 pieces ever made, each taking months to complete."
+      year: 2000
+      shot_desc: "Clinical white background, movement shot showing hand-finished anglage, dial shot emphasizing lacquer finish, case profile showing elegant lugs, macro details of hand finishing"
+    
+    - name: "F.P. Journe Chronomètre à Résonance"
+      description: "Dual movement watch utilizing resonance phenomenon, early brass movement version. Revolutionary technical achievement in modern watchmaking."
+      year: 2000
+      shot_desc: "Symmetrical dial layout captured straight on, dual time displays visible, movement shot showing brass caliber, original strap and buckle configuration"
+    
+    - name: "Rolex Submariner 6538 'Big Crown'"
+      description: "James Bond Submariner with 8mm crown, gilt dial, and no crown guards. Tropical dial variation showing even patina development."
+      year: 1956
+      shot_desc: "Angled view showing oversized crown, gilt dial detail, bezel pip at 12, bracelet stretch characteristic of age, tropical dial color variation under natural light"
+    
+    - name: "Audemars Piguet Royal Oak 5402ST A-Series"
+      description: "First series of the original luxury steel sports watch designed by Gerald Genta. Thin case with visible movement screws and integrated bracelet."
+      year: 1972
+      shot_desc: "Flat lay showing bracelet integration, macro of tapisserie dial pattern, hexagonal bezel screws visible, case thickness comparison, original Gay Frères bracelet detail"
+
+cameras:
+  name: "Cameras & Equipment"
+  brands:
+    - "Leica"
+    - "Hasselblad"
+    - "Phase One"
+    - "RED"
+    - "ARRI"
+    - "Canon"
+    - "Nikon"
+    - "Sony"
+    - "Fujifilm"
+  types:
+    - name: "Digital Camera"
+      gpc: "Cameras & Optics > Digital Cameras"
+    - name: "Film Camera"
+      gpc: "Cameras & Optics > Film Cameras"
+    - name: "Camera Lens"
+      gpc: "Cameras & Optics > Camera & Optic Accessories > Camera Lenses"
+  showcase:
+    - name: "Leica M3 Double Stroke"
+      description: "Revolutionary 35mm rangefinder camera, first with combined viewfinder/rangefinder. Chrome version with double stroke advance. Early serial number with all matching parts and original leather case."
+      year: 1954
+      shot_desc: "Front 3/4 view with 50mm Summicron, brass showing through chrome wear, leather case in background, viewfinder eye-piece visible, frame counter and advance lever detail"
+
+    - name: "Hasselblad 500C/M"
+      description: "Professional medium format system camera with modular design. Chrome body with matching A12 back and waist-level finder. Carl Zeiss Planar 80mm f/2.8 lens included."
+      year: 1970
+      shot_desc: "Exploded view showing modular components, waist-level finder open, A12 back detached, focusing screen visible, lens elements separated to show T* coating"
+
+    - name: "Phase One XF IQ4 150MP"
+      description: "Ultimate medium format digital camera system with highest resolution sensor. Complete with Blue Ring lens series and electronic shutter system."
+      year: 2018
+      shot_desc: "Studio setup with digital back visible, tethered to computer, professional lighting equipment in frame, touchscreen interface active, modular components labeled"
+
+    - name: "Nikon SP Limited Edition"
+      description: "2005 reissue of legendary 1957 rangefinder. Titanium finish with matching 35mm f/1.8 lens. Number 250 of 2500 produced."
+      year: 2005
+      shot_desc: "Side profile showing rangefinder windows, complete set with box and documents, titanium finish under controlled lighting, serial number visible"
+
+    - name: "ARRI Alexa 65"
+      description: "Large format digital cinema camera with 65mm sensor. Complete with XPL lens mount and custom cooling system. Used in major Hollywood productions."
+      year: 2014
+      shot_desc: "Production setup with full rigging, focus on sensor size comparison, cooling system visible, lens mount detail, electronic interfaces highlighted"
+
+    - name: "Linhof Master Technika 3000"
+      description: "Professional large format technical camera in titanium finish. Complete with center filter and electronic rangefinder. Schneider Super-Angulon 90mm f/5.6 lens."
+      year: 2000
+      shot_desc: "Multiple angles showing movements, ground glass back open, bellows extended, spirit levels visible, titanium finish detail"
+
+    - name: "Rolleiflex 2.8F Planar"
+      description: "Final and most refined version of the classic twin-lens reflex. White face version with matching lens caps and bay filters. Complete with original case."
+      year: 1960
+      shot_desc: "Front view showing both lenses, light meter cell visible, focus knob detail, viewing hood open, original leather case patina"
+
+    - name: "Leica M10-P 'Ghost Edition'"
+      description: "Limited edition digital rangefinder designed with Hodinkee. Matte gray finish with brass elements. Number 012 of 250 produced."
+      year: 2019
+      shot_desc: "Product style with watch pairing, brass elements highlighted, LCD screen active, limited edition numbering visible, original packaging arrangement"
+
+    - name: "Mamiya RZ67 Professional II"
+      description: "Professional medium format system camera with revolving back. Complete with AE prism finder and power drive. 110mm f/2.8 lens included."
+      year: 1995
+      shot_desc: "System layout with all components, revolving back demonstration, electronic contacts visible, modular nature emphasized, focusing screen detail"
+
+    - name: "RED RANGER MONSTRO 8K VV"
+      description: "High-end digital cinema camera with full-frame 8K sensor. Complete with unified body design and advanced cooling system."
+      year: 2018
+      shot_desc: "Production configuration with full rigging, cooling system detail, sensor assembly visible, connection ports labeled, size comparison with industry standard"
+
+musical_instruments:
+  name: "Musical Instruments"
+  brands:
+    - "Steinway & Sons"  # Pianos
+    - "Stradivari"      # Violins
+    - "Fender"          # Guitars
+    - "Gibson"          # Guitars
+    - "Martin"          # Acoustic guitars
+    - "Bösendorfer"     # Pianos
+    - "Yamaha"          # High-end pianos
+    - "Selmer Paris"    # Saxophones
+    - "Gretsch"         # Drums/Guitars
+    - "Paul Reed Smith" # Guitars
+  types:
+    - name: "Electric Guitar"
+      gpc: "Arts & Entertainment > Musical Instruments > String Instruments > Guitars > Electric Guitars"
+    - name: "Acoustic Guitar"
+      gpc: "Arts & Entertainment > Musical Instruments > String Instruments > Guitars > Acoustic Guitars"
+    - name: "Grand Piano"
+      gpc: "Arts & Entertainment > Musical Instruments > Pianos"
+  showcase:
+    - name: "Stradivari 'Messiah' Violin 1716"
+      description: "One of the most pristine Stradivari violins in existence. Never used in regular performance, maintaining original varnish and setup. Currently in Ashmolean Museum."
+      year: 1716
+      shot_desc: "Multiple angles under museum lighting, focus on original varnish, scroll detail, f-holes, interior label visible through f-hole, grain structure of top plate, original bridge position"
+
+    - name: "Steinway & Sons Model D-274 Concert Grand"
+      description: "Hamburg-built concert grand piano, ebony finish with sustained resonance enhancement. Used in major concert halls worldwide. Serial number indicates early production."
+      year: 1962
+      shot_desc: "Full profile with lid open, action detail, string layout visible, pedal mechanism shown, keyboard perspective, soundboard condition, original Steinway plate visible"
+
+    - name: "1959 Gibson Les Paul Standard 'Burst'"
+      description: "Legendary sunburst finish Les Paul with PAF humbuckers. One of approximately 1,700 produced. Highly figured maple top with intact original finish."
+      year: 1959
+      shot_desc: "Full front and back in natural light showing sunburst fade, flame maple detail, neck profile, original PAF pickup covers, control cavity, original case included"
+
+    - name: "Bösendorfer 290 Imperial"
+      description: "Flagship concert grand with additional bass notes extending to subcontra F. Special edition with inlaid Vienna-style case designs. Full CEUS recording system."
+      year: 2005
+      shot_desc: "Full length showing extra keys, rim detail with inlays, pedal system, action removed to show damper mechanism, soundboard construction, string scale design"
+
+    - name: "Martin D-45 Pre-War"
+      description: "Highest-grade pre-war Martin dreadnought. Brazilian rosewood back and sides, extensive pearl inlay, ivory bridge. One of 91 produced before WWII."
+      year: 1942
+      shot_desc: "Studio lighting showing pearl inlay detail, Brazilian rosewood grain, neck joint, bridge condition, original tuners, interior bracing visible through soundhole"
+
+    - name: "Selmer Mark VI Alto Saxophone"
+      description: "Early serial number Mark VI alto, considered the pinnacle of saxophone design. Original lacquer with minimal wear. Complete with original case and accessories."
+      year: 1954
+      shot_desc: "Multiple angles showing key work, neck stamp detail, original lacquer patina, pad condition, serial number location, original case interior with accessories"
+
+    - name: "Fender Broadcaster"
+      description: "First-year production Fender electric guitar, pre-dating the Telecaster name. Original blonde finish with minimal checking. One of fewer than 200 produced."
+      year: 1950
+      shot_desc: "Full documentation of original finish, neck date stamp, body routing, original electronics, Broadcaster decal, original case, bridge setup details"
+
+    - name: "C.F. Martin 000-45 'Peacock'"
+      description: "Unique presentation grade Martin with elaborate peacock inlay design. Brazilian rosewood with extensive pearl and abalone work. Only example known to exist."
+      year: 1902
+      shot_desc: "Detail shots of peacock inlay, pearl bordering, Brazilian rosewood figure, original bridge pins, neck profile, label through soundhole, period case"
+
+    - name: "Yamaha CFX Concert Grand"
+      description: "Flagship concert grand piano used in international competitions. Hand-built in Japan with specially selected materials. Full concert preparation."
+      year: 2010
+      shot_desc: "Performance setup showing full length, action regulation details, hammer alignment, damper spacing, string layout, soundboard crown measurement"
+
+    - name: "Gretsch White Falcon 6136"
+      description: "First-year production White Falcon, originally designed as a showpiece. Gold-plated hardware, multiple binding, jeweled knobs. Complete original specification."
+      year: 1955
+      shot_desc: "Full white nitrocellulose finish documentation, binding detail, gold hardware condition, original FilterTron pickup covers, Cadillac tailpiece, original case interior"
+
+art:
+  name: "Fine Art"
+  brands:
+    - "Gagosian Gallery"      # Premier contemporary art gallery
+    - "Pace Gallery"          # Major international gallery
+    - "White Cube"            # Contemporary art gallery
+    - "Hauser & Wirth"        # International gallery and publisher
+    - "David Zwirner"         # Contemporary art gallery
+    - "Marlborough"           # Historic fine art gallery
+    - "Acquavella"            # Fine art dealer
+    - "Marian Goodman"        # Contemporary gallery
+    - "Perrotin"              # Contemporary gallery
+    - "Thaddaeus Ropac"       # International gallery
+    - "Kaikai Kiki"           # Murakami's art company
+    - "Studio Haring"         # Keith Haring foundation
+    - "Artsy"                 # Digital art platform
+    - "Phillips"              # Auction house
+    - "Christie's"            # Auction house
+    - "Sotheby's"             # Auction house
+  artists:
+    # Contemporary Artists
+    - "Gerhard Richter"      # Painting, photography
+    - "Jeff Koons"           # Sculpture, installations
+    - "Damien Hirst"         # Mixed media, installations
+    - "Yayoi Kusama"         # Installations, painting
+    - "Ai Weiwei"            # Installations, sculpture
+    - "Marina Abramović"     # Performance art
+    - "Takashi Murakami"     # Painting, sculpture
+    - "Olafur Eliasson"      # Installations, sculpture
+    - "Jenny Saville"        # Painting
+    - "Anish Kapoor"         # Sculpture, installations
+
+    # Modern Masters
+    - "Andy Warhol"          # Pop art, prints
+    - "Jean-Michel Basquiat" # Neo-expressionism
+    - "Roy Lichtenstein"     # Pop art
+    - "Willem de Kooning"    # Abstract expressionism
+    - "Francis Bacon"        # Figurative painting
+    - "Louise Bourgeois"     # Sculpture, installations
+    - "Mark Rothko"          # Color field painting
+    - "Alberto Giacometti"   # Sculpture
+    - "Georgia O'Keeffe"     # Modernism
+    - "Salvador Dalí"        # Surrealism
+
+    # Post-War Artists
+    - "Jackson Pollock"      # Abstract expressionism
+    - "Cy Twombly"          # Abstract expressionism
+    - "Agnes Martin"         # Minimalism
+    - "Richard Serra"        # Sculpture
+    - "Donald Judd"          # Minimalism
+    - "Robert Rauschenberg" # Combines
+    - "Jasper Johns"        # Neo-Dada
+    - "David Hockney"       # Pop art, photography
+    - "Frank Stella"        # Minimalism
+    - "Ellsworth Kelly"     # Hard-edge painting
+
+    # Photography
+    - "Andreas Gursky"      # Large format photography
+    - "Cindy Sherman"       # Conceptual photography
+    - "Richard Avedon"      # Portrait photography
+    - "Irving Penn"         # Fashion, still life
+    - "Annie Leibovitz"     # Portrait photography
+    - "William Eggleston"   # Color photography
+    - "Jeff Wall"           # Staged photography
+    - "Thomas Struth"       # Architecture, landscape
+    - "Wolfgang Tillmans"   # Contemporary photography
+    - "Peter Beard"         # Mixed media photography
+
+    # Street Art/Urban
+    - "Banksy"              # Street art
+    - "KAWS"                # Urban vinyl, painting
+    - "JR"                  # Photography, street art
+    - "Keith Haring"        # Pop art, street art
+    - "Barry McGee"         # Urban art
+    - "Shepard Fairey"      # Street art, graphic design
+    - "Os Gemeos"           # Street art
+    - "Invader"             # Mosaic street art
+    - "Kenny Scharf"        # Pop art
+    - "Futura"              # Graffiti art
+  types:
+    - name: "Painting"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Fine Art > Paintings"
+    - name: "Sculpture"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Fine Art > Sculptures"
+    - name: "Print"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Fine Art > Art Prints"
+  showcase:
+    - name: "Gerhard Richter 'Abstraktes Bild (649-2)'"
+      description: "Large-scale abstract oil painting from Richter's most sought-after period. Distinctive squeegee technique creating layers of color. Previously in prominent private collection."
+      year: 1987
+      shot_desc: "Full frontal in natural light, detail shots of texture, scale reference with measuring tape, UV documentation, frame construction details, signature and date documentation"
+    
+    - name: "Jeff Koons 'Balloon Dog (Orange)'"
+      description: "Mirror-polished stainless steel sculpture with transparent color coating. Number 2 from an edition of 5. Museum exhibition history documented."
+      year: 1994
+      shot_desc: "360-degree documentation, surface reflection quality, base mounting details, fabrication markings, edition number location, scale comparison with standard figure"
+    
+    - name: "Yayoi Kusama 'Pumpkin' Sculpture"
+      description: "Painted bronze sculpture featuring signature dot pattern. Artist proof from an edition of 8. Original paint condition with certificate of authenticity."
+      year: 2000
+      shot_desc: "All sides documented, dot pattern detail, patina condition, base attachment method, artist signature location, installation documentation"
+    
+    - name: "David Hockney 'Pool with Two Figures'"
+      description: "Acrylic on canvas, iconic swimming pool scene. Complete provenance from artist's studio. Technical analysis and conservation report included."
+      year: 1972
+      shot_desc: "Raking light documentation, canvas texture, signature detail, frame construction, UV fluorescence imaging, verso details including stretcher markings"
+    
+    - name: "Louise Bourgeois 'Maman' Bronze Spider"
+      description: "Bronze edition of the iconic spider sculpture. Number 3 of 6 cast by Moderna Museet. Complete installation documentation included."
+      year: 1999
+      shot_desc: "Multiple angles showing scale, patina details, structural connections, base mounting system, edition markings, surface texture close-ups"
+    
+    - name: "Damien Hirst 'The Physical Impossibility of Death'"
+      description: "Tiger shark preserved in formaldehyde solution. Second version with improved preservation technique. Complete maintenance documentation."
+      year: 2006
+      shot_desc: "Full tank documentation, preservation fluid clarity, structural support system, temperature control setup, lighting requirements, installation specifications"
+    
+    - name: "Ai Weiwei 'Sunflower Seeds'"
+      description: "Hand-painted porcelain sunflower seeds, unique installation subset of 100,000 pieces. Original Tate Modern exhibition provenance."
+      year: 2010
+      shot_desc: "Installation layout documentation, individual seed details, quantity verification, storage system, installation instructions, authenticity markings"
+    
+    - name: "Richard Serra 'Tilted Arc' Section"
+      description: "Original section from the controversial public artwork. Cor-ten steel with documented weathering. Complete provenance and removal documentation."
+      year: 1981
+      shot_desc: "Steel surface patina, fabrication details, cut marks from removal, original installation photos, material thickness, structural properties"
+    
+    - name: "Andy Warhol 'Marilyn Monroe' Portfolio"
+      description: "Complete set of 10 screenprints from the 1967 edition. Pristine condition with original portfolio case. Authentication by Andy Warhol Art Authentication Board."
+      year: 1967
+      shot_desc: "Individual print documentation, portfolio case condition, registration marks, paper quality, ink saturation, edition numbering, authentication stamps"
+    
+    - name: "Banksy 'Girl with Balloon' (Pre-Shred)"
+      description: "Original canvas before famous shredding incident. Complete documentation of Sotheby's auction and authentication by Pest Control. Unique historical significance."
+      year: 2006
+      shot_desc: "High-resolution documentation of entire piece, frame construction (pre-modification), paint application technique, canvas mounting, authentication details"
+
+collectibles:
+  name: "Collectibles"
+  brands:
+    # Books & Comics
+    - "Penguin First Editions"  # Rare books
+    - "DC Comics"               # Comic books
+    - "Marvel Comics"           # Comic books
+    - "Heritage Press"          # Fine press books
+    - "Limited Editions Club"   # Fine press books
+    
+    # Trading Cards
+    - "Topps"                  # Sports cards
+    - "Upper Deck"             # Sports cards
+    - "Panini"                 # Sports cards
+    - "Wizards of the Coast"   # Gaming cards
+    - "Pokemon Company"        # Gaming cards
+    
+    # Coins & Currency
+    - "US Mint"                # Coins
+    - "Royal Mint"             # Coins
+    - "PCGS"                   # Grading service
+    - "NGC"                    # Grading service
+    - "American Numismatic Society" # Institution
+    
+    # Stamps
+    - "Royal Mail"             # British stamps
+    - "USPS"                   # US stamps
+    - "Stanley Gibbons"        # Stamp dealer
+    - "Scott Publishing"       # Catalogs
+    - "American Philatelic Society" # Institution
+    
+    # Sports Memorabilia
+    - "MLB Authenticated"      # Baseball
+    - "NBA Authenticated"      # Basketball
+    - "NFL Authenticated"      # Football
+    - "PSA/DNA"               # Authentication
+    - "Steiner Sports"        # Memorabilia dealer
+    
+    # Movie & Entertainment
+    - "Profiles in History"    # Auction house
+    - "Propstore"              # Movie props
+    - "Heritage Auctions"      # Auction house
+    - "Disney Archives"        # Animation art
+    - "Warner Bros. Archives"  # Film memorabilia
+    
+    # Military Collectibles
+    - "Rock Island Auction"    # Firearms
+    - "James D. Julia"         # Militaria
+    - "Hermann Historica"      # Military antiques
+    - "Collectors Armoury"     # Reproductions
+    - "International Military Antiques" # Dealer
+    
+    # Antique Dolls
+    - "Steiff"                 # Teddy bears
+    - "Madame Alexander"       # Dolls
+    - "Jumeau"                 # Antique dolls
+    - "Bru Jne"                # Antique dolls
+    - "R. John Wright"         # Artist dolls
+    
+    # Historical Documents
+    - "Sotheby's"              # Auction house
+    - "Christie's"             # Auction house
+    - "Bonhams"                # Auction house
+    - "William Reese Company"  # Rare documents
+    - "Seth Kaller"            # Historical documents
+  makers:
+    # Book Artists & Binders
+    - "William Morris"         # Arts & Crafts movement books
+    - "Cobden-Sanderson"      # Fine bookbinding
+    - "Peter Geraty"          # Contemporary fine binding
+    - "Don Glaister"          # Designer bookbinding
+    - "Jan Sobota"            # Artistic bookbinding
+
+    # Comic Artists
+    - "Jack Kirby"            # Golden/Silver Age comics
+    - "Steve Ditko"           # Marvel comics
+    - "Neal Adams"            # DC comics
+    - "Frank Miller"          # Modern comics
+    - "Todd McFarlane"        # Contemporary comics
+
+    # Coin Engravers
+    - "Augustus Saint-Gaudens" # US coin design
+    - "Adolph A. Weinman"     # US coinage
+    - "James B. Longacre"     # Historical US coins
+    - "William Wyon"          # British coins
+    - "Benedetto Pistrucci"   # British sovereign design
+
+    # Stamp Designers
+    - "Ken Widing"            # US stamp design
+    - "Howard Koslow"         # US commemoratives
+    - "David Gentleman"       # British stamps
+    - "Arnold Machin"         # Queen Elizabeth II stamps
+    - "Martin Mörck"          # Scandinavian stamps
+
+    # Doll Artists
+    - "Albert Marque"         # Art dolls
+    - "Käthe Kruse"           # Character dolls
+    - "Michael Zaikov"        # Contemporary art dolls
+    - "Alexandra Koukinova"   # Porcelain dolls
+    - "Robert Tonner"         # Fashion dolls
+
+    # Model Makers
+    - "Malcolm Sayer"         # Automotive models
+    - "John Fray"             # Ship models
+    - "Carlo Brianza"         # Architectural models
+    - "David Neat"            # Exhibition models
+    - "Gene Winfield"         # Custom car models
+
+    # Historical Craftsmen
+    - "Paul Revere"           # Silversmith
+    - "Samuel McIntire"       # Woodcarving
+    - "Duncan Phyfe"          # Furniture
+    - "Tiffany Studios"       # Decorative arts
+    - "René Lalique"          # Glass art
+
+    # Contemporary Craftspeople
+    - "Phil Poynter"          # Custom knives
+    - "David Linley"          # Luxury furniture
+    - "Jack Row"              # Luxury pens
+    - "Paul Day"              # Miniatures
+    - "Roger W. Smith"        # Watchmaking
+  types:
+    - name: "First Edition Book"
+      gpc: "Media > Books > Antiquarian & Collectible Books"
+    - name: "Comic Book"
+      gpc: "Media > Books > Comic Books"
+    - name: "Trading Card"
+      gpc: "Toys & Games > Games > Card Games > Collectible Card Games"
+    - name: "Vintage Watch"
+      gpc: "Apparel & Accessories > Jewelry > Watches > Collectible Watches"
+    - name: "Rare Coin"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Collecting > Coin Collecting"
+    - name: "Postage Stamp"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Collecting > Stamp Collecting"
+    - name: "Sports Memorabilia"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Collecting > Sports Memorabilia"
+    - name: "Movie Memorabilia"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Collecting > Movie Memorabilia"
+    - name: "Military Memorabilia"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Collecting > Militaria"
+    - name: "Antique Doll"
+      gpc: "Toys & Games > Dolls & Doll Houses > Collectible Dolls"
+    - name: "Vintage Camera"
+      gpc: "Cameras & Optics > Vintage Cameras"
+    - name: "Historical Document"
+      gpc: "Media > Documents > Historical Documents"
+    - name: "Antique Map"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Collecting > Antique Maps"
+    - name: "Fine Wine"
+      gpc: "Food, Beverages & Tobacco > Beverages > Wine"
+    - name: "Rare Whiskey"
+      gpc: "Food, Beverages & Tobacco > Beverages > Spirits & Liquors"
+    - name: "Action Figure"
+      gpc: "Toys & Games > Collectible Action Figures"
+    - name: "Antique Firearm"
+      gpc: "Sporting Goods > Hunting & Shooting > Firearms > Collectible Firearms"
+  showcase:
+    - name: "Action Comics #1 CGC 9.0"
+      description: "First appearance of Superman. Finest known copy with white pages. Complete restoration documentation and CGC certification. Original staples intact."
+      year: 1938
+      shot_desc: "Full front and back cover under controlled lighting, UV documentation of page quality, microscopic examination of staples, CGC case integrity, color registration details"
+
+    - name: "1804 Silver Dollar Class I"
+      description: "Original Class I 1804 Silver Dollar, one of only eight known examples. Complete provenance from the King of Siam set. NGC PF-65 certification."
+      year: 1834
+      shot_desc: "Both sides under numismatic lighting, edge lettering detail, weight verification, surface preservation documentation, toning patterns, holder certification"
+
+    - name: "Gutenberg Bible Leaf"
+      description: "Original leaf from the Gutenberg Bible, first major book printed with movable type in the West. From the Book of Exodus, with rubricated initials."
+      year: 1455
+      shot_desc: "Both sides under museum lighting, paper structure documentation, watermark imaging, ink analysis documentation, binding edge condition, conservation housing"
+
+    - name: "British Guiana 1c Magenta"
+      description: "The world's rarest and most valuable stamp. Complete provenance history including John du Pont collection. Recent Stuart Weitzman ownership."
+      year: 1856
+      shot_desc: "Microscopic detail of surface, ultraviolet fluorescence documentation, perforation analysis, color registration, mounting method, security case specifications"
+
+    - name: "T206 Honus Wagner SGC 3"
+      description: "The most famous baseball card in existence. Sweet Caporal back, complete documentation of ownership history. Recent professional restoration."
+      year: 1909
+      shot_desc: "High-resolution front and back imaging, corner wear documentation, surface texture analysis, paper stock verification, grading case integrity"
+
+    - name: "Declaration of Independence Broadside"
+      description: "Original July 1776 Dunlap broadside of the Declaration of Independence. One of 26 known copies. Complete conservation history."
+      year: 1776
+      shot_desc: "Full document under specialized lighting, paper structure analysis, ink composition documentation, fold patterns, storage environment specifications"
+
+    - name: "Babe Ruth Game-Used Bat"
+      description: "Game-used bat from Ruth's 60 home run season. PSA/DNA authentication with photomatching to period photographs. Original finish with ball marks."
+      year: 1927
+      shot_desc: "Full length documentation, barrel markings, use patterns, weight distribution analysis, wood grain documentation, handle tape remnants"
+
+    - name: "Apollo 11 Flight Plan"
+      description: "Crew-used flight plan from Apollo 11 mission with astronaut annotations. Complete NASA documentation and authentication."
+      year: 1969
+      shot_desc: "Page-by-page documentation, handwriting analysis, paper stock verification, binding condition, archival storage requirements"
+
+    - name: "Original Mickey Mouse Animation Cel"
+      description: "Original hand-painted animation cel from Steamboat Willie. First synchronized sound cartoon featuring Mickey Mouse. Disney studio documentation."
+      year: 1928
+      shot_desc: "Front lighting and backlighting documentation, paint layer analysis, cel material documentation, registration mark details, original background alignment"
+
+    - name: "Inverted Jenny Plate Block"
+      description: "Block of four of the famous upside-down airplane stamp. Position 87-88/97-98. Original gum, never hinged. Complete certification history."
+      year: 1918
+      shot_desc: "Individual stamp documentation, plate block position verification, gum condition analysis, perforation measurement, color registration details"
+
+jewelry:
+  name: "Fine Jewelry"
+  brands:
+    # Historic Houses
+    - "Cartier"              # French luxury jewelry house
+    - "Van Cleef & Arpels"   # French high jewelry
+    - "Boucheron"            # French heritage jeweler
+    - "Bulgari"              # Italian luxury house
+    - "Tiffany & Co."        # American luxury jeweler
+    - "Harry Winston"        # American high jewelry
+    - "Chopard"              # Swiss luxury jewelry
+    - "Graff"                # British diamond specialist
+    - "Bvlgari"              # Italian luxury house
+    - "Piaget"               # Swiss luxury watches and jewelry
+
+    # Contemporary Masters
+    - "JAR"                  # Joel Arthur Rosenthal
+    - "Wallace Chan"         # Contemporary Asian jeweler
+    - "Hemmerle"             # German avant-garde jeweler
+    - "Cindy Chao"           # Contemporary Asian jeweler
+    - "Victoire de Castellane" # Dior fine jewelry
+    
+    # Designer Jewelers
+    - "David Webb"           # American heritage jeweler
+    - "Verdura"              # Italian-American jeweler
+    - "Suzanne Belperron"    # Historic French designer
+    - "René Lalique"         # Art Nouveau master
+    - "James de Givenchy"    # Contemporary designer
+
+    # Contemporary Houses
+    - "Chanel Fine Jewelry"  # French luxury house
+    - "Dior Fine Jewelry"    # French luxury house
+    - "Louis Vuitton"        # French luxury jewelry
+    - "Gucci Fine Jewelry"   # Italian luxury house
+    - "Pomellato"            # Italian contemporary jewelry
+
+    # Specialty Houses
+    - "Mikimoto"             # Pearl specialist
+    - "Paspaley"             # Pearl specialist
+    - "Moussaieff"           # Rare gemstone specialist
+    - "Fabergé"              # Russian heritage house
+    - "David Morris"         # British fine jewelry
+  types:
+    - name: "Diamond Ring"
+      gpc: "Apparel & Accessories > Jewelry > Rings"
+    - name: "Gold Necklace"
+      gpc: "Apparel & Accessories > Jewelry > Necklaces"
+    - name: "Luxury Pen"
+      gpc: "Office Supplies > Writing Supplies > Pens & Pencils > Luxury Pens"
+  showcase:
+    - name: "Cartier 'Tutti Frutti' Art Deco Bracelet"
+      description: "Iconic Cartier design featuring carved emeralds, rubies, and sapphires in floral motifs. Platinum setting with diamond accents. Original 1920s piece with documented provenance."
+      year: 1925
+      shot_desc: "360-degree macro photography, stone-by-stone documentation, clasp mechanism detail, hallmark close-up, UV fluorescence imaging of stones, original case presentation"
+
+    - name: "JAR Diamond Butterfly Brooch"
+      description: "Unique piece by Joel Arthur Rosenthal featuring pavé-set fancy colored diamonds. Articulated wings with invisible setting technique. Original design sketches included."
+      year: 1994
+      shot_desc: "Multiple angles showing articulation, microscopic details of pavé work, color gradation documentation, mechanism function, weight distribution analysis"
+
+    - name: "Van Cleef & Arpels Mystery Set Ruby Necklace"
+      description: "Masterpiece of Mystery Setting technique with calibré-cut rubies. No metal visible between stones. Complete with original technical documentation and setting diagrams."
+      year: 1985
+      shot_desc: "Close-up of mystery setting technique, flexibility demonstration, clasp engineering, stone matching documentation, wear point analysis"
+
+    - name: "Tiffany Yellow Diamond Necklace"
+      description: "128.54-carat fancy yellow diamond in custom platinum setting with white diamond surround. One of the largest known fancy yellow diamonds. Complete certification."
+      year: 2012
+      shot_desc: "Stone from all angles under various lighting conditions, setting detail, security features, fluorescence documentation, mounting system details"
+
+    - name: "Harry Winston 'The Legacy' Diamond Ring"
+      description: "D Flawless 51.52-carat pear-shaped diamond ring. Platinum mounting with micro-pavé detail. Complete GIA documentation and origin certification."
+      year: 2000
+      shot_desc: "Stone clarity characteristics mapping, mounting architecture, profile views, precision of cut documentation, light performance analysis"
+
+    - name: "Bulgari Serpenti High Jewelry Watch"
+      description: "Coiled snake design in 18k white gold with full pavé diamonds. Concealed watch mechanism with calibrated movement. Limited edition piece with numbered certification."
+      year: 2018
+      shot_desc: "Coil flexibility demonstration, scale pattern detail, watch mechanism access, gem setting technique, articulation points"
+
+    - name: "Graff Ruby and Diamond Necklace"
+      description: "Graduated Burmese rubies totaling 87.12 carats. Each stone certified 'Pigeon's Blood' color. Platinum setting with marquise diamond spacers."
+      year: 2014
+      shot_desc: "Color consistency documentation, stone spacing measurement, clasp security features, weight distribution analysis, wearing position documentation"
+
+    - name: "Fabergé 'The Peacock' Egg"
+      description: "Contemporary Fabergé egg featuring mechanical peacock automaton. Gold, diamonds, and guilloché enamel. Complete with original presentation case and operation instructions."
+      year: 2017
+      shot_desc: "Automaton function sequence, enamel work detail, mechanism documentation, stone setting patterns, interior compartment details"
+
+    - name: "Chopard Red Carpet Collection Emerald Suite"
+      description: "Colombian emeralds totaling 150 carats in Art Deco-inspired design. Necklace, earrings, and bracelet set. Full certification of stone origin and treatment."
+      year: 2019
+      shot_desc: "Individual piece documentation, stone matching across set, wearing configuration options, security feature documentation, clasp mechanisms"
+
+    - name: "Wallace Chan Butterfly Brooch"
+      description: "Revolutionary use of titanium and Wallace Cut technique. Features a 45-carat opal with diamond and sapphire accents. Unique piece with artist documentation."
+      year: 2015
+      shot_desc: "Titanium coloring technique, stone carving detail, mechanism durability testing, weight analysis, wearing position options"
+
+vehicles:
+  name: "Vehicles"
+  brands:
+    # Luxury Performance
+    - "Ferrari"              # Italian sports cars
+    - "Lamborghini"          # Italian supercars
+    - "Porsche"              # German sports cars
+    - "McLaren"              # British supercars
+    - "Bugatti"              # French hypercars
+    - "Pagani"               # Italian boutique hypercars
+    - "Koenigsegg"           # Swedish hypercars
+    - "Aston Martin"         # British luxury sports
+    
+    # Premium Luxury
+    - "Rolls-Royce"          # British ultra-luxury
+    - "Bentley"              # British luxury
+    - "Maybach"              # German ultra-luxury
+    - "Maserati"             # Italian luxury sports
+    
+    # Historic Marques
+    - "Duesenberg"           # American luxury classics
+    - "Hispano-Suiza"        # Spanish/French luxury
+    - "Isotta Fraschini"     # Italian luxury classics
+    - "Delahaye"             # French luxury classics
+    
+    # Racing Heritage
+    - "Auto Union"           # Historic German racing
+    - "Alfa Romeo"           # Italian racing heritage
+    - "Lancia"               # Italian racing heritage
+    - "Jaguar"               # British racing heritage
+    
+    # Motorcycles
+    - "Brough Superior"      # Historic British motorcycles
+    - "Vincent"              # Classic British motorcycles
+    - "Ducati"               # Italian performance bikes
+    - "MV Agusta"            # Italian racing bikes
+    - "Indian"               # American heritage bikes
+    - "Harley-Davidson"      # American cruisers
+    - "BMW Motorrad"         # German motorcycles
+    - "Norton"               # British motorcycles
+    
+    # Limited Production
+    - "RUF"                  # German performance
+    - "Singer"               # Porsche restoration/modification
+    - "Eagle"                # Jaguar E-Type specialists
+    - "Gunther Werks"        # Porsche specialists
+    - "Morgan"               # British traditional sports cars
+  types:
+    - name: "Classic Car"
+      gpc: "Vehicles & Parts > Vehicles > Motor Vehicles > Cars, Trucks & Vans"
+    - name: "Motorcycle"
+      gpc: "Vehicles & Parts > Vehicles > Motor Vehicles > Motorcycles"
+    - name: "Luxury Bicycle"
+      gpc: "Vehicles & Parts > Vehicles > Cycles > Bicycles"
+  showcase:
+    - name: "Ferrari 250 GTO (Chassis 3851GT)"
+      description: "One of 36 built, Scuderia Ferrari racing history at Le Mans. Complete matching numbers with Ferrari Classiche certification. Original tool roll and documentation."
+      year: 1962
+      shot_desc: "Studio lighting with multiple angles, engine bay details, chassis number locations, interior patina, competition modifications, original paint examination, tool kit documentation"
+
+    - name: "Mercedes-Benz 300SL Gullwing"
+      description: "Early production Gullwing with rare aluminum body. Original Rudge wheels and fitted luggage. Complete ownership history from new with matching numbers."
+      year: 1955
+      shot_desc: "Gullwing doors open and closed positions, engine compartment, trunk with fitted luggage, belly pan details, interior configuration, Rudge wheel closeups"
+
+    - name: "Bugatti Type 57SC Atlantic"
+      description: "One of four built, the 'La Voiture Noire' specification. Electron body with distinctive dorsal seam. Complete documentation of recent restoration."
+      year: 1936
+      shot_desc: "Dramatic side profile with seam detail, engine compartment, chassis details, interior trim documentation, wheel/tire specifications, restoration progress photos"
+
+    - name: "Aston Martin DB4 GT Zagato"
+      description: "Original factory lightweight specification, one of 19 built. Extensive period racing history. Recent Aston Martin Works restoration with full documentation."
+      year: 1961
+      shot_desc: "Multiple angles showing Zagato bodywork, engine details with triple Weber setup, interior configuration, competition modifications, restoration documentation"
+
+    - name: "Porsche 917K Gulf/Wyer"
+      description: "Le Mans history, original Gulf Oil livery. Complete with spare engine and period correct parts. Extensive documentation of racing achievements."
+      year: 1970
+      shot_desc: "Studio setup showing Gulf livery, cockpit configuration, engine access, aerodynamic details, period racing documentation, spare parts inventory"
+
+    - name: "Duesenberg Model J Murphy Roadster"
+      description: "Original Murphy body with documented ownership from new. Complete with original tools and documentation. Recent concours-level restoration."
+      year: 1929
+      shot_desc: "Full profile with top up/down, engine compartment showing dual overhead cam setup, interior trim details, chassis number documentation, tool kit contents"
+
+    - name: "McLaren F1 (Chassis 066)"
+      description: "Original road specification with full BMW service history. Complete with special order options and original tools, manuals, and fitted luggage."
+      year: 1995
+      shot_desc: "Center driving position detail, engine bay with gold foil, door and roof operation sequence, tool kit layout, documentation package, service history verification"
+
+    - name: "Alfa Romeo 8C 2900B Lungo Touring"
+      description: "Supercharged straight-eight with Touring Superleggera bodywork. Complete mechanical restoration by specialist. Original components preserved."
+      year: 1937
+      shot_desc: "Multiple angles of Touring bodywork, supercharger details, chassis number locations, interior trim documentation, mechanical restoration progress"
+
+    - name: "Jaguar D-Type (Works Long Nose)"
+      description: "Le Mans works team car with documented race history. Original engine and body panels. Recent sympathetic mechanical restoration."
+      year: 1955
+      shot_desc: "Aerodynamic details including long nose and fin, cockpit layout, engine compartment, chassis number verification, competition modifications, period documentation"
+
+    - name: "Shelby Cobra 427 S/C"
+      description: "Original Semi-Competition specification with documented racing history. One of 29 built. Complete with original documentation and competition equipment."
+      year: 1965
+      shot_desc: "Multiple angles showing competition features, engine compartment with 427 details, chassis number documentation, original equipment inventory, period racing photos" 
+      
+bicycles:
+  name: "Performance Bicycles"
+  types:
+    - name: "Mountain Bike"
+      gpc: "Vehicles & Parts > Vehicles > Cycles > Bicycles > Mountain Bikes"
+    - name: "Road Bike"
+      gpc: "Vehicles & Parts > Vehicles > Cycles > Bicycles > Road Bikes"
+    - name: "Electric Bike"
+      gpc: "Vehicles & Parts > Vehicles > Cycles > Bicycles > Electric Bikes"
+
+audio:
+  name: "High-End Audio"
+  brands:
+    - "McIntosh"
+    - "Mark Levinson"
+    - "Naim"
+    - "Focal"
+    - "Bang & Olufsen"
+    - "Bowers & Wilkins"
+    - "Wilson Audio"
+    - "Sennheiser"
+    - "Audeze"
+    - "Accuphase"
+  types:
+    - name: "Audiophile Headphones"
+      gpc: "Electronics > Audio > Audio Components > Headphones"
+    - name: "Stereo Amplifier"
+      gpc: "Electronics > Audio > Audio Components > Amplifiers"
+    - name: "Turntable"
+      gpc: "Electronics > Audio > Audio Players & Recorders > Record Players"
+    - name: "Speakers"
+      gpc: "Electronics > Audio > Audio Components > Speakers"
+
+furniture:
+  name: "Designer Furniture"
+  brands:
+    - "Herman Miller"
+    - "Knoll"
+    - "Vitra"
+    - "Cassina"
+    - "B&B Italia"
+    - "Ligne Roset"
+    - "Eames"
+    - "Fritz Hansen"
+    - "Carl Hansen"
+    - "Poltrona Frau"
+  types:
+    - name: "Lounge Chair"
+      gpc: "Home & Garden > Furniture > Seating > Chairs > Living Room Chairs"
+    - name: "Dining Table"
+      gpc: "Home & Garden > Furniture > Tables > Dining Tables"
+    - name: "Designer Lamp"
+      gpc: "Home & Garden > Lighting > Lamps"
+    - name: "Sofa"
+      gpc: "Home & Garden > Furniture > Seating > Sofas"
+
+cookware:
+  name: "Premium Cookware"
+  brands:
+    - "Mauviel"
+    - "Le Creuset"
+    - "Staub"
+    - "Ruffoni"
+    - "All-Clad"
+    - "Demeyere"
+    - "Kramer by Zwilling"
+    - "Miyabi"
+  types:
+    - name: "Chef's Knife"
+      gpc: "Home & Garden > Kitchen & Dining > Kitchen Tools & Utensils > Kitchen Knives"
+    - name: "Copper Cookware Set"
+      gpc: "Home & Garden > Kitchen & Dining > Cookware > Cookware Sets"
+    - name: "Stand Mixer"
+      gpc: "Home & Garden > Kitchen & Dining > Small Kitchen Appliances > Mixers"
+    - name: "Espresso Machine"
+      gpc: "Home & Garden > Kitchen & Dining > Small Kitchen Appliances > Coffee & Tea Makers"
+
+home_decor:
+  name: "Luxury Home Decor"
+  types:
+    - name: "Crystal Vase"
+      gpc: "Home & Garden > Decor > Vases"
+    - name: "Persian Rug"
+      gpc: "Home & Garden > Floor Coverings > Rugs & Carpets"
+    - name: "Wall Sculpture"
+      gpc: "Home & Garden > Decor > Wall Art"
+    - name: "Designer Mirror"
+      gpc: "Home & Garden > Decor > Mirrors"
+
+artisan_crafts:
+  name: "Artisan Crafts"
+  types:
+    - name: "Venetian Mask"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Arts & Crafts > Art & Crafting Materials > Decorative Arts"
+    - name: "Hand-blown Glass"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Arts & Crafts > Glass & Mosaics"
+    - name: "Ceramic Vessel"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Arts & Crafts > Ceramics & Pottery"
+    - name: "Tapestry"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Textile Arts"
+
+contemporary_art:
+  name: "Contemporary Art"
+  types:
+    - name: "Installation Art"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Fine Art > Installation Art"
+    - name: "Digital Art"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Fine Art > Digital Artwork"
+    - name: "Mixed Media"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Fine Art > Mixed Media Art"
+    - name: "Photography"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Fine Art > Photography"
+
+memorabilia:
+  name: "Memorabilia"
+  types:
+    - name: "Signed Jersey"
+      gpc: "Apparel & Accessories > Clothing > Jerseys > Autographed Sports Jerseys"
+    - name: "Game-Used Equipment"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Collecting > Sports Memorabilia > Game Used Sports Equipment"
+    - name: "Movie Prop"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Collecting > Movie Memorabilia > Movie Props"
+    - name: "Concert Poster"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Collecting > Music Memorabilia > Concert Memorabilia"
+    - name: "Autographed Album"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Collecting > Music Memorabilia > Autographed Music Items"
+
+classic_cars:
+  name: "Classic & Collectible Cars"
+  brands:
+    - "Ferrari"
+    - "Porsche"
+    - "Aston Martin"
+    - "Lamborghini"
+    - "Mercedes-Benz"
+    - "Bugatti"
+    - "McLaren"
+    - "Rolls-Royce"
+    - "Bentley"
+    - "Jaguar"
+  types:
+    - name: "Vintage Sports Car"
+      gpc: "Vehicles & Parts > Vehicles > Motor Vehicles > Cars > Classic Cars > Classic Sports Cars"
+    - name: "Antique Automobile"
+      gpc: "Vehicles & Parts > Vehicles > Motor Vehicles > Cars > Classic Cars > Antique Cars"
+    - name: "Muscle Car"
+      gpc: "Vehicles & Parts > Vehicles > Motor Vehicles > Cars > Classic Cars > Classic Muscle Cars"
+    - name: "Luxury Classic Car"
+      gpc: "Vehicles & Parts > Vehicles > Motor Vehicles > Cars > Classic Cars > Classic Luxury Cars"
+    - name: "Race Car"
+      gpc: "Vehicles & Parts > Vehicles > Motor Vehicles > Cars > Racing Cars"
+    - name: "Limited Edition Car"
+      gpc: "Vehicles & Parts > Vehicles > Motor Vehicles > Cars > Limited Edition Cars"
+    - name: "Concept Car"
+      gpc: "Vehicles & Parts > Vehicles > Motor Vehicles > Cars > Concept Cars"
+
+motorcycles:
+  name: "Collectible Motorcycles"
+  brands:
+    - "Ducati"
+    - "Harley-Davidson"
+    - "Vincent"
+    - "Brough Superior"
+    - "BMW"
+    - "MV Agusta"
+    - "Norton"
+    - "Indian"
+    - "Triumph"
+    - "Moto Guzzi"
+  types:
+    - name: "Vintage Motorcycle"
+      gpc: "Vehicles & Parts > Vehicles > Motor Vehicles > Motorcycles > Classic Motorcycles"
+    - name: "Racing Motorcycle"
+      gpc: "Vehicles & Parts > Vehicles > Motor Vehicles > Motorcycles > Racing Motorcycles"
+    - name: "Custom Motorcycle"
+      gpc: "Vehicles & Parts > Vehicles > Motor Vehicles > Motorcycles > Custom Motorcycles"
+    - name: "Limited Edition Motorcycle"
+      gpc: "Vehicles & Parts > Vehicles > Motor Vehicles > Motorcycles > Limited Edition Motorcycles"
+    - name: "Cafe Racer"
+      gpc: "Vehicles & Parts > Vehicles > Motor Vehicles > Motorcycles > Classic Cafe Racers"
+    - name: "Board Track Racer"
+      gpc: "Vehicles & Parts > Vehicles > Motor Vehicles > Motorcycles > Vintage Racing Motorcycles"
+    - name: "Vintage Scooter"
+      gpc: "Vehicles & Parts > Vehicles > Motor Vehicles > Scooters > Classic Scooters"
+
+golf_equipment:
+  name: "Golf Equipment"
+  brands:
+    - "Titleist"
+    - "Scotty Cameron"
+    - "Miura"
+    - "PXG"
+    - "Honma"
+    - "TaylorMade"
+    - "Callaway"
+    - "Ping"
+    - "Mizuno"
+  types:
+    - name: "Golf Club Set"
+      gpc: "Sporting Goods > Golf > Golf Clubs > Golf Club Sets"
+    - name: "Driver"
+      gpc: "Sporting Goods > Golf > Golf Clubs > Golf Drivers"
+    - name: "Putter"
+      gpc: "Sporting Goods > Golf > Golf Clubs > Golf Putters"
+    - name: "Golf Bag"
+      gpc: "Sporting Goods > Golf > Golf Bags"
+    - name: "Golf Rangefinder"
+      gpc: "Sporting Goods > Golf > Golf Training Aids & Equipment > Golf Rangefinders"
+    - name: "Limited Edition Club"
+      gpc: "Sporting Goods > Golf > Golf Clubs > Limited Edition Golf Clubs"
+
+luxury_bags:
+  name: "Luxury Bags"
+  brands:
+    - "Hermès"
+    - "Louis Vuitton"
+    - "Chanel"
+    - "Gucci"
+    - "Prada"
+    - "Bottega Veneta"
+    - "Celine"
+    - "Saint Laurent"
+    - "Fendi"
+    - "Goyard"
+  types:
+    - name: "Designer Tote"
+      gpc: "Apparel & Accessories > Handbags, Wallets & Cases > Handbags > Designer Tote Bags"
+    - name: "Luxury Clutch"
+      gpc: "Apparel & Accessories > Handbags, Wallets & Cases > Handbags > Designer Clutch Bags"
+    - name: "Designer Shoulder Bag"
+      gpc: "Apparel & Accessories > Handbags, Wallets & Cases > Handbags > Designer Shoulder Bags"
+    - name: "Vintage Handbag"
+      gpc: "Apparel & Accessories > Handbags, Wallets & Cases > Handbags > Vintage Designer Bags"
+    - name: "Limited Edition Bag"
+      gpc: "Apparel & Accessories > Handbags, Wallets & Cases > Handbags > Limited Edition Designer Bags"
+    - name: "Evening Bag"
+      gpc: "Apparel & Accessories > Handbags, Wallets & Cases > Handbags > Designer Evening Bags"
+    - name: "Exotic Leather Bag"
+      gpc: "Apparel & Accessories > Handbags, Wallets & Cases > Handbags > Exotic Leather Designer Bags"
+
+miscellaneous:
+  name: "Other Collectibles"
+  brands:
+    - "Montblanc"      # Luxury pens
+    - "S.T. Dupont"    # Luxury lighters
+    - "Rimowa"         # Luxury luggage
+    - "Globe-Trotter"  # Heritage luggage
+    - "Zippo"          # Collectible lighters
+    - "Pelikan"        # Fine writing instruments
+    - "LEGO"           # Collectible sets
+    - "Steiff"         # Collectible teddy bears
+    - "Lalique"        # Crystal art
+    - "Baccarat"       # Fine crystal
+    - "Riedel"         # Wine glasses
+    - "Christofle"     # Silverware
+    - "Fabergé"        # Decorative objects
+    - "Dunhill"        # Luxury accessories
+  types:
+    - name: "Luxury Pen"
+      gpc: "Office Supplies > Writing Supplies > Pens & Pencils > Luxury Writing Instruments"
+    - name: "Designer Lighter"
+      gpc: "Smoking Accessories > Lighters > Luxury Lighters"
+    - name: "Luxury Luggage"
+      gpc: "Apparel & Accessories > Luggage & Bags > Luggage > Designer Luggage"
+    - name: "Crystal Glassware"
+      gpc: "Home & Garden > Kitchen & Dining > Tableware > Drinkware > Crystal Glassware"
+    - name: "Collectible LEGO"
+      gpc: "Toys & Games > Building Toys > Building Set Toys > Limited Edition Building Sets"
+    - name: "Collectible Bear"
+      gpc: "Toys & Games > Stuffed Toys > Limited Edition Plush Toys"
+    - name: "Art Glass"
+      gpc: "Home & Garden > Decor > Decorative Glass Art"
+    - name: "Silver Service"
+      gpc: "Home & Garden > Kitchen & Dining > Tableware > Flatware > Luxury Flatware"
+    - name: "Decorative Egg"
+      gpc: "Home & Garden > Decor > Decorative Eggs"
+    - name: "Humidor"
+      gpc: "Smoking Accessories > Tobacco Storage > Luxury Humidors"
+    - name: "Desk Accessory"
+      gpc: "Office Supplies > Desk Accessories > Luxury Desk Sets"
+    - name: "Travel Trunk"
+      gpc: "Apparel & Accessories > Luggage & Bags > Trunks > Vintage Travel Trunks"
+
+art_prints:
+  name: "Fine Art Prints"
+  brands:
+    - "Pace Prints"
+    - "Gemini G.E.L."
+    - "KAWS"
+    - "Takashi Murakami"
+    - "Banksy"
+  types:
+    - name: "Limited Edition Print"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Fine Art > Limited Edition Prints"
+    - name: "Artist Proof"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Fine Art > Artist Proofs"
+    - name: "Signed Print"
+      gpc: "Arts & Entertainment > Hobbies & Creative Arts > Fine Art > Signed Prints"
+
+sneakers:
+  name: "Collectible Sneakers"
+  brands:
+    - "Nike"
+    - "Jordan"
+    - "Adidas"
+    - "Yeezy"
+    - "Off-White"
+  types:
+    - name: "Limited Edition Sneaker"
+      gpc: "Apparel & Accessories > Shoes > Athletic Shoes > Limited Edition Sneakers"
+    - name: "Collaboration Sneaker"
+      gpc: "Apparel & Accessories > Shoes > Athletic Shoes > Designer Collaboration Sneakers"
+
+wine_spirits:
+  name: "Fine Wines & Spirits"
+  brands:
+    - "Domaine de la Romanée-Conti"
+    - "Château Lafite Rothschild"
+    - "Macallan"
+    - "Dalmore"
+    - "Louis XIII"
+  types:
+    - name: "Investment Wine"
+      gpc: "Food, Beverages & Tobacco > Beverages > Wine > Investment Grade Wine"
+    - name: "Rare Whisky"
+      gpc: "Food, Beverages & Tobacco > Beverages > Spirits > Rare Whisky"
+
+table_books:
+  name: "Collectible Table Books"
+  brands:
+    - "Taschen"            # Art and design publisher
+    - "Assouline"          # Luxury lifestyle publisher
+    - "Phaidon"            # Art and architecture
+    - "Rizzoli"            # Art and fashion
+    - "Steidl"             # Photography books
+    - "Aperture"           # Photography
+    - "Thames & Hudson"    # Art and culture
+    - "Gestalten"          # Design and architecture
+    - "Hatje Cantz"        # Contemporary art
+    - "Prestel"            # Art and photography
+  types:
+    - name: "Art Monograph"
+      gpc: "Media > Books > Art Books"
+    - name: "Photography Book"
+      gpc: "Media > Books > Photography Books"
+    - name: "Fashion Book"
+      gpc: "Media > Books > Fashion Books"
+    - name: "Architecture Book"
+      gpc: "Media > Books > Architecture Books"
+    - name: "Limited Edition Book"
+      gpc: "Media > Books > Limited Edition Art Books"
+  showcase:
+    - name: "Helmut Newton SUMO by Taschen"
+      description: "Groundbreaking XXL format photography book with Philippe Starck stand. First edition from 1999, numbered from edition of 10,000. Complete with original packaging and documentation."
+      year: 1999
+      shot_desc: "Book with stand setup, binding condition, page quality documentation, edition number verification, stand assembly details, original packaging inventory"
+
+    - name: "Annie Leibovitz at Work (Collector's Edition)"
+      description: "Limited edition of 1,000 copies, signed by Annie Leibovitz. Clamshell case with archival print. Complete documentation of edition number and authenticity."
+      year: 2008
+      shot_desc: "Clamshell case condition, book binding, signature verification, print condition, edition numbering, archival quality assessment"
+
+    - name: "Peter Beard Art Edition by Taschen"
+      description: "Limited to 200 copies, with original signed photographic print. Hand-decorated by Peter Beard with collage elements. Complete with documentation and display case."
+      year: 2006
+      shot_desc: "Collage detail documentation, signature verification, print condition assessment, display case specifications, binding structure, protective elements"
+
+    - name: "Goyard: The Art of Travel"
+      description: "Ultra-limited edition in custom Goyard slipcase. Hand-numbered from edition of 233. Features special paper and traditional binding techniques."
+      year: 2010
+      shot_desc: "Slipcase condition, binding craftsmanship, paper quality documentation, edition number location, special printing techniques, protective cover details"
+
+    - name: "Ferrari by Taschen (Art Edition)"
+      description: "Limited to 250 copies with Marc Newson designed display stand. Signed by Piero Ferrari. Includes exclusive historical documentation and Ferrari archive prints."
+      year: 2018
+      shot_desc: "Display stand assembly, signature verification, archive print condition, binding engineering, protective case features, historical document inventory"
+
+    - name: "Chanel: Collections and Creations (Deluxe Edition)"
+      description: "Special binding in Chanel tweed with original Chanel chain. Limited to 100 copies worldwide. Includes exclusive fabric samples and historical sketches."
+      year: 2007
+      shot_desc: "Tweed cover detail, chain attachment method, fabric sample documentation, binding construction, protective case condition, historical material verification"
+
+    - name: "David Hockney: A Bigger Book"
+      description: "Monumental format book with Marc Newson designed stand. Signed by David Hockney, limited to 9,000 copies. Complete with iPad drawing portfolio."
+      year: 2016
+      shot_desc: "Stand setup documentation, signature verification, iPad portfolio contents, binding structure, protective case condition, display configuration options"
+
+    - name: "Louis Vuitton: The Birth of Modern Luxury"
+      description: "Limited edition in custom trunk case. Hand-numbered from edition of 500. Features exclusive archive materials and original trunk hardware."
+      year: 2004
+      shot_desc: "Trunk case condition, hardware authenticity, binding quality, archive material organization, edition number location, protective elements"
+
+    - name: "Modernist Cuisine (The Art Edition)"
+      description: "Limited edition of 150 copies, signed by Nathan Myhrvold. Custom stainless steel case with laboratory-grade finish. Includes original photographic prints."
+      year: 2011
+      shot_desc: "Case engineering documentation, signature verification, print condition, binding structure, protective features, display configuration options"
+
+    - name: "Genesis by Sebastião Salgado (Collector's Edition)"
+      description: "Limited to 500 copies, signed by Salgado. Includes original silver gelatin print. Custom display stand and archival case included."
+      year: 2013
+      shot_desc: "Print condition assessment, signature verification, display stand assembly, case construction, binding quality, protective element documentation"
