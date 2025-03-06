@@ -10,6 +10,7 @@ such as Open OCR.
 - By default new Views and ViewModels should be added to the RecordLib library.
 - By default new Models should be added to the RecordLib library.
 - By default new Services should be added to the RecordLib library.
+- For components that react to events or external @State variables, a toolbar should be added to the preview that allows triggering changes and events.
 
 
 # Project structure
@@ -64,4 +65,20 @@ Generated with tree -L 3
 - CoreMLTools
 - CoreMLData
 - CoreMLDataTools
+
+# Code Policies
+
+## Logging in Swift View Components
+
+`let logger = Logger(subsystem: "com.record-thing", category: "ui")`
+
+1. Privacy First: Despite the ease of logging, always ensure you're not capturing sensitive or personal user input.
+
+2. Subsystems and Categories: Segment your logs using different subsystems (e.g., data, UI, network) and categories for better organization.
+
+3. Consistent Naming: Adopt a uniform naming convention for your loggers, making it easier to filter and analyze logs.
+
+4. Adaptive Logging: Use different log levels depending on the build (e.g., more verbose logging in debug builds and minimal in-release builds).
+
+5. Incorporate Metadata: Logger supports metadata, allowing you to add supplementary context to your logs, enriching them for better diagnostics.
 

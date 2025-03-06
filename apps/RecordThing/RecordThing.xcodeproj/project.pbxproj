@@ -47,6 +47,15 @@
 		3E53738C2D7E2A740082BF62 /* EvidenceTypeMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5373652D7E2A740082BF62 /* EvidenceTypeMenu.swift */; };
 		3E53738D2D7E2A740082BF62 /* EvidenceTypeList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5373642D7E2A740082BF62 /* EvidenceTypeList.swift */; };
 		3E53738E2D7E2A740082BF62 /* EvidenceTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5373672D7E2A740082BF62 /* EvidenceTypeView.swift */; };
+		3E5373962D7E36FB0082BF62 /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3E5373952D7E36FB0082BF62 /* RecordLib */; };
+		3E5373992D7F162C0082BF62 /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 3E5373982D7F162C0082BF62 /* SwiftUIIntrospect */; };
+		3E53739B2D7F16330082BF62 /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 3E53739A2D7F16330082BF62 /* SwiftUIIntrospect */; };
+		3E53739D2D7F16380082BF62 /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 3E53739C2D7F16380082BF62 /* SwiftUIIntrospect */; };
+		3E53739F2D7F163E0082BF62 /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 3E53739E2D7F163E0082BF62 /* SwiftUIIntrospect */; };
+		3E5373A12D7F295E0082BF62 /* BrowseTabNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5373A02D7F295E0082BF62 /* BrowseTabNavigation.swift */; };
+		3E5373A22D7F295E0082BF62 /* BrowseTabNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5373A02D7F295E0082BF62 /* BrowseTabNavigation.swift */; };
+		3E5373A32D7F295E0082BF62 /* BrowseTabNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5373A02D7F295E0082BF62 /* BrowseTabNavigation.swift */; };
+		3E5373A42D7F295E0082BF62 /* BrowseTabNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5373A02D7F295E0082BF62 /* BrowseTabNavigation.swift */; };
 		3E5A35BF2D75F04900069A95 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3E5A35BE2D75F04900069A95 /* Blackbird */; };
 		3E5A35C12D75F05200069A95 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3E5A35C02D75F05200069A95 /* Blackbird */; };
 		3E5A35C32D75F05A00069A95 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3E5A35C22D75F05A00069A95 /* Blackbird */; };
@@ -144,7 +153,6 @@
 		610F54D626158DDB001D3AA0 /* RecordThingApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6123FD244E8B32004DDFF7 /* RecordThingApp.swift */; };
 		610F54D826158DDB001D3AA0 /* AccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1E626157D870046AAA9 /* AccountModel.swift */; };
 		610F54D926158DDB001D3AA0 /* StepperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1CA26157D870046AAA9 /* StepperView.swift */; };
-		610F54DE26158DDB001D3AA0 /* AppSidebarNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1DF26157D870046AAA9 /* AppSidebarNavigation.swift */; };
 		610F54E026158DDB001D3AA0 /* Animations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1D226157D870046AAA9 /* Animations.swift */; };
 		610F54E326158DDB001D3AA0 /* CircleToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1D126157D870046AAA9 /* CircleToggleStyle.swift */; };
 		610F54E926158DDB001D3AA0 /* FlipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1CB26157D870046AAA9 /* FlipView.swift */; };
@@ -159,7 +167,6 @@
 		610F550E26158DE2001D3AA0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1E026157D870046AAA9 /* ContentView.swift */; };
 		610F551B26158DE2001D3AA0 /* AccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1E626157D870046AAA9 /* AccountModel.swift */; };
 		610F551C26158DE2001D3AA0 /* StepperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1CA26157D870046AAA9 /* StepperView.swift */; };
-		610F552126158DE2001D3AA0 /* AppSidebarNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1DF26157D870046AAA9 /* AppSidebarNavigation.swift */; };
 		610F552326158DE2001D3AA0 /* Animations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1D226157D870046AAA9 /* Animations.swift */; };
 		610F552626158DE2001D3AA0 /* CircleToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1D126157D870046AAA9 /* CircleToggleStyle.swift */; };
 		610F552C26158DE2001D3AA0 /* FlipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1CB26157D870046AAA9 /* FlipView.swift */; };
@@ -190,7 +197,6 @@
 		E0DC7FAC27B72FDC00A6417B /* AccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1E626157D870046AAA9 /* AccountModel.swift */; };
 		E0DC7FAD27B72FDC00A6417B /* StepperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1CA26157D870046AAA9 /* StepperView.swift */; };
 		E0DC7FB027B72FDC00A6417B /* CapsuleButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6182BAF026522B14006774BD /* CapsuleButtonStyle.swift */; };
-		E0DC7FB327B72FDC00A6417B /* AppSidebarNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1DF26157D870046AAA9 /* AppSidebarNavigation.swift */; };
 		E0DC7FB527B72FDC00A6417B /* Animations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1D226157D870046AAA9 /* Animations.swift */; };
 		E0DC7FB927B72FDC00A6417B /* CircleToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1D126157D870046AAA9 /* CircleToggleStyle.swift */; };
 		E0DC7FBE27B72FDC00A6417B /* FlipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1CB26157D870046AAA9 /* FlipView.swift */; };
@@ -212,7 +218,6 @@
 		E0DC7FF727B7307600A6417B /* AccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1E626157D870046AAA9 /* AccountModel.swift */; };
 		E0DC7FF827B7307600A6417B /* StepperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1CA26157D870046AAA9 /* StepperView.swift */; };
 		E0DC7FFC27B7307600A6417B /* CapsuleButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6182BAF026522B14006774BD /* CapsuleButtonStyle.swift */; };
-		E0DC7FFF27B7307600A6417B /* AppSidebarNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1DF26157D870046AAA9 /* AppSidebarNavigation.swift */; };
 		E0DC800127B7307600A6417B /* Animations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1D226157D870046AAA9 /* Animations.swift */; };
 		E0DC800427B7307600A6417B /* CircleToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1D126157D870046AAA9 /* CircleToggleStyle.swift */; };
 		E0DC800927B7307600A6417B /* FlipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1CB26157D870046AAA9 /* FlipView.swift */; };
@@ -335,6 +340,7 @@
 		3E5373672D7E2A740082BF62 /* EvidenceTypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvidenceTypeView.swift; sourceTree = "<group>"; };
 		3E5373682D7E2A740082BF62 /* SimpleEvidenceTypeList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleEvidenceTypeList.swift; sourceTree = "<group>"; };
 		3E5373692D7E2A740082BF62 /* TestList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestList.swift; sourceTree = "<group>"; };
+		3E5373A02D7F295E0082BF62 /* BrowseTabNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowseTabNavigation.swift; sourceTree = "<group>"; };
 		3ECD50AD2C96E3E000755E83 /* RecordLib */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = RecordLib; path = ../libs/RecordLib; sourceTree = "<group>"; };
 		3ECD50D22C9759EF00755E83 /* MLModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MLModel.swift; sourceTree = "<group>"; };
 		3ED6C4632D57C5CC00FF632C /* Evidence+SwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Evidence+SwiftUI.swift"; sourceTree = "<group>"; };
@@ -374,7 +380,6 @@
 		6111A1D526157D870046AAA9 /* RewardsCardWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardsCardWidget.swift; sourceTree = "<group>"; };
 		6111A1D626157D870046AAA9 /* FeaturedSmoothieWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturedSmoothieWidget.swift; sourceTree = "<group>"; };
 		6111A1D726157D870046AAA9 /* RecordThingWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordThingWidgets.swift; sourceTree = "<group>"; };
-		6111A1DF26157D870046AAA9 /* AppSidebarNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSidebarNavigation.swift; sourceTree = "<group>"; };
 		6111A1E026157D870046AAA9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		6111A1E426157D870046AAA9 /* Configuration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Configuration.storekit; sourceTree = "<group>"; };
 		6111A1E626157D870046AAA9 /* AccountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountModel.swift; sourceTree = "<group>"; };
@@ -404,6 +409,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3E53739B2D7F16330082BF62 /* SwiftUIIntrospect in Frameworks */,
 				3ECD50BF2C974E4500755E83 /* RecordLib in Frameworks */,
 				3E5A35C12D75F05200069A95 /* Blackbird in Frameworks */,
 			);
@@ -413,6 +419,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3E53739F2D7F163E0082BF62 /* SwiftUIIntrospect in Frameworks */,
 				3ECD50C32C974E5600755E83 /* RecordLib in Frameworks */,
 				3E5A35C52D75F06000069A95 /* Blackbird in Frameworks */,
 			);
@@ -422,7 +429,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3E5373992D7F162C0082BF62 /* SwiftUIIntrospect in Frameworks */,
 				3E5A35BF2D75F04900069A95 /* Blackbird in Frameworks */,
+				3E5373962D7E36FB0082BF62 /* RecordLib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -430,6 +439,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3E53739D2D7F16380082BF62 /* SwiftUIIntrospect in Frameworks */,
 				3ECD50C12C974E5000755E83 /* RecordLib in Frameworks */,
 				3E5A35C32D75F05A00069A95 /* Blackbird in Frameworks */,
 			);
@@ -601,7 +611,7 @@
 		6111A1DE26157D870046AAA9 /* Navigation */ = {
 			isa = PBXGroup;
 			children = (
-				6111A1DF26157D870046AAA9 /* AppSidebarNavigation.swift */,
+				3E5373A02D7F295E0082BF62 /* BrowseTabNavigation.swift */,
 				6111A1E026157D870046AAA9 /* ContentView.swift */,
 			);
 			path = Navigation;
@@ -661,6 +671,7 @@
 			packageProductDependencies = (
 				3ECD50BE2C974E4500755E83 /* RecordLib */,
 				3E5A35C02D75F05200069A95 /* Blackbird */,
+				3E53739A2D7F16330082BF62 /* SwiftUIIntrospect */,
 			);
 			productName = "Smoothies iOS";
 			productReference = 610F550626158DDB001D3AA0 /* RecordThing iOS All.app */;
@@ -684,6 +695,7 @@
 			packageProductDependencies = (
 				3ECD50C22C974E5600755E83 /* RecordLib */,
 				3E5A35C42D75F06000069A95 /* Blackbird */,
+				3E53739E2D7F163E0082BF62 /* SwiftUIIntrospect */,
 			);
 			productName = "Smoothies macOS";
 			productReference = 610F554926158DE2001D3AA0 /* RecordThing.app */;
@@ -706,6 +718,8 @@
 			name = "RecordThing iOS";
 			packageProductDependencies = (
 				3E5A35BE2D75F04900069A95 /* Blackbird */,
+				3E5373952D7E36FB0082BF62 /* RecordLib */,
+				3E5373982D7F162C0082BF62 /* SwiftUIIntrospect */,
 			);
 			productName = "Smoothies iOS";
 			productReference = E0DC7FE327B72FDC00A6417B /* RecordThing iOS.app */;
@@ -729,6 +743,7 @@
 			packageProductDependencies = (
 				3ECD50C02C974E5000755E83 /* RecordLib */,
 				3E5A35C22D75F05A00069A95 /* Blackbird */,
+				3E53739C2D7F16380082BF62 /* SwiftUIIntrospect */,
 			);
 			productName = "Smoothies macOS";
 			productReference = E0DC802C27B7307600A6417B /* RecordThing macOS.app */;
@@ -758,6 +773,7 @@
 			packageReferences = (
 				3E8287F22D4FB1E500E80D09 /* XCLocalSwiftPackageReference "../libs/RecordLib" */,
 				3E5A35BD2D75EFE400069A95 /* XCRemoteSwiftPackageReference "Blackbird" */,
+				3E5373972D7F14D00082BF62 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
 			);
 			productRefGroup = 5E612405244E8B32004DDFF7 /* Products */;
 			projectDirPath = "";
@@ -841,7 +857,6 @@
 				3ED6C49C2D59558300FF632C /* RequestsList.swift in Sources */,
 				6182BAF126522B14006774BD /* CapsuleButtonStyle.swift in Sources */,
 				3EE0BDE52D566EB400AD1085 /* Things+SwiftUI.swift in Sources */,
-				610F54DE26158DDB001D3AA0 /* AppSidebarNavigation.swift in Sources */,
 				610F54E026158DDB001D3AA0 /* Animations.swift in Sources */,
 				3EE0BDEF2D56B4A700AD1085 /* Evidence.swift in Sources */,
 				610F54E326158DDB001D3AA0 /* CircleToggleStyle.swift in Sources */,
@@ -856,6 +871,7 @@
 				610F54EA26158DDB001D3AA0 /* BubbleView.swift in Sources */,
 				3EF67D9C2D515432000D1AE9 /* Things.swift in Sources */,
 				3EE0BDE12D566D4200AD1085 /* ThingsHeaderView.swift in Sources */,
+				3E5373A22D7F295E0082BF62 /* BrowseTabNavigation.swift in Sources */,
 				610F54EC26158DDB001D3AA0 /* BubbleBackground.swift in Sources */,
 				3EE0BDC02D560E6800AD1085 /* ThingsList.swift in Sources */,
 				3ED6C48D2D593E9E00FF632C /* RequestsRow.swift in Sources */,
@@ -912,12 +928,12 @@
 				3EE0BDDA2D56599E00AD1085 /* Account.swift in Sources */,
 				3EE0BDCB2D5611D300AD1085 /* ThingsRow.swift in Sources */,
 				6182BAF326522B14006774BD /* CapsuleButtonStyle.swift in Sources */,
-				610F552126158DE2001D3AA0 /* AppSidebarNavigation.swift in Sources */,
 				610F552326158DE2001D3AA0 /* Animations.swift in Sources */,
 				3ED6C4852D593D6E00FF632C /* Requests+SwiftUI.swift in Sources */,
 				610F552626158DE2001D3AA0 /* CircleToggleStyle.swift in Sources */,
 				3ED6C48A2D593E3500FF632C /* RequestsHeaderView.swift in Sources */,
 				3ECD50D72C9759EF00755E83 /* MLModel.swift in Sources */,
+				3E5373A42D7F295E0082BF62 /* BrowseTabNavigation.swift in Sources */,
 				610F552C26158DE2001D3AA0 /* FlipView.swift in Sources */,
 				3ED6C4942D59545700FF632C /* RequestsView.swift in Sources */,
 				610F552D26158DE2001D3AA0 /* BubbleView.swift in Sources */,
@@ -952,7 +968,6 @@
 				3ED6C49B2D59558300FF632C /* RequestsList.swift in Sources */,
 				E0DC7FB027B72FDC00A6417B /* CapsuleButtonStyle.swift in Sources */,
 				3EE0BDE42D566EB400AD1085 /* Things+SwiftUI.swift in Sources */,
-				E0DC7FB327B72FDC00A6417B /* AppSidebarNavigation.swift in Sources */,
 				E0DC7FB527B72FDC00A6417B /* Animations.swift in Sources */,
 				3EE0BDEE2D56B4A700AD1085 /* Evidence.swift in Sources */,
 				E0DC7FB927B72FDC00A6417B /* CircleToggleStyle.swift in Sources */,
@@ -967,6 +982,7 @@
 				E0DC7FBF27B72FDC00A6417B /* BubbleView.swift in Sources */,
 				3EF67D9D2D515432000D1AE9 /* Things.swift in Sources */,
 				3EE0BDE02D566D4200AD1085 /* ThingsHeaderView.swift in Sources */,
+				3E5373A12D7F295E0082BF62 /* BrowseTabNavigation.swift in Sources */,
 				E0DC7FC127B72FDC00A6417B /* BubbleBackground.swift in Sources */,
 				3EE0BDC12D560E6800AD1085 /* ThingsList.swift in Sources */,
 				3ED6C48C2D593E9E00FF632C /* RequestsRow.swift in Sources */,
@@ -1023,12 +1039,12 @@
 				3EE0BDDB2D56599E00AD1085 /* Account.swift in Sources */,
 				3EE0BDC72D5611D300AD1085 /* ThingsRow.swift in Sources */,
 				E0DC7FFC27B7307600A6417B /* CapsuleButtonStyle.swift in Sources */,
-				E0DC7FFF27B7307600A6417B /* AppSidebarNavigation.swift in Sources */,
 				E0DC800127B7307600A6417B /* Animations.swift in Sources */,
 				3ED6C4842D593D6E00FF632C /* Requests+SwiftUI.swift in Sources */,
 				E0DC800427B7307600A6417B /* CircleToggleStyle.swift in Sources */,
 				3ED6C4892D593E3500FF632C /* RequestsHeaderView.swift in Sources */,
 				3ECD50D62C9759EF00755E83 /* MLModel.swift in Sources */,
+				3E5373A32D7F295E0082BF62 /* BrowseTabNavigation.swift in Sources */,
 				E0DC800927B7307600A6417B /* FlipView.swift in Sources */,
 				3ED6C4932D59545700FF632C /* RequestsView.swift in Sources */,
 				E0DC800A27B7307600A6417B /* BubbleView.swift in Sources */,
@@ -1548,6 +1564,14 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		3E5373972D7F14D00082BF62 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/siteline/SwiftUI-Introspect";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.0;
+			};
+		};
 		3E5A35BD2D75EFE400069A95 /* XCRemoteSwiftPackageReference "Blackbird" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/thepia/Blackbird";
@@ -1559,6 +1583,30 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		3E5373952D7E36FB0082BF62 /* RecordLib */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RecordLib;
+		};
+		3E5373982D7F162C0082BF62 /* SwiftUIIntrospect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3E5373972D7F14D00082BF62 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
+			productName = SwiftUIIntrospect;
+		};
+		3E53739A2D7F16330082BF62 /* SwiftUIIntrospect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3E5373972D7F14D00082BF62 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
+			productName = SwiftUIIntrospect;
+		};
+		3E53739C2D7F16380082BF62 /* SwiftUIIntrospect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3E5373972D7F14D00082BF62 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
+			productName = SwiftUIIntrospect;
+		};
+		3E53739E2D7F163E0082BF62 /* SwiftUIIntrospect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3E5373972D7F14D00082BF62 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
+			productName = SwiftUIIntrospect;
+		};
 		3E5A35BE2D75F04900069A95 /* Blackbird */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 3E5A35BD2D75EFE400069A95 /* XCRemoteSwiftPackageReference "Blackbird" */;

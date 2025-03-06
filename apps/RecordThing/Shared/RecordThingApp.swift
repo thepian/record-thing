@@ -18,6 +18,20 @@ private let logger = Logger(
     category: "App"
 )
 
+struct DataBrowsingNav: Hashable {
+    var title: String
+    var path: String
+}
+
+struct FeedNav: Hashable {
+    var path: String
+}
+
+struct AccountNav: Hashable {
+    var path: String
+}
+
+
 /// - Tag: SingleAppDefinitionTag
 @main
 struct RecordThingApp: App {

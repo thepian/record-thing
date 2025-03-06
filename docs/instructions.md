@@ -64,9 +64,8 @@ AI-powered object recognition and event tracking with minimal manual input.
 
 - **Cloud Functions**: To manage user authentication and data synchronization  
 - **Storage Backend**: Bunny, AWS DynamoDB, AWS Buckets, B2, or similar for cloud storage  
- 
-A CDN(thing.thepia.net)  is maintained backed by a Storage Bucket at B2 / Linode / Bunny.
 
+A CDN(thing.thepia.net)  is maintained backed by a Storage Bucket at B2 / Linode / Bunny.
 
 ### **3.C. ML Model Requirements**
 
@@ -165,6 +164,9 @@ The database contains the following tables:
 - **Clean & Minimalistic**: Focus on the object being scanned
 - **Intuitive Navigation**: Easy access to object details and editing options
 - **8.C. Simple Floating Toolbar**: The default view shows a context or camera view with a 3 button toolbar at the bottom.
+- **8.D. Belonging full-screen View**: Full screen view for recording and showcasing belongings.
+- **8.E. Assets browsing View**: Full screen view of Belongings arranged in a typical Photos layout.
+- **8.F. Actions browsing View**: Full screen view of Actions.
 
 ### 8.A. Clean & Minimalistic
 
@@ -174,16 +176,37 @@ Additional questions can be shown with an icon above the toolbar.
 
 Thumbs up and down icon buttons can be shown below the toolbar together with an assertion of the subject recognised.
 
-
 ### 8.C. Simple Floating Toolbar
 
 Create a new Component for a floating toolbar with configurable buttons. Stack - Take Picture - Account(Signature). It has a rounded-rect mostly transparent color.
 
 ![Floating Toolbar](./Screens/First%20Categorical%20Scan%20-%20iPhone%2013%20mini.png)
 
+### 8.D. Belonging full-screen View
+
+Full screen view for recording and showcasing belongings. It shows the belonging taking up the full screen with toolbars and other interactive components laid out on top.
+
+### 8.E. Assets browsing View
+
+Full screen view of Belongings arranged in a typical iOS Photos layout.
+It can be grouped by time and searched/filtered by topic/category.
+The view is accessed through the left button in the toolbar with a stack icon.
+Selecting an asset navigates to its full-screen view.
+In addition to belongs special feed entries may be shown.
+Assets are a filtered view of the `feed` table in the database.
+The overview should always be visible. It can be a sidebar on iPad, but full-screen on iOS.
+
+
+### 8.F. Actions browsing View
+
+Full screen view of Actions.
+Selecting an action navigates to its full-screen view.
+In addition to requests special feed entries may be shown.
+Actions are a filtered view of the `feed` table in the database.
+
 ---
 
-# TODO further refinements:
+## TODO further refinements:
 
 Recording Showcase Scenario
 
@@ -192,17 +215,14 @@ Server setting - Thepia / Evidently / Specific Org Server domain (thing.myorg.co
 
 If a showcase is not chosen to be private it will be uploaded to a CDN determined by the Server setting.
 
-
-
 ## Key Features
 
 1. **Live Camera Scene Determination**
 2. **Multi-Angle Object Image Capture**
-3. **Known Object Detection** 
-4. **Open OCR Contract Scanning** 
+3. **Known Object Detection**
+4. **Open OCR Contract Scanning**
 5. **Open OCR Receipt Scanning**
 6. **Event Recording**  
 7. **Data Browsing and Editing (Admin)**
 8. **Transitioning between Information Screens and Camera**
 9. **Settings, Sponsor Setup and Universe Switching**
-
