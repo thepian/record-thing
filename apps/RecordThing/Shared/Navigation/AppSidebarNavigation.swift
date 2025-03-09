@@ -26,63 +26,54 @@ struct AppSidebarNavigation: View {
     var body: some View {
         NavigationView {
             List {
-                NavigationLink(tag: NavigationItem.things, selection: $selection) {
+                NavigationLink(destination: {
                     ThingsMenu()
-                } label: {
-                    Label("Things", systemImage: "list.bullet")
-                }
-                
-                NavigationLink(tag: NavigationItem.productType, selection: $selection) {
-                    ProductTypeMenu()
-                } label: {
-                    Label("Products", systemImage: "list.bullet")
-                }
-                
-                NavigationLink(tag: NavigationItem.documentType, selection: $selection) {
-                    DocumentTypeList()
-                } label: {
-                    Label("Documents", systemImage: "doc")
-                }
-                
-                NavigationLink(tag: NavigationItem.recent, selection: $selection) {
+                }, label: {
+                    Label(LocalizedStringKey(stringLiteral: "nav.things"), systemImage: "list.bullet")
+                })
+                NavigationLink(destination: {
+                    EvidenceTypeMenu()
+                }, label: {
+                    Label("Types", systemImage: "list.bullet")
+                })
+//                NavigationLink(destination: { DocumentTypeList()
+//                }, label: { Label("Documents", systemImage: "doc") })
+                NavigationLink(destination: {
                     RequestsMenu()
-                } label: {
-                    Label("Recent", systemImage: "clock")
-                }
-                
-                NavigationLink(tag: NavigationItem.favorites, selection: $selection) {
+                }, label: {
+                    Label(LocalizedStringKey(stringLiteral: "nav.recent"), systemImage: "clock")
+                })
+                NavigationLink(destination: {
                     RequestsMenu()
-                } label: {
-                    Label("Requests", systemImage: "flag")
-                }
-            
-                NavigationLink(tag: NavigationItem.favorites, selection: $selection) {
+                }, label: {
+                    Label(LocalizedStringKey(stringLiteral: "nav.requests"), systemImage: "flag")
+                })
+                NavigationLink(destination: {
                     RequestsMenu()
-                } label: {
-                    Label("Favorites", systemImage: "heart")
-                }
-
-                NavigationLink(tag: NavigationItem.recipes, selection: $selection) {
+                }, label: {
+                    Label(LocalizedStringKey(stringLiteral: "nav.favorites"), systemImage: "heart")
+                })
+                NavigationLink(destination: {
                     RequestsMenu()
-                } label: {
+                }, label: {
                     Label("ML Models", systemImage: "book.closed")
-                }
+                })
 
             }
-            .navigationTitle("Record Thing")
+            .navigationTitle(LocalizedStringKey(stringLiteral: "nav.appname"))
             #if EXTENDED_ALL
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 Pocket()
             }
             #endif
             
-            Text("Select a category")
+            Text("ui.select.category".localized)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background()
                 .ignoresSafeArea()
             
-            Text("Select a product")
+            Text("ui.select.product".localized)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background()
@@ -91,6 +82,12 @@ struct AppSidebarNavigation: View {
 //                    ProductFavoriteButton()
 //                        .environmentObject(model)
 //                        .disabled(true)
+                    
+//                    Button(action: {
+//                        model.refresh()
+//                    }) {
+//                        Text("refresh")
+//                    }
                 }
         }
     }
@@ -101,7 +98,7 @@ struct AppSidebarNavigation: View {
         
         var body: some View {
             Button(action: { presentingRewards = true }) {
-                Label("Rewards", systemImage: "seal")
+                Label("nav.rewards".localized, systemImage: "seal")
             }
             .controlSize(.large)
             .buttonStyle(.capsule)
@@ -115,19 +112,19 @@ struct AppSidebarNavigation: View {
 
 struct AppSidebarNavigation_Previews: PreviewProvider {
     static var previews: some View {
-        @Previewable @StateObject var database = try! Blackbird.Database(path: "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite")
-        @Previewable @StateObject var model = Model()
+        @Previewable @StateObject var datasource = AppDatasource.shared
+        @Previewable @StateObject var model = Model(loadedLangConst: "en")
 
         AppSidebarNavigation()
-            .environment(\.blackbirdDatabase, database)
-            .environmentObject(Model())
+            .environment(\.blackbirdDatabase, datasource.db)
+            .environmentObject(model)
     }
 }
 
 struct AppSidebarNavigationPocket_Previews: PreviewProvider {
     static var previews: some View {
         AppSidebarNavigation.Pocket()
-            .environmentObject(Model())
+            .environmentObject(Model(loadedLangConst: "en"))
             .frame(width: 300)
     }
 }

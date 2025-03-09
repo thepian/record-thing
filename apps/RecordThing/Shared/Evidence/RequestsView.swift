@@ -29,6 +29,8 @@ struct RequestsView: View {
     @State private var presentingAppStoreOverlay = false
     #endif
 
+    @State private var showingActionSheet = false
+
     var body: some View {
         container
             #if os(macOS)
@@ -36,10 +38,32 @@ struct RequestsView: View {
             #endif
             .background()
             .navigationTitle(request.title)
-//            .toolbar {
+            .toolbar {
 //                ProductFavoriteButton()
 //                    .environmentObject(model)
-//            }
+                Menu {
+                    Button(action: { /* Complete action */ }) {
+                        Label("Mark Complete", systemImage: "checkmark.circle")
+                    }
+                    
+                    Button(action: { /* Share action */ }) {
+                        Label("Share Request", systemImage: "square.and.arrow.up")
+                    }
+                    
+                    Divider()
+                    
+                    Button(action: { /* Edit action */ }) {
+                        Label("Edit Request", systemImage: "pencil")
+                    }
+                    
+                    Button(role: .destructive, action: { /* Delete action */ }) {
+                        Label("Delete", systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                        .imageScale(.large)
+                }
+            }
             .sheet(isPresented: $presentingOrderPlacedSheet) {
             }
             .alert(isPresented: $presentingSecurityAlert) {
@@ -121,8 +145,8 @@ struct RequestsView: View {
              @BlackbirdColumn private var description: String?  // Backing field for description
              */
             VStack(alignment: .leading) {
-                Text("Evidence.menu",
-                     tableName: "Evidence",
+                Text(LocalizedStringKey(stringLiteral: "nav.evidence"),
+                     tableName: "evidence",
                      comment: "Evidence in a smoothie. For languages that have different words for \"Ingredient\" based on semantic context.")
                     .font(Font.title).bold()
                     .foregroundStyle(.secondary)
@@ -181,7 +205,7 @@ struct RequestsView: View {
 
 #Preview(traits: .sizeThatFitsLayout) {
     @Previewable @StateObject var database = try! Blackbird.Database(path: "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite")
-    @Previewable @StateObject var model = Model()
+    @Previewable @StateObject var model = Model(loadedLangConst: "en")
 
     Group {
         NavigationStack {

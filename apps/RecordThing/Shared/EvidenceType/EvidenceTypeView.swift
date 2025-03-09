@@ -1,5 +1,5 @@
 //
-//  ProductTypeView.swift
+//  EvidenceTypeView.swift
 //  RecordThing
 //
 //  Created by Henrik Vendelbo on 21.09.2024.
@@ -8,8 +8,8 @@
 
 import SwiftUI
 
-struct ProductTypeView: View {
-    var product: ProductType
+struct EvidenceTypeView: View {
+    var type: EvidenceType
     
     @State private var presentingOrderPlacedSheet = false
     @State private var presentingSecurityAlert = false
@@ -21,6 +21,8 @@ struct ProductTypeView: View {
     #if APPCLIP
     @State private var presentingAppStoreOverlay = false
     #endif
+    
+    @State private var showingActionSheet = false
 
     var body: some View {
         container
@@ -28,10 +30,32 @@ struct ProductTypeView: View {
             .frame(minWidth: 500, idealWidth: 700, maxWidth: .infinity, minHeight: 400, maxHeight: .infinity)
             #endif
             .background()
-            .navigationTitle(product.fullName)
+            .navigationTitle(type.fullName)
             .toolbar {
 //                ProductFavoriteButton()
 //                    .environmentObject(model)
+                Menu {
+                    Button(action: { /* Share action */ }) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                    
+                    Button(action: { /* Export action */ }) {
+                        Label("Export", systemImage: "arrow.up.doc")
+                    }
+                    
+                    Divider()
+                    
+                    Button(action: { /* Edit action */ }) {
+                        Label("Edit Details", systemImage: "pencil")
+                    }
+                    
+                    Button(role: .destructive, action: { /* Delete action */ }) {
+                        Label("Delete", systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                        .imageScale(.large)
+                }
             }
             .sheet(isPresented: $presentingOrderPlacedSheet) {
             }
@@ -64,7 +88,7 @@ struct ProductTypeView: View {
     
     var content: some View {
         VStack(spacing: 0) {
-            ProductTypeHeaderView(product: product)
+            EvidenceTypeHeaderView(type: type)
                 
         }
     }
@@ -85,13 +109,13 @@ struct ProductTypeView: View {
 #Preview(traits: .sizeThatFitsLayout) {
     Group {
         NavigationView {
-            ProductTypeView(product: .Electronics)
+            EvidenceTypeView(type: .Electronics)
         }
         
-        ForEach([ProductType.Electronics, .Pet, .Room]) { product in
-            ProductTypeView(product: product)
+        ForEach([EvidenceType.Electronics, .Pet, .Room]) { type in
+            EvidenceTypeView(type: type)
                 .frame(height: 700)
         }
     }
-    .environmentObject(Model())
+    .environmentObject(Model(loadedLangConst: "en"))
 }

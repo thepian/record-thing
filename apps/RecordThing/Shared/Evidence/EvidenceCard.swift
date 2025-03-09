@@ -33,5 +33,6 @@ struct EvidenceCard: View {
 
 
 #Preview {
+    Text(LocalizedStringKey("Evidence.recipe"))
     EvidenceCard(evidence: .avocado, presenting: true)
 }

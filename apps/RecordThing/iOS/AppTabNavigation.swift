@@ -35,7 +35,7 @@ struct AppTabNavigation: View {
             .tag(Tab.menu)
             
             NavigationView {
-                ProductTypeMenu()
+                EvidenceTypeMenu()
             }
             .tabItem {
                 Label {

@@ -14,6 +14,7 @@ struct Requests: BlackbirdModel, Identifiable {
 
     // Primary key fields
     @BlackbirdColumn var id: String  // KSUID
+    @BlackbirdColumn var account_id: String = ""
     
     // Request details
     @BlackbirdColumn var url: String?
@@ -50,8 +51,8 @@ struct Requests: BlackbirdModel, Identifiable {
 extension Requests {
     @RequestsArrayBuilder
     static func all(includingPaid: Bool = true) -> [Requests] {
-        Requests(id: "id123", url: "https://example.com/request/2so4rEgF9EVQPBUrvubUQ6AyDVN", status: "expired", delivery_method: "email", delivery_target: "user0@example.com")
-        Requests(id: "id234", url: "https://example.com/request/2so4rEgF9EVQPBUrvubUQ6AyDVN", status: "expired", delivery_method: "email", delivery_target: "user0@example.com")
+        Requests(id: "id123", account_id: "a", url: "https://example.com/request/2so4rEgF9EVQPBUrvubUQ6AyDVN", status: "expired", delivery_method: "email", delivery_target: "user0@example.com")
+        Requests(id: "id234", account_id: "a", url: "https://example.com/request/2so4rEgF9EVQPBUrvubUQ6AyDVN", status: "expired", delivery_method: "email", delivery_target: "user0@example.com")
     }
 
     // Used in previews.

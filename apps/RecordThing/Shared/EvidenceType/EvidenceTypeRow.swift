@@ -1,5 +1,5 @@
 //
-//  ProductTypeRow.swift
+//  EvidenceTypeRow.swift
 //  RecordThing
 //
 //  Created by Henrik Vendelbo on 21.09.2024.
@@ -8,15 +8,15 @@
 
 import SwiftUI
 
-struct ProductTypeRow: View {
-    var product: ProductType
+struct EvidenceTypeRow: View {
+    var type: EvidenceType
     
 //    @EnvironmentObject private var model: Model
 
     var body: some View {
         HStack(alignment: .top) {
             let imageClipShape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-            product.image
+            type.image
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .frame(width: 60, height: 60)
@@ -25,7 +25,7 @@ struct ProductTypeRow: View {
                 .accessibility(hidden: true)
 
             VStack(alignment: .leading) {
-                Text(product.fullName)
+                Text(type.name)
                     .font(.headline)
             }
             
@@ -47,11 +47,11 @@ struct ProductTypeRow: View {
 
 #Preview(traits: .sizeThatFitsLayout) {
     Group {
-        ProductTypeRow(product: .Electronics)
-        ProductTypeRow(product: .Pet)
+        EvidenceTypeRow(type: .Electronics)
+        EvidenceTypeRow(type: .Pet)
     }
     .frame(width: 250, alignment: .leading)
     .padding(.horizontal)
-    .environmentObject(Model())
+    .environmentObject(Model(loadedLangConst: "en"))
 
 }

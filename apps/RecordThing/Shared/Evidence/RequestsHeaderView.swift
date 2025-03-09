@@ -55,7 +55,7 @@ struct RequestsHeaderView: View {
         HStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 4) {
                 #if os(macOS)
-                Text(document.fullName)
+                Text(request.title)
                     .font(Font.largeTitle.bold())
                 #endif
                 Text(request.title)
