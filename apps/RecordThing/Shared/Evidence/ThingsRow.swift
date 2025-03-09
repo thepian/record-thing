@@ -52,6 +52,6 @@ struct ThingsRow: View {
     }
     .frame(width: 250, alignment: .leading)
     .padding(.horizontal)
-    .environmentObject(Model())
+    .environmentObject(Model(loadedLangConst: "en"))
 
 }

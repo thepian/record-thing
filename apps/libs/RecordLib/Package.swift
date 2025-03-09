@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "RecordLib",
     platforms: [
-        .macOS(.v13), .iOS(.v15), .tvOS(.v15)
+        .macOS(.v14), .iOS(.v16), .tvOS(.v16)
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
@@ -23,10 +23,10 @@ let package = Package(
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
             name: "RecordLib",
-            dependencies: []),
+            dependencies: ["Blackbird"]),
         .testTarget(
             name: "RecordLibTests",
-            dependencies: ["RecordLib"]),
+            dependencies: ["Blackbird", "RecordLib"]),
     ],
     swiftLanguageVersions: [.v5]
 )

@@ -1,8 +1,8 @@
 import SwiftUI
 import Blackbird
 
-struct SimpleProductTypeList: View {
-    @BlackbirdLiveModels({ try await ProductType.read(from: $0, orderBy: .ascending(\.$name)) }) var types
+struct SimpleEvidenceTypeList: View {
+    @BlackbirdLiveModels({ try await EvidenceType.read(from: $0, orderBy: .ascending(\.$name)) }) var types
 
     var body: some View {
         Text("Scroll")
@@ -10,9 +10,9 @@ struct SimpleProductTypeList: View {
             VStack {
                 if types.didLoad {
                     Text("List")
-                    ForEach(types.results) { productType in
-                        NavigationLink(destination: ProductTypeView(product: productType)) {
-                            ProductTypeRow(product: productType)
+                    ForEach(types.results) { type in
+                        NavigationLink(destination: EvidenceTypeView(type: type)) {
+                            EvidenceTypeRow(type: type)
                         }
                     }
                 } else {
@@ -29,9 +29,9 @@ struct SimpleProductTypeList: View {
 
 #Preview {
     @Previewable @StateObject var database = try! Blackbird.Database(path: "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite")
-    @Previewable @StateObject var model = Model()
+    @Previewable @StateObject var model = Model(loadedLangConst: "en")
 
-    ProductTypeList()
+    EvidenceTypeList()
         .environment(\.blackbirdDatabase, database)
         .environmentObject(model)
 }

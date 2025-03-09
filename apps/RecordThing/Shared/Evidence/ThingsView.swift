@@ -29,6 +29,8 @@ struct ThingsView: View {
     @State private var presentingAppStoreOverlay = false
     #endif
 
+    @State private var showingActionSheet = false
+
     var body: some View {
         container
             #if os(macOS)
@@ -37,9 +39,30 @@ struct ThingsView: View {
             .background()
             .navigationTitle(thing.title ?? "<title>")
             .toolbar {
-                Text(" ")
 //                ProductFavoriteButton()
 //                    .environmentObject(model)
+                Menu {
+                    Button(action: { /* Share action */ }) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                    
+                    Button(action: { /* Export action */ }) {
+                        Label("Export", systemImage: "arrow.up.doc")
+                    }
+                    
+                    Divider()
+                    
+                    Button(action: { /* Edit action */ }) {
+                        Label("Edit Details", systemImage: "pencil")
+                    }
+                    
+                    Button(role: .destructive, action: { /* Delete action */ }) {
+                        Label("Delete", systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                        .imageScale(.large)
+                }
             }
             .sheet(isPresented: $presentingOrderPlacedSheet) {
             }
@@ -98,8 +121,8 @@ struct ThingsView: View {
             ThingsHeaderView(thing: thing)
             
             VStack(alignment: .leading) {
-                Text("Evidence.menu",
-                     tableName: "Evidence",
+                Text(LocalizedStringKey(stringLiteral: "nav.evidence"),
+                     tableName: "evidence",
                      comment: "Evidence in a smoothie. For languages that have different words for \"Ingredient\" based on semantic context.")
                     .font(Font.title).bold()
                     .foregroundStyle(.secondary)
@@ -157,8 +180,8 @@ struct ThingsView: View {
 
 
 #Preview(traits: .sizeThatFitsLayout) {
-    @Previewable @StateObject var database = try! Blackbird.Database(path: "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite")
-    @Previewable @StateObject var model = Model()
+    @Previewable @StateObject var datasource = AppDatasource.shared
+    @Previewable @StateObject var model = Model(loadedLangConst: "en")
 
     NavigationStack {
         ThingsView(thing: .Sports)
@@ -168,7 +191,7 @@ struct ThingsView: View {
 //struct ThingsView_Previews: PreviewProvider {
 //    static var previews: some View {
 //        @Previewable @StateObject var database = try! Blackbird.Database(path: "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite")
-//        @Previewable @StateObject var model = Model()
+//        @Previewable @StateObject var model = Model(loadedLangConst: "en")
 //
 //        Group {
 //            NavigationView {
@@ -182,6 +205,6 @@ struct ThingsView: View {
 //            }
 //        }
 //        .environment(\.blackbirdDatabase, database)
-//        .environmentObject(Model())
+//        .environmentObject(Model(loadedLangConst: "en"))
 //    }
 //}

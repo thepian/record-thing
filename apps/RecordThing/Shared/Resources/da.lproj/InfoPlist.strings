@@ -1,0 +1,20 @@
+/*
+See LICENSE folder for this sample’s licensing information.
+
+Abstract:
+TODO
+*/
+
+/*
+  InfoPlist.strings
+  RecordThing
+*/
+
+/* Bundle name */
+"CFBundleName" = "RecordThing";
+
+/* Bundle display name */
+"CFBundleDisplayName" = "Record Thing";
+
+/* Copyright (human-readable) */
+"NSHumanReadableCopyright" = "Copyright © 2024 Thepia. All rights reserved.";

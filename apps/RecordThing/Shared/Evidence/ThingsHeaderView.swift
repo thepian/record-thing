@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import RecordLib
 
 struct ThingsHeaderView: View {
     var thing: Things
@@ -42,6 +43,15 @@ struct ThingsHeaderView: View {
             
             VStack(alignment: .leading) {
                 Text(thing.description ?? "<description>")
+                
+//                StructureFieldTableView(
+//                    "Details",
+//                    item: thing,
+//                    rightAlignValues: true,
+//                    fieldColumnName: "Property",
+//                    valueColumnName: "Value",
+//                    maxLines: 5
+//                )
             }
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -51,30 +61,42 @@ struct ThingsHeaderView: View {
     
     var wideClipShape = RoundedRectangle(cornerRadius: 20, style: .continuous)
     var wideContent: some View {
-        HStack(spacing: 0) {
-            VStack(alignment: .leading, spacing: 4) {
-                #if os(macOS)
-                Text(thing.id)
-                    .font(Font.largeTitle.bold())
-                #endif
-                Text(thing.description ?? "<description>")
-                    .font(.title2)
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                VStack(alignment: .leading, spacing: 4) {
+                    #if os(macOS)
+                    Text(thing.id)
+                        .font(Font.largeTitle.bold())
+                    #endif
+                    Text(thing.description ?? "<description>")
+                        .font(.title2)
+                }
+                .padding()
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                .background()
+                
+                thing.image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 220, height: 250)
+                    .clipped()
+                    .accessibility(hidden: true)
             }
-            .padding()
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-            .background()
+            .frame(height: 250)
+            .clipShape(wideClipShape)
+            .overlay {
+                wideClipShape.strokeBorder(.quaternary, lineWidth: 0.5)
+            }
             
-            thing.image
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 220, height: 250)
-                .clipped()
-                .accessibility(hidden: true)
-        }
-        .frame(height: 250)
-        .clipShape(wideClipShape)
-        .overlay {
-            wideClipShape.strokeBorder(.quaternary, lineWidth: 0.5)
+//            StructureFieldTableView(
+//                "Details",
+//                item: thing,
+//                rightAlignValues: true,
+//                fieldColumnName: "Property",
+//                valueColumnName: "Value",
+//                excluding: ["description"],
+//                maxLines: 5
+//            )
         }
         .padding()
     }

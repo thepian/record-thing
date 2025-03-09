@@ -1,34 +1,29 @@
 //
-//  ThingsList.swift
+//  EvidenceTypeList.swift
 //  RecordThing
 //
-//  Created by Henrik Vendelbo on 23.09.2024.
+//  Created by Henrik Vendelbo on 16.09.2024.
 //  Copyright © 2025 Thepia. All rights reserved.
 //
 
 import SwiftUI
 import Blackbird
 
-struct ThingsList: View {
-    
-    @BlackbirdLiveModels({ try await Things.read(from: $0, orderBy: .ascending(\.$title)) }) var things
+struct TestList: View {
+    @BlackbirdLiveModels({ try await TestCustomDecoder.read(from: $0, orderBy: .ascending(\.$name)) }) var types
     @EnvironmentObject private var model: Model
-
+    
     var body: some View {
-        if things.didLoad {
+        if types.didLoad {
             ScrollViewReader { proxy in
                 List {
-                    ForEach(things.results) { thing in
+                    ForEach(types.results) { type in
                         NavigationLink(destination: {
-                            ThingsView(thing: thing)
+                            Text(type.name)
+                            Text(type.thumbnail.absoluteString)
                         }, label: {
-                            ThingsRow(thing: thing)
+                            Text(type.name)
                         })
-//                        NavigationLink(tag: thing.title ?? thing.upc ?? "", selection: $model.selectedThingID) {
-//                            ThingsView(thing: thing)
-//                        } label: {
-//                            ThingsRow(thing: thing)
-//                        }
                     }
                 }
             }
@@ -46,7 +41,7 @@ struct ThingsList: View {
     @Previewable @StateObject var model = Model(loadedLangConst: "en")
 
     NavigationView {
-        ThingsList().navigationTitle(LocalizedStringKey(stringLiteral: "nav.things"))
+        TestList().navigationTitle(LocalizedStringKey(stringLiteral: "test"))
     }
     .environment(\.blackbirdDatabase, datasource.db)
     .environmentObject(model)
