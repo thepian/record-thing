@@ -47,6 +47,46 @@ AI-powered object recognition and event tracking with minimal manual input.
 
 - **Search & Filter**: Users can browse their belongings, filter by category, and search for specific items.  
 - **Edit & Delete**: Items can be updated or removed.  
+- 
+
+### **2.F. Record Thing App Deployment**
+
+[Enrollment Plan for Apple App Store](./apple_enrollment.md)
+
+App Name: "Record Thing"
+Apple Account: apps@thepia.com
+Company: Thepia GmbH, Switzerland
+
+The App will record Images and Video and import/export from the Photo Library on the Phone.
+
+Multiple Info.plists are maintained for the different target platforms. Additionally there are entitlements files.
+
+How should Info.plist and .entitlements files be structured? and what must they contain?
+
+The App will primarily target iOS on the App Store, but it will also be compiled as a macOS App that can be installed directly or via the App Store. Apple Watch and Widgets may also be supported.
+
+
+#### Development
+
+Development Provisioning is needed to deploy to devices logged in with apps@thepia.com.
+
+Is a provisioning profile needed specifically for development?
+
+
+#### Test Flight
+
+A number of people related socially will want to Beta test the application. We will want to allocate
+
+Is a separate provisioning provile needed?
+
+
+#### Production Deployment
+
+The production deployment is done via the App Store.
+
+Is a separate provisioning provile needed?
+
+
 
 ---
 
@@ -107,7 +147,7 @@ The database contains the following tables:
 - **Event Logging**:  
   *As a user, I want to record incidents (damage, maintenance) linked to my belongings.*  
 - **Data Sync & Backup**:  
-  *As a user, I want my records stored safely in the cloud so I don’t lose my data.*  
+  *As a user, I want my records stored safely in the cloud so I don't lose my data.*  
 - **Showcase my Purchase**
   *As a user, I want to help showing my new purchase to my friends and family.*
 
@@ -167,6 +207,7 @@ The database contains the following tables:
 - **8.D. Belonging full-screen View**: Full screen view for recording and showcasing belongings.
 - **8.E. Assets browsing View**: Full screen view of Belongings arranged in a typical Photos layout.
 - **8.F. Actions browsing View**: Full screen view of Actions.
+- **8.G. Camera Preview with Optional Mask and Highlights**: Highlighted objects tracked and Optional Circular Mask
 
 ### 8.A. Clean & Minimalistic
 
@@ -203,6 +244,12 @@ Full screen view of Actions.
 Selecting an action navigates to its full-screen view.
 In addition to requests special feed entries may be shown.
 Actions are a filtered view of the `feed` table in the database.
+
+### 8.G. Camera Preview with Optional Mask and Highlights
+
+The camera preview is a full-screen overlay. It can be masked so only a circular area of the preview is shown. The circular area can be moved around like a searchlight by an animation task set on the view.
+
+The preview can be overlaid with line markers such as circles and range finders to indicate focus and objects.
 
 ---
 

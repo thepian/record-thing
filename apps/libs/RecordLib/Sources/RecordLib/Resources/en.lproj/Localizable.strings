@@ -1,0 +1,61 @@
+/* 
+  Localizable.strings
+  RecordLib
+
+  Created by Cline on 16.03.2025.
+*/
+
+"security.camera_denied" = "Treasure uses the camera to record your belongings.";
+"security.camera_notDetermined" = "Treasure uses the camera to record your belongings.";
+"security.camera_restricted" = "Treasure uses the camera to record your belongings.";
+
+// General
+"yes" = "Yes";
+"no" = "No";
+"ok" = "OK";
+"cancel" = "Cancel";
+"done" = "Done";
+"next" = "Next";
+"back" = "Back";
+"save" = "Save";
+"delete" = "Delete";
+"edit" = "Edit";
+"search" = "Search";
+"loading" = "Loading...";
+"error" = "Error";
+"success" = "Success";
+"warning" = "Warning";
+"info" = "Information";
+
+// ConfirmDenyStatement
+"confirm_deny_is_this_a" = "Is this a";
+"confirm_deny_yes" = "Yes";
+"confirm_deny_no" = "No";
+"confirm_deny_yes_it_is" = "Yes, it is";
+"confirm_deny_no_its_not" = "No, it's not";
+
+// Camera
+"camera_permission_title" = "Camera Access";
+"camera_permission_message" = "This app needs access to your camera to scan items.";
+"camera_permission_denied" = "Camera access denied. Please enable it in Settings.";
+"camera_not_available" = "Camera not available on this device.";
+"camera_scanning" = "Scanning...";
+"camera_position_item" = "Position the item in the frame";
+
+// Errors
+"error_generic" = "Something went wrong. Please try again.";
+"error_network" = "Network error. Please check your connection.";
+"error_timeout" = "Request timed out. Please try again.";
+"error_server" = "Server error. Please try again later.";
+"error_authentication" = "Authentication error. Please log in again.";
+"error_permission" = "Permission denied. Please check your settings.";
+
+// Accessibility
+"accessibility_tab_home" = "Home tab";
+"accessibility_tab_search" = "Search tab";
+"accessibility_tab_camera" = "Camera tab";
+"accessibility_tab_notifications" = "Notifications tab";
+"accessibility_tab_profile" = "Profile tab";
+"accessibility_button_close" = "Close";
+"accessibility_button_back" = "Go back";
+"accessibility_button_more" = "More options";

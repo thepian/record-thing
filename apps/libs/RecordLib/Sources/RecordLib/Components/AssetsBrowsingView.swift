@@ -1,6 +1,12 @@
 import SwiftUI
 import os
 
+#if os(macOS)
+import AppKit
+#else
+import UIKit
+#endif
+
 /// A view for browsing and managing luxury assets captured by the app
 public struct AssetsBrowsingView: View {
     // MARK: - Properties
@@ -43,16 +49,24 @@ public struct AssetsBrowsingView: View {
     public var body: some View {
         GeometryReader { geometry in
             if geometry.size.width > 700 {
-                // iPad layout with sidebar
+                // iPad/Mac layout with sidebar
                 NavigationSplitView(columnVisibility: $columnVisibility) {
                     // Overview sidebar
                     overviewContent
                         .navigationTitle("Assets")
+                        #if os(macOS)
+                        .toolbar {
+                            ToolbarItem {
+                                recordButton
+                            }
+                        }
+                        #else
                         .toolbar {
                             ToolbarItem(placement: .navigationBarTrailing) {
                                 recordButton
                             }
                         }
+                        #endif
                 } detail: {
                     // Detail view
                     if let asset = selectedAsset {
@@ -69,11 +83,19 @@ public struct AssetsBrowsingView: View {
                 NavigationStack {
                     overviewContent
                         .navigationTitle("Assets")
+                        #if os(macOS)
+                        .toolbar {
+                            ToolbarItem {
+                                recordButton
+                            }
+                        }
+                        #else
                         .toolbar {
                             ToolbarItem(placement: .navigationBarTrailing) {
                                 recordButton
                             }
                         }
+                        #endif
                         .navigationDestination(for: Asset.self) { asset in
                             assetDetailView(asset)
                         }
@@ -128,6 +150,11 @@ public struct AssetsBrowsingView: View {
                 .padding(8)
                 .background(Circle().fill(Color(white: 0.2)))
         }
+        #if os(macOS)
+        .buttonStyle(BorderlessButtonStyle())
+        #else
+        .buttonStyle(PlainButtonStyle())
+        #endif
     }
     
     /// Tab selector at the top
@@ -159,6 +186,11 @@ public struct AssetsBrowsingView: View {
                         .fill(selectedTab == tab ? Color(white: 0.2) : Color.clear)
                 )
         }
+        #if os(macOS)
+        .buttonStyle(BorderlessButtonStyle())
+        #else
+        .buttonStyle(PlainButtonStyle())
+        #endif
     }
     
     /// Section for a group of assets by month
@@ -223,7 +255,11 @@ public struct AssetsBrowsingView: View {
                     .lineLimit(1)
             }
         }
+        #if os(macOS)
+        .buttonStyle(BorderlessButtonStyle())
+        #else
         .buttonStyle(PlainButtonStyle())
+        #endif
     }
     
     /// Detail view for a selected asset
@@ -301,7 +337,9 @@ public struct AssetsBrowsingView: View {
             }
         }
         .navigationTitle(asset.name)
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
         .background(Color.black)
     }
     

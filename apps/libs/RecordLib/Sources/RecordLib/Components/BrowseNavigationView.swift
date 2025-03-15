@@ -208,12 +208,21 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
             }
             .navigationTitle("Browse")
             .toolbar {
+                #if os(macOS)
+                ToolbarItem {
+                    RecordButtonToolbarItem(
+                        showToolbar: showToolbar,
+                        onRecordTapped: onRecordTapped
+                    )
+                }
+                #else
                 ToolbarItem(placement: .navigationBarTrailing) {
                     RecordButtonToolbarItem(
                         showToolbar: showToolbar,
                         onRecordTapped: onRecordTapped
                     )
                 }
+                #endif
             }
         } detail: {
             // Detail view based on selected tab
@@ -224,12 +233,21 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
                         thingsContent
                             .navigationTitle("Things")
                             .toolbar {
+                                #if os(macOS)
+                                ToolbarItem {
+                                    RecordButtonToolbarItem(
+                                        showToolbar: showToolbar,
+                                        onRecordTapped: onRecordTapped
+                                    )
+                                }
+                                #else
                                 ToolbarItem(placement: .navigationBarTrailing) {
                                     RecordButtonToolbarItem(
                                         showToolbar: showToolbar,
                                         onRecordTapped: onRecordTapped
                                     )
                                 }
+                                #endif
                             }
                     }
                 case .types:
@@ -237,12 +255,21 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
                         typesContent
                             .navigationTitle("Types")
                             .toolbar {
+                                #if os(macOS)
+                                ToolbarItem {
+                                    RecordButtonToolbarItem(
+                                        showToolbar: showToolbar,
+                                        onRecordTapped: onRecordTapped
+                                    )
+                                }
+                                #else
                                 ToolbarItem(placement: .navigationBarTrailing) {
                                     RecordButtonToolbarItem(
                                         showToolbar: showToolbar,
                                         onRecordTapped: onRecordTapped
                                     )
                                 }
+                                #endif
                             }
                     }
                 case .feed:
@@ -250,12 +277,21 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
                         feedContent
                             .navigationTitle("Feed")
                             .toolbar {
+                                #if os(macOS)
+                                ToolbarItem {
+                                    RecordButtonToolbarItem(
+                                        showToolbar: showToolbar,
+                                        onRecordTapped: onRecordTapped
+                                    )
+                                }
+                                #else
                                 ToolbarItem(placement: .navigationBarTrailing) {
                                     RecordButtonToolbarItem(
                                         showToolbar: showToolbar,
                                         onRecordTapped: onRecordTapped
                                     )
                                 }
+                                #endif
                             }
                     }
                 case .favorites:
@@ -263,12 +299,21 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
                         favoritesContent
                             .navigationTitle("Favorites")
                             .toolbar {
+                                #if os(macOS)
+                                ToolbarItem {
+                                    RecordButtonToolbarItem(
+                                        showToolbar: showToolbar,
+                                        onRecordTapped: onRecordTapped
+                                    )
+                                }
+                                #else
                                 ToolbarItem(placement: .navigationBarTrailing) {
                                     RecordButtonToolbarItem(
                                         showToolbar: showToolbar,
                                         onRecordTapped: onRecordTapped
                                     )
                                 }
+                                #endif
                             }
                     }
                 default:
@@ -293,12 +338,21 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
                         thingsContent
                             .navigationTitle("Things")
                             .toolbar {
+                                #if os(macOS)
+                                ToolbarItem {
+                                    RecordButtonToolbarItem(
+                                        showToolbar: showToolbar,
+                                        onRecordTapped: onRecordTapped
+                                    )
+                                }
+                                #else
                                 ToolbarItem(placement: .navigationBarTrailing) {
                                     RecordButtonToolbarItem(
                                         showToolbar: showToolbar,
                                         onRecordTapped: onRecordTapped
                                     )
                                 }
+                                #endif
                             }
                     }
                     .tabItem {
@@ -310,12 +364,21 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
                         typesContent
                             .navigationTitle("Types")
                             .toolbar {
+                                #if os(macOS)
+                                ToolbarItem {
+                                    RecordButtonToolbarItem(
+                                        showToolbar: showToolbar,
+                                        onRecordTapped: onRecordTapped
+                                    )
+                                }
+                                #else
                                 ToolbarItem(placement: .navigationBarTrailing) {
                                     RecordButtonToolbarItem(
                                         showToolbar: showToolbar,
                                         onRecordTapped: onRecordTapped
                                     )
                                 }
+                                #endif
                             }
                     }
                     .tabItem {
@@ -327,12 +390,21 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
                         feedContent
                             .navigationTitle("Feed")
                             .toolbar {
+                                #if os(macOS)
+                                ToolbarItem {
+                                    RecordButtonToolbarItem(
+                                        showToolbar: showToolbar,
+                                        onRecordTapped: onRecordTapped
+                                    )
+                                }
+                                #else
                                 ToolbarItem(placement: .navigationBarTrailing) {
                                     RecordButtonToolbarItem(
                                         showToolbar: showToolbar,
                                         onRecordTapped: onRecordTapped
                                     )
                                 }
+                                #endif
                             }
                     }
                     .tabItem {
@@ -344,12 +416,21 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
                         favoritesContent
                             .navigationTitle("Favorites")
                             .toolbar {
+                                #if os(macOS)
+                                ToolbarItem {
+                                    RecordButtonToolbarItem(
+                                        showToolbar: showToolbar,
+                                        onRecordTapped: onRecordTapped
+                                    )
+                                }
+                                #else
                                 ToolbarItem(placement: .navigationBarTrailing) {
                                     RecordButtonToolbarItem(
                                         showToolbar: showToolbar,
                                         onRecordTapped: onRecordTapped
                                     )
                                 }
+                                #endif
                             }
                     }
                     .tabItem {
@@ -389,12 +470,21 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
                     thingsContent
                         .navigationTitle("Things")
                         .toolbar {
+                            #if os(macOS)
+                            ToolbarItem {
+                                RecordButtonToolbarItem(
+                                    showToolbar: showToolbar,
+                                    onRecordTapped: onRecordTapped
+                                )
+                            }
+                            #else
                             ToolbarItem(placement: .navigationBarTrailing) {
                                 RecordButtonToolbarItem(
                                     showToolbar: showToolbar,
                                     onRecordTapped: onRecordTapped
                                 )
                             }
+                            #endif
                         }
                 }
                 .frame(width: geometry.size.width, height: geometry.size.height)
@@ -405,12 +495,21 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
                     typesContent
                         .navigationTitle("Types")
                         .toolbar {
+                            #if os(macOS)
+                            ToolbarItem {
+                                RecordButtonToolbarItem(
+                                    showToolbar: showToolbar,
+                                    onRecordTapped: onRecordTapped
+                                )
+                            }
+                            #else
                             ToolbarItem(placement: .navigationBarTrailing) {
                                 RecordButtonToolbarItem(
                                     showToolbar: showToolbar,
                                     onRecordTapped: onRecordTapped
                                 )
                             }
+                            #endif
                         }
                 }
                 .frame(width: geometry.size.width, height: geometry.size.height)
@@ -421,12 +520,21 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
                     feedContent
                         .navigationTitle("Feed")
                         .toolbar {
+                            #if os(macOS)
+                            ToolbarItem {
+                                RecordButtonToolbarItem(
+                                    showToolbar: showToolbar,
+                                    onRecordTapped: onRecordTapped
+                                )
+                            }
+                            #else
                             ToolbarItem(placement: .navigationBarTrailing) {
                                 RecordButtonToolbarItem(
                                     showToolbar: showToolbar,
                                     onRecordTapped: onRecordTapped
                                 )
                             }
+                            #endif
                         }
                 }
                 .frame(width: geometry.size.width, height: geometry.size.height)
@@ -437,12 +545,21 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
                     favoritesContent
                         .navigationTitle("Favorites")
                         .toolbar {
+                            #if os(macOS)
+                            ToolbarItem {
+                                RecordButtonToolbarItem(
+                                    showToolbar: showToolbar,
+                                    onRecordTapped: onRecordTapped
+                                )
+                            }
+                            #else
                             ToolbarItem(placement: .navigationBarTrailing) {
                                 RecordButtonToolbarItem(
                                     showToolbar: showToolbar,
                                     onRecordTapped: onRecordTapped
                                 )
                             }
+                            #endif
                         }
                 }
                 .frame(width: geometry.size.width, height: geometry.size.height)
@@ -636,7 +753,9 @@ struct BrowseNavigationView_Previews: PreviewProvider {
                 dest in
                 DetailView(destination: dest)
             })
+            #if os(iOS)
             .listStyle(InsetGroupedListStyle())
+            #endif
         }
     }
     
@@ -694,7 +813,9 @@ struct BrowseNavigationView_Previews: PreviewProvider {
                     ))
                 }
             }
+#if os(iOS)
             .listStyle(InsetGroupedListStyle())
+#endif
             .navigationDestination(for: BrowseDestination.self, destination: {
                 destination in
                 DetailView(destination: destination)

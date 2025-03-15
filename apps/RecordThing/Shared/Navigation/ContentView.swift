@@ -12,6 +12,8 @@ import RecordLib
 
 struct ContentView: View {
     @EnvironmentObject private var model: Model
+    @StateObject public var captureService: CaptureService
+    @StateObject public var cameraViewModel = CameraViewModel()
 
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -80,31 +82,69 @@ struct ContentView: View {
         )
     ]
     
+    init(captureService: CaptureService = CaptureService()) {
+        _captureService = StateObject(wrappedValue: captureService)
+    }
+    
     var sampleNavBars: some View {
-        VStack {
-            // The floating toolbar
-            StandardFloatingToolbar(
-                useFullRounding: false,
-                onDataBrowseTapped: {
-                    selectedTab = .things
-                    path.append(DataBrowsingNav(title: "Title", path: ""))
-                },
-                onStackTapped: {
-                    selectedTab = .assets
-                    path.append(FeedNav(path: "1")) },
-                onCameraTapped: { print("Camera tapped") },
-                onAccountTapped: {
-                    selectedTab = .actions
-                    path.append(AccountNav(path: "A")) }
-            )
-            .padding()
-            
-            SimpleConfirmDenyStatement(
-                objectName: "Electric Mountain Bike",
-                onConfirm: { print("Confirmed electric mountain bike") },
-                onDeny: { print("Denied electric mountain bike") }
-            )
-            .padding()
+        GeometryReader { geometry in
+            ZStack {
+                // Controls positioned at the bottom
+                VStack(alignment: .center, spacing: 0) {
+                    Spacer() // Push everything to the bottom
+                    RecordedStackAndRequirementsView(
+                        checkboxItems: model.checkboxItems,
+                        cardImages: [
+                            .system("photo"),
+                            .system("camera"),
+                            .system("doc")
+                        ],
+                        direction: .horizontal,
+                        checkboxTextColor: Color.white,
+                        checkboxColor: Color.white,
+                        onItemToggled: { item in
+                            model.toggleCheckboxItem(item)
+                            print("Item toggled: \(item.text), isChecked: \(item.isChecked)")
+                        },
+                        onCardStackTapped: {
+                            print("Card stack tapped")
+                        }
+                    )
+                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 32))
+                    
+                    // The floating toolbar
+                    StandardFloatingToolbar(
+                        useFullRounding: false,
+                        onDataBrowseTapped: {
+                            selectedTab = .things
+                            path.append(DataBrowsingNav(title: "Title", path: ""))
+                        },
+                        onStackTapped: {
+                            selectedTab = .assets
+                            path.append(FeedNav(path: "1")) },
+                        onCameraTapped: { print("Camera tapped") },
+                        onAccountTapped: {
+                            selectedTab = .actions
+                            path.append(AccountNav(path: "A")) }
+                    )
+                    .frame(height: 100) // FIXME not sure why it expands to fille space otherwise
+                    
+                    SimpleConfirmDenyStatement(
+                        objectName: "Electric Mountain Bike",
+                        onConfirm: { print("Confirmed electric mountain bike") },
+                        onDeny: { print("Denied electric mountain bike") }
+                    )
+                    .padding(EdgeInsets(top: 0, leading: 12, bottom: 32, trailing: 12))
+//                    .background(Color.purple.opacity(0.2)) // Debug color
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+//                .background(Color.green.opacity(0.1)) // Debug color for bottom controls container
+            }
+            .frame(width: geometry.size.width, height: geometry.size.height)
+//            .background(Color.red.opacity(0.1)) // Debug color for entire container
+            .onAppear {
+                print("sampleNavBars size: \(geometry.size)")
+            }
         }
     }
     
@@ -148,31 +188,7 @@ struct ContentView: View {
 #if os(iOS)
         NavigationStack(path: $path) {
             sampleNavBars
-            //                .navigationDestination(item: DataBrowsingNav(title: "Things", path: "things"), destination: {
-            //                    Text("Thigs table")
-            //                }),
-            .navigationDestination(for: DataBrowsingNav.self, destination: { nav in
-                if nav.path == "" {
-                    NavigationSplitView {
-                        NavigationLink(value: DataBrowsingNav(title: "Things", path: "things"), label: {
-                            Label(LocalizedStringKey(stringLiteral: "nav.things"), systemImage: "list.bullet")
-                        })
-                        NavigationLink(value: DataBrowsingNav(title: "Evidence", path: "evidence"), label: {
-                            Label("Types", systemImage: "list.bullet")
-                        })
 
-                    } detail: {
-                        
-                    }
-                }
-            })
-            .navigationDestination(for: FeedNav.self, destination: {
-                nav in
-            })
-            .navigationDestination(for: AccountNav.self, destination: { nav in
-                
-            })
-        }
         // This clears the stack background as it isn't otherwise supported
         .introspect(.navigationStack, on: .iOS(.v16, .v17, .v18)) {
             $0.viewControllers.forEach { controller in
@@ -197,7 +213,7 @@ struct ContentView: View {
             }
         )
     }
-        
+    
     var body: some View {
         ZStack {
             mountainBike
@@ -207,25 +223,36 @@ struct ContentView: View {
                     .frame(width: 50, height: 50, alignment: .center)
                     .scaleEffect(3)
             } else {
-                switch selectedTab {
-                case .record: sampleNavBars
-                case .assets: assetsBrowsingView
-                case .actions: sampleNavBars
-                default: browseTab
+                CameraDrivenView(captureService: captureService)  {
+                    switch selectedTab {
+                    case .record: sampleNavBars
+                    case .assets: assetsBrowsingView
+                    case .actions: sampleNavBars
+                    default: browseTab
+                    }
                 }
+                    .onAppear() {
+                        cameraViewModel.onAppear()
+                    }
+                    .environmentObject(model)
+                    .environment(\.cameraViewModel, cameraViewModel)
+    //                .accentColor(UIColor(named: "AccentColor").cgColor())
+
             }
         }
     }
 }
 
+import AVFoundation
+
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             // Regular view preview
-            ContentView()
+            ContentView(captureService: MockedCaptureService(.authorized))
                 .environmentObject(Model(loadedLangConst: "en"))
                 .environment(\.blackbirdDatabase, AppDatasource.shared.db)
-                .previewDisplayName("Loaded")
+                .previewDisplayName("Loaded & Authorized")
             
             // Redacted view preview
             ContentView()
@@ -245,3 +272,77 @@ struct ContentView_Previews: PreviewProvider {
         }
     }
 }
+
+/*
+struct ContentView_Previews: PreviewProvider {
+    // Create a MockedCaptureService class that extends CaptureService
+    class MockedCaptureService: CaptureService {
+        var status: AVAuthorizationStatus
+        
+        init(status: AVAuthorizationStatus) {
+            self.status = status
+            super.init()
+            // Set permissionGranted based on status
+            self.permissionGranted = (status == .authorized)
+        }
+        
+        override func checkPermission() -> AVAuthorizationStatus {
+            return status
+        }
+        
+        // Override any other methods that depend on authorization status
+        override func startSessionIfAuthorized(completion: @escaping (Error?) -> ()) {
+            if status == .authorized {
+                permissionGranted = true
+                completion(nil)
+            } else {
+                permissionGranted = false
+                completion(CaptureError.notAuthorized(comment: "Not authorized in preview"))
+            }
+        }
+    }
+    
+    // Create a custom ContentView initializer for previews
+    struct PreviewContentView: View {
+        @StateObject var captureService: CaptureService
+        @StateObject var cameraViewModel: CameraViewModel
+        
+        init(captureStatus: AVAuthorizationStatus) {
+            // Create the mocked capture service with the specified status
+            let mockedService = MockedCaptureService(status: captureStatus)
+            // Create a camera view model with the same status
+            let viewModel = CameraViewModel(captureStatus)
+            
+            // Initialize the StateObjects
+            _captureService = StateObject(wrappedValue: mockedService)
+            _cameraViewModel = StateObject(wrappedValue: viewModel)
+        }
+        
+        var body: some View {
+            ContentView(captureService: captureService, cameraViewModel: cameraViewModel)
+        }
+    }
+    
+    static var previews: some View {
+        Group {
+            // Authorized preview
+            PreviewContentView(captureStatus: .authorized)
+                .environmentObject(Model(loadedLangConst: "en"))
+                .environment(\.blackbirdDatabase, AppDatasource.shared.db)
+                .previewDisplayName("Camera Authorized")
+            
+            // Not determined preview
+            PreviewContentView(captureStatus: .notDetermined)
+                .environmentObject(Model(loadedLangConst: "en"))
+                .environment(\.blackbirdDatabase, AppDatasource.shared.db)
+                .previewDisplayName("Camera Permission Not Determined")
+            
+            // Denied preview
+            PreviewContentView(captureStatus: .denied)
+                .environmentObject(Model(loadedLangConst: "en"))
+                .environment(\.blackbirdDatabase, AppDatasource.shared.db)
+                .previewDisplayName("Camera Permission Denied")
+        }
+    }
+}
+*/

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import UIKit
 import Vision
 
 /// An example showing how to use SimpleConfirmDenyStatement with camera frames
@@ -16,7 +15,7 @@ public struct CameraObjectDetectionView: View {
     @State private var detectedObject: String?
     @State private var showConfirmation: Bool = false
     @State private var backgroundBrightness: CGFloat = 0.0
-    @State private var currentFrame: UIImage?
+    @State private var currentFrame: RecordImage?
     
     // Logger for debugging
     private let logger = Logger(subsystem: "com.evidently.recordthing", category: "CameraObjectDetectionView")
@@ -226,16 +225,20 @@ public struct CameraObjectDetectionView: View {
         completion(brightness)
     }
     
-    /// Converts a CVPixelBuffer to a UIImage
+    /// Converts a CVPixelBuffer to a RecordImage
     /// - Parameter pixelBuffer: The CVPixelBuffer to convert
-    /// - Returns: A UIImage, or nil if conversion fails
-    private func uiImage(from pixelBuffer: CVPixelBuffer) -> UIImage? {
+    /// - Returns: A RecordImage, or nil if conversion fails
+    private func recordImage(from pixelBuffer: CVPixelBuffer) -> RecordImage? {
         let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
         let context = CIContext()
         guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else {
             return nil
         }
+        #if canImport(UIKit)
         return UIImage(cgImage: cgImage)
+        #elseif canImport(AppKit)
+        return NSImage(cgImage: cgImage, size: CGSize(width: cgImage.width, height: cgImage.height))
+        #endif
     }
 }
 

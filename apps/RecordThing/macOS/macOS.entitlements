@@ -16,5 +16,39 @@
 	<true/>
 	<key>com.apple.security.network.server</key>
 	<true/>
+
+	    <!-- iCloud capabilities -->
+    <key>com.apple.developer.icloud-container-identifiers</key>
+    <array>
+        <string>iCloud.com.thepia.recordthing</string>
+    </array>
+    <key>com.apple.developer.icloud-services</key>
+    <array>
+        <string>CloudKit</string>
+    </array>
+    
+    <!-- App Sandbox (required for Mac App Store) -->
+    <key>com.apple.security.app-sandbox</key>
+    <true/>
+    
+    <!-- Camera access -->
+    <key>com.apple.security.device.camera</key>
+    <true/>
+    
+    <!-- Microphone access -->
+    <key>com.apple.security.device.microphone</key>
+    <true/>
+    
+    <!-- User selected files -->
+    <key>com.apple.security.files.user-selected.read-write</key>
+    <true/>
+    
+    <!-- Pictures folder access -->
+    <key>com.apple.security.assets.pictures.read-write</key>
+    <true/>
+    
+    <!-- Network access -->
+    <key>com.apple.security.network.client</key>
+    <true/>
 </dict>
 </plist>

@@ -56,6 +56,7 @@
 		3E5373A22D7F295E0082BF62 /* BrowseTabNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5373A02D7F295E0082BF62 /* BrowseTabNavigation.swift */; };
 		3E5373A32D7F295E0082BF62 /* BrowseTabNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5373A02D7F295E0082BF62 /* BrowseTabNavigation.swift */; };
 		3E5373A42D7F295E0082BF62 /* BrowseTabNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5373A02D7F295E0082BF62 /* BrowseTabNavigation.swift */; };
+		3E5373AD2D8605C10082BF62 /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3E5373AC2D8605C10082BF62 /* RecordLib */; };
 		3E5A35BF2D75F04900069A95 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3E5A35BE2D75F04900069A95 /* Blackbird */; };
 		3E5A35C12D75F05200069A95 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3E5A35C02D75F05200069A95 /* Blackbird */; };
 		3E5A35C32D75F05A00069A95 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3E5A35C22D75F05A00069A95 /* Blackbird */; };
@@ -432,6 +433,7 @@
 				3E5373992D7F162C0082BF62 /* SwiftUIIntrospect in Frameworks */,
 				3E5A35BF2D75F04900069A95 /* Blackbird in Frameworks */,
 				3E5373962D7E36FB0082BF62 /* RecordLib in Frameworks */,
+				3E5373AD2D8605C10082BF62 /* RecordLib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -720,6 +722,7 @@
 				3E5A35BE2D75F04900069A95 /* Blackbird */,
 				3E5373952D7E36FB0082BF62 /* RecordLib */,
 				3E5373982D7F162C0082BF62 /* SwiftUIIntrospect */,
+				3E5373AC2D8605C10082BF62 /* RecordLib */,
 			);
 			productName = "Smoothies iOS";
 			productReference = E0DC7FE327B72FDC00A6417B /* RecordThing iOS.app */;
@@ -771,9 +774,9 @@
 			);
 			mainGroup = 5E6123F7244E8B32004DDFF7;
 			packageReferences = (
-				3E8287F22D4FB1E500E80D09 /* XCLocalSwiftPackageReference "../libs/RecordLib" */,
 				3E5A35BD2D75EFE400069A95 /* XCRemoteSwiftPackageReference "Blackbird" */,
 				3E5373972D7F14D00082BF62 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
+				3E5373AB2D8605C10082BF62 /* XCLocalSwiftPackageReference "../libs/RecordLib" */,
 			);
 			productRefGroup = 5E612405244E8B32004DDFF7 /* Products */;
 			projectDirPath = "";
@@ -1155,8 +1158,8 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Fruta;
-				INFOPLIST_KEY_CFBundleName = Fruta;
+				INFOPLIST_KEY_CFBundleDisplayName = RecordThing;
+				INFOPLIST_KEY_CFBundleName = RecordThing;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1216,8 +1219,8 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Fruta;
-				INFOPLIST_KEY_CFBundleName = Fruta;
+				INFOPLIST_KEY_CFBundleDisplayName = RecordThing;
+				INFOPLIST_KEY_CFBundleName = RecordThing;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -1383,6 +1386,11 @@
 				INFOPLIST_FILE = iOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Record Thing";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Record Thing needs camera access to scan and record your belongings for cataloging purposes.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Record Thing uses your local network to process data efficiently.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record Thing needs microphone access to record video with audio of your belongings.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Record Thing needs permission to save images to your photo library.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Record Thing needs access to your photo library to import images of your belongings and save captured photos.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -1418,6 +1426,11 @@
 				INFOPLIST_FILE = iOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Record Thing";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Record Thing needs camera access to scan and record your belongings for cataloging purposes.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Record Thing uses your local network to process data efficiently.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record Thing needs microphone access to record video with audio of your belongings.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Record Thing needs permission to save images to your photo library.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Record Thing needs access to your photo library to import images of your belongings and save captured photos.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -1557,7 +1570,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		3E8287F22D4FB1E500E80D09 /* XCLocalSwiftPackageReference "../libs/RecordLib" */ = {
+		3E5373AB2D8605C10082BF62 /* XCLocalSwiftPackageReference "../libs/RecordLib" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../libs/RecordLib;
 		};
@@ -1606,6 +1619,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3E5373972D7F14D00082BF62 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
 			productName = SwiftUIIntrospect;
+		};
+		3E5373AC2D8605C10082BF62 /* RecordLib */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RecordLib;
 		};
 		3E5A35BE2D75F04900069A95 /* Blackbird */ = {
 			isa = XCSwiftPackageProductDependency;

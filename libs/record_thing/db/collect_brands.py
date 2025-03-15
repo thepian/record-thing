@@ -59,7 +59,7 @@ def populate_from_wikidata_entities(db_path: Path, evidentnet_path: Path = evide
     Args:
         db_path: Path to the SQLite database
         evidentnet_path: Path to the evidentnet directory
-        
+    
     Returns:
         Dictionary with statistics about the import process
     """
@@ -163,21 +163,21 @@ def populate_from_wikidata_entities(db_path: Path, evidentnet_path: Path = evide
                 # Process brands
                 for _, brand in brands_df.iterrows():
                     try:
-                        # Check if brand already exists
+        # Check if brand already exists
                         cursor.execute("SELECT id FROM brand WHERE wikidata_id = ?", (brand['wikidata_id'],))
-                        existing_brand = cursor.fetchone()
-                        
-                        if not existing_brand:
+        existing_brand = cursor.fetchone()
+        
+        if not existing_brand:
                             # Generate UID for new brand
-                            brand_id = create_uid()
-                            
+            brand_id = create_uid()
+            
                             # Insert new brand
-                            cursor.execute("""
-                                INSERT INTO brand (
+            cursor.execute("""
+                INSERT INTO brand (
                                     id, name, wikidata_id, description, category,
                                     founded_date, official_url, wikipedia_url, source
                                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                            """, (
+            """, (
                                 brand_id,
                                 brand['name'],
                                 brand['wikidata_id'],
@@ -187,9 +187,9 @@ def populate_from_wikidata_entities(db_path: Path, evidentnet_path: Path = evide
                                 brand['website'],
                                 "",  # wikipedia_url not in entity data
                                 'wikidata'
-                            ))
-                            stats['new_brands'] += 1
-                            
+            ))
+            stats['new_brands'] += 1
+            
                             # Add instance_of as tags
                             if brand['instance_of']:
                                 tag_id = create_uid()
@@ -313,8 +313,8 @@ def populate_from_wikidata_entities(db_path: Path, evidentnet_path: Path = evide
                     
                     stats['existing_companies'] += 1
                     stats['updated_companies'] += 1
-            except Exception as e:
-                logger.error(f"Error processing company {wikidata_id}: {e}")
+        except Exception as e:
+            logger.error(f"Error processing company {wikidata_id}: {e}")
                 stats['errors'] += 1
         
         # Final commit
@@ -338,7 +338,7 @@ python collect_brands.py
 python collect_brands.py --trickle
 
 # Trickle fetch with custom delay
-python collect_brands.py --trickle --delay 10
+python collect_brands.py --trickle --delay 10    
 
 # Import Wikidata entities from parquet files
 python collect_brands.py --import-entities
@@ -360,7 +360,7 @@ python collect_brands.py --import-entities --db-path /path/to/database.sqlite
         # Determine database path
         if args.db_path:
             db_path = Path(args.db_path)
-        else:
+    else:
             db_path = Path(__file__).parent / "record-thing.sqlite"
         
         # Import entities

@@ -8,5 +8,21 @@
 	<true/>
 	<key>NSSupportsSuddenTermination</key>
 	<true/>
+
+    <!-- Required permissions -->
+    <key>NSCameraUsageDescription</key>
+    <string>Record Thing needs camera access to scan and record your belongings.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Record Thing needs microphone access to record video with audio.</string>
+    
+    <!-- macOS-specific permissions -->
+    <key>NSDesktopFolderUsageDescription</key>
+    <string>Record Thing needs access to save and retrieve files from your Desktop.</string>
+    <key>NSDocumentsFolderUsageDescription</key>
+    <string>Record Thing needs access to save and retrieve files from your Documents folder.</string>
+    <key>NSDownloadsFolderUsageDescription</key>
+    <string>Record Thing needs access to save and retrieve files from your Downloads folder.</string>
+
+
 </dict>
 </plist>

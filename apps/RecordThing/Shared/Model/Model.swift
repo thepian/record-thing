@@ -1,5 +1,5 @@
 /*
-See LICENSE folder for this sample’s licensing information.
+See LICENSE folder for this sample's licensing information.
 
 Abstract:
 A model representing all of the data the app needs to display in its interface.
@@ -9,6 +9,7 @@ import Foundation
 import AuthenticationServices
 import os
 import Combine
+import RecordLib
 
 private let logger = Logger(
     subsystem: Bundle.main.bundleIdentifier ?? "com.thepia.RecordThing",
@@ -19,6 +20,13 @@ class Model: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     @Published var account: AccountModel?
+    
+    // Add checkboxItems for RecordedStackAndRequirementsView
+    @Published var checkboxItems: [CheckboxItem] = [
+        CheckboxItem(text: "Take product photo"),
+        CheckboxItem(text: "Scan barcode", isChecked: true),
+        CheckboxItem(text: "Capture Sales Receipt")
+    ]
     
     var hasAccount: Bool {
         #if targetEnvironment(simulator)
@@ -107,7 +115,7 @@ class Model: ObservableObject {
     }
 }
 
-// MARK: - Products & AccountModel
+// MARK: - Products & AccountModel
 
 extension Model {
     func toggleFavorite(smoothieID: Things.ID) {
@@ -182,4 +190,48 @@ extension Model {
         self.allRecipesUnlocked = true
     }
     
+}
+
+// MARK: - Checkbox Items Management
+
+extension Model {
+    func toggleCheckboxItem(_ item: CheckboxItem) {
+        if let index = checkboxItems.firstIndex(where: { $0.id == item.id }) {
+            checkboxItems[index].isChecked.toggle()
+            logger.debug("Toggled checkbox item: \(self.checkboxItems[index].text), isChecked: \(self.checkboxItems[index].isChecked)")
+        }
+    }
+    
+    func resetCheckboxItems() {
+        checkboxItems = [
+            CheckboxItem(text: "Take product photo", isChecked: false),
+            CheckboxItem(text: "Scan barcode", isChecked: false),
+            CheckboxItem(text: "Capture Sales Receipt", isChecked: false)
+        ]
+    }
+    
+    func updateCheckboxItems(for category: AssetCategory) {
+        // Example of updating checkbox items based on the selected category
+        switch category {
+        case .watches:
+            checkboxItems = [
+                CheckboxItem(text: "Take watch photo"),
+                CheckboxItem(text: "Scan serial number"),
+                CheckboxItem(text: "Capture warranty card")
+            ]
+        case .bags:
+            checkboxItems = [
+                CheckboxItem(text: "Take bag photo"),
+                CheckboxItem(text: "Scan authenticity code"),
+                CheckboxItem(text: "Capture receipt")
+            ]
+        default:
+            // Default items
+            checkboxItems = [
+                CheckboxItem(text: "Take product photo"),
+                CheckboxItem(text: "Scan barcode", isChecked: true),
+                CheckboxItem(text: "Capture Sales Receipt")
+            ]
+        }
+    }
 }

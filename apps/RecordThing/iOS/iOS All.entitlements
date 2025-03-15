@@ -10,5 +10,7 @@
 	<array>
 		<string>group.thepia.recordthing</string>
 	</array>
+	<key>com.apple.security.device.camera</key>
+	<true/>
 </dict>
 </plist>

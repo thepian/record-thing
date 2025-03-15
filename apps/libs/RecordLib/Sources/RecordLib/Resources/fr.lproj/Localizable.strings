@@ -1,0 +1,61 @@
+/* 
+  Localizable.strings (French)
+  RecordLib
+
+  Created by Cline on 16.03.2025.
+*/
+
+"security.camera_denied" = "Treasure uses the camera to record your belongings.";
+"security.camera_notDetermined" = "Treasure uses the camera to record your belongings.";
+"security.camera_restricted" = "Treasure uses the camera to record your belongings.";
+
+// General
+"yes" = "Oui";
+"no" = "Non";
+"ok" = "OK";
+"cancel" = "Annuler";
+"done" = "Terminé";
+"next" = "Suivant";
+"back" = "Retour";
+"save" = "Enregistrer";
+"delete" = "Supprimer";
+"edit" = "Modifier";
+"search" = "Rechercher";
+"loading" = "Chargement...";
+"error" = "Erreur";
+"success" = "Succès";
+"warning" = "Avertissement";
+"info" = "Information";
+
+// ConfirmDenyStatement
+"confirm_deny_is_this_a" = "Est-ce un";
+"confirm_deny_yes" = "Oui";
+"confirm_deny_no" = "Non";
+"confirm_deny_yes_it_is" = "Oui, c'est ça";
+"confirm_deny_no_its_not" = "Non, ce n'est pas ça";
+
+// Camera
+"camera_permission_title" = "Accès à la caméra";
+"camera_permission_message" = "Cette application a besoin d'accéder à votre caméra pour scanner des objets.";
+"camera_permission_denied" = "Accès à la caméra refusé. Veuillez l'activer dans les Paramètres.";
+"camera_not_available" = "Caméra non disponible sur cet appareil.";
+"camera_scanning" = "Numérisation...";
+"camera_position_item" = "Positionnez l'objet dans le cadre";
+
+// Errors
+"error_generic" = "Une erreur s'est produite. Veuillez réessayer.";
+"error_network" = "Erreur réseau. Veuillez vérifier votre connexion.";
+"error_timeout" = "La requête a expiré. Veuillez réessayer.";
+"error_server" = "Erreur serveur. Veuillez réessayer plus tard.";
+"error_authentication" = "Erreur d'authentification. Veuillez vous reconnecter.";
+"error_permission" = "Permission refusée. Veuillez vérifier vos paramètres.";
+
+// Accessibility
+"accessibility_tab_home" = "Onglet Accueil";
+"accessibility_tab_search" = "Onglet Recherche";
+"accessibility_tab_camera" = "Onglet Caméra";
+"accessibility_tab_notifications" = "Onglet Notifications";
+"accessibility_tab_profile" = "Onglet Profil";
+"accessibility_button_close" = "Fermer";
+"accessibility_button_back" = "Retour";
+"accessibility_button_more" = "Plus d'options";

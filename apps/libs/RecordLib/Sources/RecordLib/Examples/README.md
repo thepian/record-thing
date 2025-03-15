@@ -2,6 +2,71 @@
 
 This directory contains example implementations that demonstrate how to use various components from the RecordLib library in real-world scenarios.
 
+## CheckboxImageCardViewDemo
+
+The `CheckboxImageCardViewDemo.swift` file demonstrates how to use the `CheckboxImageCardView` component, which combines a `CheckboxCarouselView` and an `ImageCardStack` side-by-side. This component is useful for displaying a list of checkable items alongside a stack of related images.
+
+### Key Features
+
+- **Combined Components**: Integrates CheckboxCarouselView and ImageCardStack in a single component
+- **Flexible Layout**: Supports both horizontal (side-by-side) and vertical (stacked) layouts
+- **Customizable Appearance**: Extensive customization options for colors, sizes, and styling
+- **Interactive Demo**: Includes a live demo with configurable options for layout, style, and theme
+- **Optional Section Titles**: Support for adding titles to both the checkbox and image sections
+
+### Usage in Your Project
+
+To implement a CheckboxImageCardView in your project:
+
+1. Define your checkbox items and card images:
+   ```swift
+   let checkboxItems = [
+       CheckboxItem(text: "Take a photo"),
+       CheckboxItem(text: "Scan barcode", isChecked: true),
+       CheckboxItem(text: "Add details")
+   ]
+   
+   let cardImages = [
+       ImageCardStack.CardImage.system("photo"),
+       ImageCardStack.CardImage.system("camera"),
+       ImageCardStack.CardImage.system("doc.text.image")
+   ]
+   ```
+
+2. Create the CheckboxImageCardView:
+   ```swift
+   CheckboxImageCardView(
+       checkboxItems: checkboxItems,
+       cardImages: cardImages,
+       direction: .horizontal,
+       checkboxTitle: "Required Steps",
+       imagesTitle: "Reference Images",
+       onItemToggled: { item in
+           print("Item toggled: \(item.text), isChecked: \(item.isChecked)")
+       },
+       onCardStackTapped: {
+           print("Card stack tapped")
+       }
+   )
+   ```
+
+### Customization Options
+
+The CheckboxImageCardView component offers extensive customization options:
+
+- **Layout Direction**: Choose between horizontal (side-by-side) or vertical (stacked) layout
+- **Checkbox Styling**: Customize the appearance of checkboxes (boxed or simple style)
+- **Card Stack Styling**: Customize the appearance of the image cards (size, spacing, rotation)
+- **Colors and Themes**: Customize colors for text, checkboxes, card borders, and backgrounds
+- **Animation**: Control animation duration and behavior for both components
+
+### Use Cases
+
+- Product onboarding flows
+- Task checklists with visual references
+- Multi-step processes with image examples
+- Feature tours with screenshots
+
 ## FloatingTabBarExample
 
 The `FloatingTabBarExample.swift` file demonstrates how to create a custom TabView with a floating tab bar in SwiftUI. This component provides a modern, customizable alternative to the standard SwiftUI TabView.

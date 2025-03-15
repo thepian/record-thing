@@ -6,8 +6,7 @@
 //
 
 import SwiftUI
-
-import UIKit
+import os
 
 /// A simple component that displays an object name with thumbs up/down buttons
 /// This matches the design shown in "First Scan - iPhone 13 mini.png"
@@ -20,7 +19,9 @@ public struct SimpleConfirmDenyStatement: View {
     private let onConfirm: () -> Void
     private let onDeny: () -> Void
     private let textColor: Color?
-    private let backgroundImage: UIImage?
+    
+    private let backgroundImage: RecordImage?
+    
     private let backgroundBrightness: CGFloat?
     private let useGlowEffect: Bool
     private let glowColor: Color
@@ -34,7 +35,7 @@ public struct SimpleConfirmDenyStatement: View {
     /// - Parameters:
     ///   - objectName: The name of the detected object
     ///   - textColor: Optional fixed color of the object name text (if nil, color will be determined dynamically)
-    ///   - backgroundImage: Optional UIImage to analyze for determining optimal text color
+    ///   - backgroundImage: Optional image to analyze for determining optimal text color
     ///   - backgroundBrightness: Optional brightness value (0-1) to determine text color (if backgroundImage not provided)
     ///   - useGlowEffect: Whether to apply a glow effect to the text for better contrast
     ///   - glowColor: Color of the glow effect (defaults to black)
@@ -45,7 +46,7 @@ public struct SimpleConfirmDenyStatement: View {
     public init(
         objectName: String,
         textColor: Color? = nil,
-        backgroundImage: UIImage? = nil,
+        backgroundImage: RecordImage? = nil,
         backgroundBrightness: CGFloat? = nil,
         useGlowEffect: Bool = true,
         glowColor: Color = .black,
@@ -82,6 +83,7 @@ public struct SimpleConfirmDenyStatement: View {
                         .shadow(color: .black.opacity(0.8), radius: 2, x: 0, y: 0)
                         .padding(.top, 8)
                 }
+                .buttonStyle(PlainButtonStyle()) // Ensure consistent appearance across platforms
                 .accessibilityLabel("Not a \(objectName)")
                 
                 // Confirm button (thumbs up)
@@ -95,6 +97,7 @@ public struct SimpleConfirmDenyStatement: View {
                         .shadow(color: .black.opacity(0.8), radius: 2, x: 0, y: 0)
                         .padding(.bottom, 8)
                 }
+                .buttonStyle(PlainButtonStyle()) // Ensure consistent appearance across platforms
                 .accessibilityLabel("Yes, it's a \(objectName)")
             }
             // Object name with glow effect
@@ -141,10 +144,14 @@ public struct SimpleConfirmDenyStatement: View {
     }
     
     /// Calculates the average brightness of an image
-    /// - Parameter image: The UIImage to analyze
+    /// - Parameter image: The image to analyze
     /// - Returns: A value between 0 (dark) and 1 (bright)
-    private func calculateAverageBrightness(from image: UIImage) -> CGFloat {
+    private func calculateAverageBrightness(from image: RecordImage) -> CGFloat {
+        #if canImport(UIKit)
         guard let cgImage = image.cgImage else { return 0.5 }
+        #elseif canImport(AppKit)
+        guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return 0.5 }
+        #endif
         
         // Create a bitmap context to sample pixels
         let width = cgImage.width
@@ -259,7 +266,7 @@ public struct ConfirmDenyStatement: View {
         objectImage: Image? = nil,
         confirmText: String = "Yes",
         denyText: String = "No",
-        backgroundColor: Color = Color(.secondarySystemBackground),
+        backgroundColor: Color = Color.secondarySystemBackground,
         textColor: Color = .primary,
         buttonBackgroundColor: Color = .blue,
         buttonTextColor: Color = .white,
@@ -323,6 +330,7 @@ public struct ConfirmDenyStatement: View {
                         .background(buttonBackgroundColor.opacity(0.7))
                         .cornerRadius(cornerRadius / 2)
                 }
+                .buttonStyle(PlainButtonStyle())
                 .accessibilityLabel("Deny \(objectName)")
                 
                 // Confirm button
@@ -338,6 +346,7 @@ public struct ConfirmDenyStatement: View {
                         .background(buttonBackgroundColor)
                         .cornerRadius(cornerRadius / 2)
                 }
+                .buttonStyle(PlainButtonStyle())
                 .accessibilityLabel("Confirm \(objectName)")
             }
             .padding(.horizontal)
@@ -387,6 +396,7 @@ public struct CompactConfirmDenyStatement: View {
                     .font(.title3)
                     .foregroundColor(.red)
             }
+            .buttonStyle(PlainButtonStyle())
             .accessibilityLabel("Not a \(objectName)")
             
             // Confirm button
@@ -395,27 +405,17 @@ public struct CompactConfirmDenyStatement: View {
                     .font(.title3)
                     .foregroundColor(.green)
             }
+            .buttonStyle(PlainButtonStyle())
             .accessibilityLabel("Yes, it's a \(objectName)")
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
-        .background(Color(.secondarySystemBackground))
+        .background(Color.secondarySystemBackground)
         .cornerRadius(10)
     }
 }
 
-// Simple logger for debugging
-fileprivate struct Logger {
-    let subsystem: String
-    let category: String
-    
-    func debug(_ message: String) {
-        #if DEBUG
-        print("[\(subsystem):\(category)] DEBUG: \(message)")
-        #endif
-    }
-}
-
+#if DEBUG
 // MARK: - Preview
 struct ConfirmDenyStatement_Previews: PreviewProvider {
     static var previews: some View {
@@ -572,6 +572,7 @@ struct ConfirmDenyStatement_Previews: PreviewProvider {
             .padding()
         }
         .previewLayout(.sizeThatFits)
-        .background(Color(.systemBackground))
+        .background(Color.systemBackground)
     }
 }
+#endif
