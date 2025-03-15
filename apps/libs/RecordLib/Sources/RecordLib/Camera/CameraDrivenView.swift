@@ -149,6 +149,20 @@ import AVFoundation
 
 struct CameraDrivenView_Previews: PreviewProvider {
     static var previews: some View {
+        @StateObject var viewModel = RecordedThingViewModel(
+            checkboxItems: [
+                CheckboxItem(text: "Take a photo of the product"),
+                CheckboxItem(text: "Scan the barcode"),
+                CheckboxItem(text: "Capture the receipt")
+            ],
+            cardImages: [
+                .system("moon.fill"),
+                .system("star.fill")
+            ]
+//            checkboxTextColor: .white,
+//            checkboxColor: .white
+        )
+        
         Group {
             // Create preview with authorized camera
             CameraDrivenView(captureService: MockedCaptureService(.authorized)) {
@@ -156,14 +170,7 @@ struct CameraDrivenView_Previews: PreviewProvider {
                     Spacer()
                     ReservedForCameraView()
                     CheckboxCarouselView(
-                        items: [
-                            CheckboxItem(text: "Take a photo of the product"),
-                            CheckboxItem(text: "Scan the barcode"),
-                            CheckboxItem(text: "Capture the receipt")
-                        ],
-                        onItemToggled: { item in
-                            print("Item toggled: \(item.text), isChecked: \(item.isChecked)")
-                        }
+                        viewModel: viewModel
                     )
                     .padding()
                     .cornerRadius(12)

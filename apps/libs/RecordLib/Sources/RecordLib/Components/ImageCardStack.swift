@@ -17,33 +17,17 @@ import os
 ///
 /// Example usage:
 /// ```swift
-/// // With custom images
 /// ImageCardStack(
-///     images: [
-///         .custom(Image("card1")),
-///         .custom(Image("card2")),
-///         .custom(Image("card3"))
-///     ],
-///     size: 60
-/// )
-///
-/// // With system images
-/// ImageCardStack(
-///     images: [
-///         .system("photo"),
-///         .system("camera"),
-///         .system("doc")
-///     ],
-///     size: 50,
-///     spacing: 8,
-///     rotation: 5
-/// )
-///
-/// // Empty stack
-/// ImageCardStack(
-///     images: [],
-///     size: 40,
-///     placeholderColor: .gray.opacity(0.3)
+///     viewModel: RecordedThingViewModel(
+///         cardImages: [
+///             .system("photo"),
+///             .system("camera"),
+///             .system("doc.text.image")
+///         ],
+///         cardSize: 60,
+///         cardSpacing: 12,
+///         cardRotation: 4
+///     )
 /// )
 /// ```
 public struct ImageCardStack: View {
@@ -83,8 +67,10 @@ public struct ImageCardStack: View {
     // Logger for debugging
     private let logger = Logger(subsystem: "com.record-thing", category: "ui.image-card-stack")
     
-    // Content
-    @State private var images: [CardImage]
+    // ViewModel
+    @ObservedObject private var viewModel: RecordedThingViewModel
+    
+    // Animation state
     @State private var isAnimatingReplacement: Bool = false
     @State private var replacementImage: CardImage?
     @State private var replacementOffset: CGFloat = 50
@@ -92,83 +78,32 @@ public struct ImageCardStack: View {
     @State private var topCardOffset: CGFloat = 0
     @State private var topCardOpacity: Double = 1
     
-    // Configuration
-    private let size: CGFloat
-    private let spacing: CGFloat
-    private let rotation: CGFloat
-    private let cornerRadius: CGFloat
-    private let showBorder: Bool
-    private let borderColor: Color
-    private let borderWidth: CGFloat
-    private let showShadow: Bool
-    private let shadowColor: Color
-    private let shadowRadius: CGFloat
-    private let placeholderColor: Color
-    private let placeholderSystemImage: String?
     private let onTap: (() -> Void)?
     private let replacementAnimationDuration: Double
     
     // MARK: - Initialization
     
     /// Creates a new ImageCardStack
-    /// - Parameters:
-    ///   - images: Array of images to display in the stack (max 5)
-    ///   - size: Size of each card (width and height)
-    ///   - spacing: Horizontal spacing between cards
-    ///   - rotation: Rotation angle in degrees between cards
-    ///   - cornerRadius: Corner radius of each card
-    ///   - showBorder: Whether to show a border around each card
-    ///   - borderColor: Color of the border
-    ///   - borderWidth: Width of the border
-    ///   - showShadow: Whether to show a shadow under each card
-    ///   - shadowColor: Color of the shadow
-    ///   - shadowRadius: Radius of the shadow
-    ///   - placeholderColor: Color of the placeholder circle when no images are present
-    ///   - placeholderSystemImage: Optional system image to display in the placeholder
     ///   - replacementAnimationDuration: Duration of the card replacement animation
     ///   - onTap: Action to perform when the stack is tapped
+    /// - Parameter viewModel: The view model that manages the state and business logic
     public init(
-        images: [CardImage],
-        size: CGFloat = 60,
-        spacing: CGFloat = 10,
-        rotation: CGFloat = 3,
-        cornerRadius: CGFloat = 8,
-        showBorder: Bool = true,
-        borderColor: Color = .white,
-        borderWidth: CGFloat = 1,
-        showShadow: Bool = true,
-        shadowColor: Color = .black.opacity(0.3),
-        shadowRadius: CGFloat = 2,
-        placeholderColor: Color = .gray.opacity(0.2),
-        placeholderSystemImage: String? = nil,
+        viewModel: RecordedThingViewModel,
         replacementAnimationDuration: Double = 0.5,
         onTap: (() -> Void)? = nil
     ) {
-        // Limit to 5 images maximum
-        self._images = State(initialValue: Array(images.prefix(5)))
-        self.size = size
-        self.spacing = spacing
-        self.rotation = rotation
-        self.cornerRadius = cornerRadius
-        self.showBorder = showBorder
-        self.borderColor = borderColor
-        self.borderWidth = borderWidth
-        self.showShadow = showShadow
-        self.shadowColor = shadowColor
-        self.shadowRadius = shadowRadius
-        self.placeholderColor = placeholderColor
-        self.placeholderSystemImage = placeholderSystemImage
+        self.viewModel = viewModel
+
         self.replacementAnimationDuration = replacementAnimationDuration
         self.onTap = onTap
-        
-        logger.debug("ImageCardStack initialized with \(images.count) images")
+        logger.debug("ImageCardStack initialized with view model")
     }
     
     // MARK: - Body
     
     public var body: some View {
         ZStack {
-            if images.isEmpty {
+            if viewModel.cardImages.isEmpty {
                 // Placeholder when no images are present
                 emptyPlaceholder
             } else {
@@ -178,18 +113,18 @@ public struct ImageCardStack: View {
                 // Replacement card animation
                 if isAnimatingReplacement, let replacement = replacementImage {
                     cardView(for: replacement)
-                        .offset(x: xOffset(for: images.count - 1), y: replacementOffset)
-                        .rotationEffect(.degrees(rotationAngle(for: images.count - 1)))
+                        .offset(x: xOffset(for: viewModel.cardImages.count - 1), y: replacementOffset)
+                        .rotationEffect(.degrees(rotationAngle(for: viewModel.cardImages.count - 1)))
                         .opacity(replacementOpacity)
-                        .zIndex(Double(images.count + 1))
+                        .zIndex(Double(viewModel.cardImages.count + 1))
                 }
             }
         }
-        .frame(width: stackWidth, height: size)
+        .frame(width: stackWidth, height: viewModel.designSystem.cardSize)
         .contentShape(Rectangle())
         .onTapGesture {
             logger.debug("ImageCardStack tapped")
-            onTap?()
+            viewModel.handleCardStackTapped()
         }
     }
     
@@ -199,8 +134,8 @@ public struct ImageCardStack: View {
     private var cardStack: some View {
         ZStack {
             // Display cards from back to front
-            ForEach(0..<images.count, id: \.self) { index in
-                if index == images.count - 1 && isAnimatingReplacement {
+            ForEach(0..<viewModel.cardImages.count, id: \.self) { index in
+                if index == viewModel.cardImages.count - 1 && isAnimatingReplacement {
                     // Top card that's being replaced
                     cardView(for: index)
                         .offset(x: xOffset(for: index), y: topCardOffset)
@@ -220,20 +155,20 @@ public struct ImageCardStack: View {
     
     /// A single card in the stack
     private func cardView(for index: Int) -> some View {
-        images[index].image
+        viewModel.cardImages[index].image
             .resizable()
             .scaledToFill()
-            .frame(width: size, height: size)
-            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+            .frame(width: viewModel.designSystem.cardSize, height: viewModel.designSystem.cardSize)
+            .clipShape(RoundedRectangle(cornerRadius: viewModel.designSystem.cornerRadius))
             .overlay(
                 Group {
-                    if showBorder {
-                        RoundedRectangle(cornerRadius: cornerRadius)
-                            .stroke(borderColor, lineWidth: borderWidth)
+                    if viewModel.showCardBorder {
+                        RoundedRectangle(cornerRadius: viewModel.designSystem.cornerRadius)
+                            .stroke(viewModel.designSystem.borderColor, lineWidth: viewModel.designSystem.borderWidth)
                     }
                 }
             )
-            .shadow(color: showShadow ? shadowColor : .clear, radius: shadowRadius)
+            .shadow(color: viewModel.designSystem.shadowColor, radius: viewModel.designSystem.shadowRadius)
     }
     
     /// A single card view for a replacement card
@@ -241,39 +176,39 @@ public struct ImageCardStack: View {
         image.image
             .resizable()
             .scaledToFill()
-            .frame(width: size, height: size)
-            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+            .frame(width: viewModel.designSystem.cardSize, height: viewModel.designSystem.cardSize)
+            .clipShape(RoundedRectangle(cornerRadius: viewModel.designSystem.cornerRadius))
             .overlay(
                 Group {
-                    if showBorder {
-                        RoundedRectangle(cornerRadius: cornerRadius)
-                            .stroke(borderColor, lineWidth: borderWidth)
+                    if viewModel.showCardBorder {
+                        RoundedRectangle(cornerRadius: viewModel.designSystem.cornerRadius)
+                            .stroke(viewModel.designSystem.borderColor, lineWidth: viewModel.designSystem.borderWidth)
                     }
                 }
             )
-            .shadow(color: showShadow ? shadowColor : .clear, radius: shadowRadius)
+            .shadow(color: viewModel.designSystem.shadowColor, radius: viewModel.designSystem.shadowRadius)
     }
     
     /// Placeholder shown when no images are present
     private var emptyPlaceholder: some View {
         ZStack {
             Circle()
-                .fill(placeholderColor)
-                .frame(width: size, height: size)
+                .fill(viewModel.designSystem.placeholderColor)
+                .frame(width: viewModel.designSystem.cardSize, height: viewModel.designSystem.cardSize)
                 .overlay(
                     Group {
-                        if showBorder {
+                        if viewModel.showCardBorder {
                             Circle()
-                                .stroke(borderColor, lineWidth: borderWidth)
+                                .stroke(viewModel.designSystem.borderColor, lineWidth: viewModel.designSystem.borderWidth)
                         }
                     }
                 )
-                .shadow(color: showShadow ? shadowColor : .clear, radius: shadowRadius)
+                .shadow(color: viewModel.designSystem.shadowColor, radius: viewModel.designSystem.shadowRadius)
             
-            if let systemImageName = placeholderSystemImage {
+            if let systemImageName = viewModel.cardPlaceholderSystemImage {
                 Image(systemName: systemImageName)
-                    .foregroundColor(borderColor)
-                    .font(.system(size: size * 0.4))
+                    .foregroundColor(viewModel.designSystem.borderColor)
+                    .font(.system(size: viewModel.designSystem.cardSize * 0.4))
             }
         }
     }
@@ -282,24 +217,24 @@ public struct ImageCardStack: View {
     
     /// Calculate the horizontal offset for a card at the given index
     private func xOffset(for index: Int) -> CGFloat {
-        return spacing * CGFloat(index)
+        return viewModel.designSystem.cardSpacing * CGFloat(index)
     }
     
     /// Calculate the rotation angle for a card at the given index
     private func rotationAngle(for index: Int) -> Double {
         // Center card is straight, others fan out
-        let middleIndex = Double(images.count - 1) / 2.0
+        let middleIndex = Double(viewModel.cardImages.count - 1) / 2.0
         let indexDiff = Double(index) - middleIndex
-        return indexDiff * Double(rotation)
+        return indexDiff * Double(viewModel.designSystem.cardRotation)
     }
     
     /// Calculate the total width of the stack
     private var stackWidth: CGFloat {
-        if images.isEmpty {
-            return size // Just the circle width
+        if viewModel.cardImages.isEmpty {
+            return viewModel.designSystem.cardSize // Just the circle width
         } else {
             // Width of first card + offset of last card + width of last card
-            return size + xOffset(for: images.count - 1)
+            return viewModel.designSystem.cardSize + xOffset(for: viewModel.cardImages.count - 1)
         }
     }
     
@@ -309,10 +244,10 @@ public struct ImageCardStack: View {
     /// - Parameter newImage: The new image to place on top of the stack
     /// - Returns: A modified ImageCardStack with the animation in progress
     public func replaceTopCard(with newImage: CardImage) -> Self {
-        var copy = self
+        let copy = self
         
         // Only proceed if there are images in the stack
-        if !copy.images.isEmpty {
+        if !copy.viewModel.cardImages.isEmpty {
             copy.replacementImage = newImage
             copy.isAnimatingReplacement = true
             
@@ -335,10 +270,10 @@ public struct ImageCardStack: View {
             
             // After animation completes, update the actual images array
             DispatchQueue.main.asyncAfter(deadline: .now() + copy.replacementAnimationDuration + 0.1) {
-                if var updatedImages = copy.images as? [CardImage], !updatedImages.isEmpty {
+                if var updatedImages = copy.viewModel.cardImages as? [CardImage], !updatedImages.isEmpty {
                     // Replace the top card
                     updatedImages[updatedImages.count - 1] = newImage
-                    copy.images = updatedImages
+                    copy.viewModel.cardImages = updatedImages
                     
                     // Reset animation states
                     copy.isAnimatingReplacement = false
@@ -357,20 +292,34 @@ public struct ImageCardStack: View {
 
 struct ImageCardStack_Previews: PreviewProvider {
     struct AnimatedCardStackDemo: View {
-        @State private var stack = ImageCardStack(
-            images: [
+        @StateObject private var viewModel = RecordedThingViewModel(
+            checkboxItems: [
+                CheckboxItem(text: "Take product photo", isChecked: false),
+                CheckboxItem(text: "Scan barcode", isChecked: false),
+                CheckboxItem(text: "Capture Sales Receipt", isChecked: false)
+            ],
+            cardImages: [
                 .system("photo"),
                 .system("camera"),
                 .system("doc.text.image")
             ],
-            size: 60,
-            spacing: 12,
-            rotation: 4,
-            borderColor: .white,
-            shadowColor: .black.opacity(0.3)
+            designSystem: DesignSystemSetup(
+                textColor: .white,
+                accentColor: .white,
+                backgroundColor: .clear,
+                borderColor: .white.opacity(0.2),
+                shadowColor: .black.opacity(0.3),
+                placeholderColor: .white.opacity(0.2),
+                cardSpacing: 12,
+                cardSize: 60,
+                cardRotation: 4
+            )
         )
         
         @State private var replacementImages: [ImageCardStack.CardImage] = [
+            .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)),
+//            .custom(<#T##Image#>("beige_kitchen_table_with_a_professional_DSLR_standing"))
+//            .system("beige_kitchen_table_with_a_professional_DSLR_standing"),
             .system("star.fill"),
             .system("heart.fill"),
             .system("bell.fill"),
@@ -385,7 +334,7 @@ struct ImageCardStack_Previews: PreviewProvider {
                     .font(.headline)
                     .padding(.bottom, 10)
                 
-                stack
+                ImageCardStack(viewModel: viewModel)
                     .padding()
                 
                 Button("Replace Top Card") {
@@ -393,7 +342,7 @@ struct ImageCardStack_Previews: PreviewProvider {
                     let nextImage = replacementImages[currentIndex]
                     
                     // Update the stack with animation
-                    stack = stack.replaceTopCard(with: nextImage)
+                    viewModel.cardImages[viewModel.cardImages.count - 1] = nextImage
                     
                     // Move to the next replacement image
                     currentIndex = (currentIndex + 1) % replacementImages.count
@@ -420,19 +369,25 @@ struct ImageCardStack_Previews: PreviewProvider {
                     .font(.headline)
                 
                 ImageCardStack(
-                    images: [
-                        .custom(Image("thepia_a_high-end_electric_mountain_bike_1")),
-                        .custom(Image("thepia_a_high-end_electric_mountain_bike_1")),
-                        .custom(Image("thepia_a_high-end_electric_mountain_bike_1")),
-                        .custom(Image("thepia_a_high-end_electric_mountain_bike_1")),
-                        .custom(Image("thepia_a_high-end_electric_mountain_bike_1"))
-                    ],
-                    size: 70,
-                    spacing: 15,
-                    rotation: 5,
-                    onTap: {
-                        print("Full stack tapped")
-                    }
+                    viewModel: RecordedThingViewModel(
+                        checkboxItems: [
+                            CheckboxItem(text: "First item"),
+                            CheckboxItem(text: "Second item", isChecked: true),
+                            CheckboxItem(text: "Third item")
+                        ],
+                        cardImages: [
+                            .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)),
+                            .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)),
+                            .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)),
+                            .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)),
+                            .custom(Image("beige_kitchen_table_with_a_professional_DSLR_standing", bundle: Bundle.module))
+                        ],
+                        designSystem: DesignSystemSetup(
+                            cardSpacing: 15,
+                            cardSize: 70,
+                            cardRotation: 5
+                        )
+                    )
                 )
             }
             
@@ -442,19 +397,25 @@ struct ImageCardStack_Previews: PreviewProvider {
                     .font(.headline)
                 
                 ImageCardStack(
-                    images: [
-                        .system("photo"),
-                        .system("camera"),
-                        .system("doc.text.image")
-                    ],
-                    size: 60,
-                    spacing: 12,
-                    rotation: 4,
-                    borderColor: .blue,
-                    shadowColor: .blue.opacity(0.3),
-                    onTap: {
-                        print("System images stack tapped")
-                    }
+                    viewModel: RecordedThingViewModel(
+                        checkboxItems: [
+                            CheckboxItem(text: "First item"),
+                            CheckboxItem(text: "Second item", isChecked: true),
+                            CheckboxItem(text: "Third item")
+                        ],
+                        cardImages: [
+                            .system("photo"),
+                            .system("camera"),
+                            .system("doc.text.image")
+                        ],
+                        designSystem: DesignSystemSetup(
+                            borderColor: .blue,
+                            shadowColor: .blue.opacity(0.3),
+                            cardSpacing: 12,
+                            cardSize: 60,
+                            cardRotation: 4
+                        )
+                    )
                 )
             }
             
@@ -464,16 +425,22 @@ struct ImageCardStack_Previews: PreviewProvider {
                     .font(.headline)
                 
                 ImageCardStack(
-                    images: [
-                        .system("photo.fill")
-                    ],
-                    size: 50,
-                    cornerRadius: 25, // Circle
-                    borderColor: .green,
-                    borderWidth: 2,
-                    onTap: {
-                        print("Single image stack tapped")
-                    }
+                    viewModel: RecordedThingViewModel(
+                        checkboxItems: [
+                            CheckboxItem(text: "First item"),
+                            CheckboxItem(text: "Second item", isChecked: true),
+                            CheckboxItem(text: "Third item")
+                        ],
+                        cardImages: [
+                            .system("photo.fill")
+                        ],
+                        designSystem: DesignSystemSetup(
+                            borderColor: .green,
+                            cardSize: 50,
+                            borderWidth: 2,
+                            cornerRadius: 25 // Circle
+                        )
+                    )
                 )
             }
             
@@ -483,13 +450,18 @@ struct ImageCardStack_Previews: PreviewProvider {
                     .font(.headline)
                 
                 ImageCardStack(
-                    images: [],
-                    size: 60,
-                    placeholderColor: .gray.opacity(0.2),
-                    placeholderSystemImage: "photo.stack",
-                    onTap: {
-                        print("Empty stack tapped")
-                    }
+                    viewModel: RecordedThingViewModel(
+                        checkboxItems: [
+                            CheckboxItem(text: "First item"),
+                            CheckboxItem(text: "Second item", isChecked: true),
+                            CheckboxItem(text: "Third item")
+                        ],
+                        cardImages: [],
+                        designSystem: DesignSystemSetup(
+                            placeholderColor: .gray.opacity(0.2),
+                            cardSize: 60
+                        )
+                    )
                 )
             }
         }

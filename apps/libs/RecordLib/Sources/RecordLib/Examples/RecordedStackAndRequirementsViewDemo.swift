@@ -8,20 +8,8 @@ public struct RecordedStackAndRequirementsViewDemo: View {
     @State private var selectedStyle: StyleOption = .standard
     @State private var selectedTheme: ThemeOption = .light
     
-    // Sample checkbox items
-    @State private var checkboxItems: [CheckboxItem] = [
-        CheckboxItem(text: "Take a photo of the product"),
-        CheckboxItem(text: "Scan the barcode"),
-        CheckboxItem(text: "Capture the receipt"),
-        CheckboxItem(text: "Add product details")
-    ]
-    
-    // Sample card images
-    @State private var cardImages: [ImageCardStack.CardImage] = [
-        .system("camera.viewfinder"),
-        .system("barcode.viewfinder"),
-        .system("doc.text.image")
-    ]
+    // ViewModel for state management
+    @StateObject private var viewModel: RecordedThingViewModel
     
     // MARK: - Types
     
@@ -46,6 +34,27 @@ public struct RecordedStackAndRequirementsViewDemo: View {
         case colorful = "Colorful"
         
         var id: String { self.rawValue }
+    }
+    
+    // MARK: - Initialization
+    
+    public init() {
+        // Initialize the ViewModel with default values
+        _viewModel = StateObject(wrappedValue: RecordedThingViewModel(
+            checkboxItems: [
+                CheckboxItem(text: "Take a photo of the product"),
+                CheckboxItem(text: "Scan the barcode"),
+                CheckboxItem(text: "Capture the receipt"),
+                CheckboxItem(text: "Add product details")
+            ],
+            cardImages: [
+                .system("camera.viewfinder"),
+                .system("barcode.viewfinder"),
+                .system("doc.text.image")
+            ],
+            direction: .horizontal,
+            designSystem: .light
+        ))
     }
     
     // MARK: - Body
@@ -98,6 +107,9 @@ public struct RecordedStackAndRequirementsViewDemo: View {
             }
             .pickerStyle(SegmentedPickerStyle())
             .padding(.horizontal)
+            .onChange(of: selectedLayout) { newValue in
+                viewModel.direction = newValue == .horizontal ? .horizontal : .vertical
+            }
             
             // Style picker
             Picker("Style", selection: $selectedStyle) {
@@ -107,6 +119,10 @@ public struct RecordedStackAndRequirementsViewDemo: View {
             }
             .pickerStyle(SegmentedPickerStyle())
             .padding(.horizontal)
+//            .onChange(of: selectedStyle) { newValue in
+//                viewModel.checkboxStyle = newValue == .simple ? .simple : .boxed
+//                viewModel.showCheckboxBorder = newValue != .simple
+//            }
             
             // Theme picker
             Picker("Theme", selection: $selectedTheme) {
@@ -116,30 +132,37 @@ public struct RecordedStackAndRequirementsViewDemo: View {
             }
             .pickerStyle(SegmentedPickerStyle())
             .padding(.horizontal)
+            .onChange(of: selectedTheme) { newValue in
+                // Update the ViewModel's design system based on selected theme
+                let designSystem: DesignSystemSetup
+                switch newValue {
+                case .light:
+                    designSystem = .light
+                case .dark:
+                    designSystem = .dark
+                case .colorful:
+                    designSystem = DesignSystemSetup(
+                        textColor: .primary,
+                        accentColor: .orange,
+                        backgroundColor: .blue.opacity(0.2),
+                        borderColor: .orange,
+                        shadowColor: .orange.opacity(0.3)
+                    )
+                }
+                viewModel.designSystem = designSystem
+//                viewModel = RecordedThingViewModel(
+//                    checkboxItems: viewModel.checkboxItems,
+//                    cardImages: viewModel.cardImages,
+//                    direction: viewModel.direction,
+//                    designSystem: designSystem
+//                )
+            }
         }
     }
     
     /// Component preview based on selected options
     private var componentPreview: some View {
-        RecordedStackAndRequirementsView(
-            checkboxItems: checkboxItems,
-            cardImages: cardImages,
-            direction: selectedLayout == .horizontal ? .horizontal : .vertical,
-            spacing: 20,
-            maxVisibleItems: 1,
-            checkboxTextColor: textColorForTheme,
-            checkboxColor: accentColorForTheme,
-            checkboxStyle: checkboxStyleForSelection,
-            showCheckboxBorder: selectedStyle != .simple,
-            cardSize: 60,
-            cardBorderColor: accentColorForTheme,
-            onItemToggled: { item in
-                // Update the item in our local array
-                if let index = checkboxItems.firstIndex(where: { $0.id == item.id }) {
-                    checkboxItems[index].isChecked = item.isChecked
-                }
-            }
-        )
+        RecordedStackAndRequirementsView(viewModel: viewModel)
     }
     
     /// Description of the component
@@ -174,19 +197,21 @@ public struct RecordedStackAndRequirementsViewDemo: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 Text("""
-                CheckboxImageCardView(
-                    checkboxItems: [
-                        CheckboxItem(text: "Take a photo"),
-                        CheckboxItem(text: "Scan barcode", isChecked: true),
-                        CheckboxItem(text: "Add details")
-                    ],
-                    cardImages: [
-                        .system("photo"),
-                        .system("camera"),
-                        .system("doc.text.image")
-                    ],
-                    direction: .\(selectedLayout == .horizontal ? "horizontal" : "vertical"),
-                    checkboxStyle: .\(selectedStyle == .simple ? "simple" : "boxed")
+                RecordedStackAndRequirementsView(
+                    viewModel: RecordedThingViewModel(
+                        checkboxItems: [
+                            CheckboxItem(text: "Take a photo"),
+                            CheckboxItem(text: "Scan barcode", isChecked: true),
+                            CheckboxItem(text: "Add details")
+                        ],
+                        cardImages: [
+                            .system("photo"),
+                            .system("camera"),
+                            .system("doc.text.image")
+                        ],
+                        direction: .\(selectedLayout == .horizontal ? "horizontal" : "vertical"),
+                        checkboxStyle: .\(selectedStyle == .simple ? "simple" : "boxed")
+                    )
                 )
                 """)
                 .font(.system(.body, design: .monospaced))
@@ -232,16 +257,6 @@ public struct RecordedStackAndRequirementsViewDemo: View {
             return .white
         case .colorful:
             return .orange
-        }
-    }
-    
-    /// Checkbox style based on selected style
-    private var checkboxStyleForSelection: CheckboxStyle {
-        switch selectedStyle {
-        case .standard, .custom:
-            return .boxed
-        case .simple:
-            return .simple
         }
     }
 }
