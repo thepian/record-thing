@@ -70,7 +70,7 @@ Generated with tree -L 3
 
 ## Logging in Swift View Components
 
-`let logger = Logger(subsystem: "com.record-thing", category: "ui")`
+> let logger = Logger(subsystem: "com.record-thing", category: "ui")
 
 1. Privacy First: Despite the ease of logging, always ensure you're not capturing sensitive or personal user input.
 
@@ -82,3 +82,7 @@ Generated with tree -L 3
 
 5. Incorporate Metadata: Logger supports metadata, allowing you to add supplementary context to your logs, enriching them for better diagnostics.
 
+
+## Platforms
+
+The app will be supporting both iOS and macOS.

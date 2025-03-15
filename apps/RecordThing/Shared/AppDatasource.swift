@@ -202,7 +202,7 @@ class AppDatasource: ObservableObject {
 //            logger.info
             print("\(keysWithValues.count) Translations loaded from DB for \(locale ?? "en")")
         } catch {
-            loadedLang = nil
+            loadedLang = "failed" // TODO fallback
             logger.error("Error loading translations: \(error)")
         }
     }

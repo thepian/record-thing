@@ -50,7 +50,7 @@ public struct FloatingTabBar: View {
         tabs: [TabItem],
         height: CGFloat = 60,
         cornerRadius: CGFloat = 25,
-        backgroundColor: Color = Color(.systemBackground),
+        backgroundColor: Color = Color.systemBackground,
         selectedColor: Color = .blue,
         unselectedColor: Color = .gray,
         showShadow: Bool = true
@@ -166,7 +166,7 @@ public struct FloatingTabView<Content: View>: View {
         tabs: [FloatingTabBar.TabItem],
         tabBarHeight: CGFloat = 60,
         tabBarCornerRadius: CGFloat = 25,
-        tabBarBackgroundColor: Color = Color(.systemBackground),
+        tabBarBackgroundColor: Color = Color.systemBackground,
         tabBarSelectedColor: Color = .blue,
         tabBarUnselectedColor: Color = .gray,
         showTabBarShadow: Bool = true,
@@ -264,7 +264,7 @@ public struct FloatingTabBarExample: View {
         FloatingTabView(
             selectedTab: $selectedTab,
             tabs: tabs,
-            tabBarBackgroundColor: Color(.systemBackground),
+            tabBarBackgroundColor: Color.systemBackground,
             tabBarSelectedColor: .blue,
             tabBarUnselectedColor: .gray
         ) {
