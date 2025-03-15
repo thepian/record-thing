@@ -7,18 +7,18 @@ A high contrast button style for initiating purchases.
 
 import SwiftUI
 
-struct PurchaseButtonStyle: ButtonStyle {
+public struct PurchaseButtonStyle: ButtonStyle {
     @Environment(\.colorScheme) private var colorScheme
     
-    var foregroundColor: Color {
+    public var foregroundColor: Color {
         colorScheme == .dark ? .black : .white
     }
     
-    var backgroundColor: Color {
+    public var backgroundColor: Color {
         colorScheme == .dark ? .white : .black
     }
     
-    var minWidth: Double {
+    public var minWidth: Double {
         #if os(iOS)
         return 80
         #else
@@ -26,7 +26,7 @@ struct PurchaseButtonStyle: ButtonStyle {
         #endif
     }
     
-    func makeBody(configuration: Configuration) -> some View {
+    public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.subheadline.bold())
             .foregroundStyle(foregroundColor)
@@ -39,7 +39,7 @@ struct PurchaseButtonStyle: ButtonStyle {
 }
 
 extension ButtonStyle where Self == PurchaseButtonStyle {
-    static var purchase: PurchaseButtonStyle {
+    public static var purchase: PurchaseButtonStyle {
         PurchaseButtonStyle()
     }
 }

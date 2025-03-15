@@ -7,8 +7,8 @@ A button style that displays over a capsule background.
 
 import SwiftUI
 
-struct CapsuleButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
+public struct CapsuleButtonStyle: ButtonStyle {
+    public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .dynamicTypeSize(.large)
             .padding(.horizontal, 15)
@@ -23,7 +23,7 @@ struct CapsuleButtonStyle: ButtonStyle {
 }
 
 extension ButtonStyle where Self == CapsuleButtonStyle {
-    static var capsule: CapsuleButtonStyle {
+    public static var capsule: CapsuleButtonStyle {
         CapsuleButtonStyle()
     }
 }

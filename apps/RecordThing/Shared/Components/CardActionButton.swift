@@ -6,6 +6,7 @@ A squishable button that has a consistent look for use on a card
 */
 
 import SwiftUI
+import RecordLib
 
 struct CardActionButton: View {
     var label: LocalizedStringKey

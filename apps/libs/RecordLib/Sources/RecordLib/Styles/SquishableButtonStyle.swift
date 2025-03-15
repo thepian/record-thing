@@ -7,10 +7,14 @@ A button style that squishes its content and optionally slightly fades it out wh
 
 import SwiftUI
 
-struct SquishableButtonStyle: ButtonStyle {
-    var fadeOnPress = true
+public struct SquishableButtonStyle: ButtonStyle {
+    var fadeOnPress: Bool
+    
+    public init(fadeOnPress: Bool = true) {
+        self.fadeOnPress = fadeOnPress
+    }
 
-    func makeBody(configuration: Configuration) -> some View {
+    public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .opacity(configuration.isPressed && fadeOnPress ? 0.75 : 1)
             .scaleEffect(configuration.isPressed ? 0.95 : 1)
@@ -18,11 +22,11 @@ struct SquishableButtonStyle: ButtonStyle {
 }
 
 extension ButtonStyle where Self == SquishableButtonStyle {
-    static var squishable: SquishableButtonStyle {
+    public static var squishable: SquishableButtonStyle {
         SquishableButtonStyle()
     }
     
-    static func squishable(fadeOnPress: Bool = true) -> SquishableButtonStyle {
+    public static func squishable(fadeOnPress: Bool = true) -> SquishableButtonStyle {
         SquishableButtonStyle(fadeOnPress: fadeOnPress)
     }
 }

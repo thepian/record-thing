@@ -10,6 +10,7 @@ import AuthenticationServices
 import os
 import Combine
 import RecordLib
+import SwiftUICore
 
 private let logger = Logger(
     subsystem: Bundle.main.bundleIdentifier ?? "com.thepia.RecordThing",
@@ -22,11 +23,26 @@ class Model: ObservableObject {
     @Published var account: AccountModel?
     
     // Add checkboxItems for RecordedStackAndRequirementsView
-    @Published var checkboxItems: [CheckboxItem] = [
-        CheckboxItem(text: "Take product photo"),
-        CheckboxItem(text: "Scan barcode", isChecked: true),
-        CheckboxItem(text: "Capture Sales Receipt")
-    ]
+//    @Published var checkboxItems: [CheckboxItem] = [
+//        CheckboxItem(text: "Take product photo"),
+//        CheckboxItem(text: "Scan barcode", isChecked: true),
+//        CheckboxItem(text: "Capture Sales Receipt")
+//    ]
+    
+    // Add cardImages for RecordedStackAndRequirementsView
+//    @Published var cardImages: [RecordImage] = [
+//        RecordImage.systemImage("photo") ?? RecordImage(),
+//        RecordImage.systemImage("camera") ?? RecordImage(),
+//        RecordImage.systemImage("doc") ?? RecordImage()
+//    ]
+    
+    // Helper method to create system images
+    func systemImage(_ name: String) -> Image {
+        if let recordImage = RecordImage.systemImage(name) {
+            return recordImage.asImage
+        }
+        return Image(systemName: name) // Fallback
+    }
     
     var hasAccount: Bool {
         #if targetEnvironment(simulator)
@@ -59,6 +75,71 @@ class Model: ObservableObject {
     private var updatesHandler: Task<Void, Error>? = nil
     
     @Published var loadedLang: String?
+    
+    // Add state management for AssetsBrowsingView
+    @Published var selectedAsset: Asset?
+    @Published var assetGroups: [AssetGroup] = [
+        AssetGroup(
+            monthYear: "March 2025",
+            month: 3,
+            year: 2025,
+            assets: [
+                Asset(
+                    id: "1",
+                    name: "Rolex Daytona",
+                    category: .watches,
+                    createdAt: Date(),
+                    tags: ["luxury", "watch", "gold"]
+                ),
+                Asset(
+                    id: "2",
+                    name: "LV Neverfull",
+                    category: .bags,
+                    createdAt: Date(),
+                    tags: ["luxury", "bag", "leather"]
+                ),
+                Asset(
+                    id: "3",
+                    name: "Louboutin Pumps",
+                    category: .shoes,
+                    createdAt: Date(),
+                    tags: ["luxury", "shoes", "red"]
+                )
+            ]
+        ),
+        AssetGroup(
+            monthYear: "February 2025",
+            month: 2,
+            year: 2025,
+            assets: [
+                Asset(
+                    id: "4",
+                    name: "Gucci Sunglasses",
+                    category: .accessories,
+                    createdAt: Date().addingTimeInterval(-2592000),
+                    tags: ["luxury", "sunglasses", "summer"]
+                ),
+                Asset(
+                    id: "5",
+                    name: "Hermès Wallet",
+                    category: .accessories,
+                    createdAt: Date().addingTimeInterval(-2592000),
+                    tags: ["luxury", "wallet", "leather"]
+                ),
+                Asset(
+                    id: "6",
+                    name: "Cartier Love",
+                    category: .jewelry,
+                    createdAt: Date().addingTimeInterval(-2592000),
+                    tags: ["luxury", "bracelet", "gold"]
+                )
+            ]
+        )
+    ]
+    
+    // Add state management for CameraDrivenView
+    @Published var isCameraActive: Bool = false
+    @Published var cameraError: Error?
     
     init() {
         // Start listening for transaction info updates, like if the user
@@ -192,46 +273,3 @@ extension Model {
     
 }
 
-// MARK: - Checkbox Items Management
-
-extension Model {
-    func toggleCheckboxItem(_ item: CheckboxItem) {
-        if let index = checkboxItems.firstIndex(where: { $0.id == item.id }) {
-            checkboxItems[index].isChecked.toggle()
-            logger.debug("Toggled checkbox item: \(self.checkboxItems[index].text), isChecked: \(self.checkboxItems[index].isChecked)")
-        }
-    }
-    
-    func resetCheckboxItems() {
-        checkboxItems = [
-            CheckboxItem(text: "Take product photo", isChecked: false),
-            CheckboxItem(text: "Scan barcode", isChecked: false),
-            CheckboxItem(text: "Capture Sales Receipt", isChecked: false)
-        ]
-    }
-    
-    func updateCheckboxItems(for category: AssetCategory) {
-        // Example of updating checkbox items based on the selected category
-        switch category {
-        case .watches:
-            checkboxItems = [
-                CheckboxItem(text: "Take watch photo"),
-                CheckboxItem(text: "Scan serial number"),
-                CheckboxItem(text: "Capture warranty card")
-            ]
-        case .bags:
-            checkboxItems = [
-                CheckboxItem(text: "Take bag photo"),
-                CheckboxItem(text: "Scan authenticity code"),
-                CheckboxItem(text: "Capture receipt")
-            ]
-        default:
-            // Default items
-            checkboxItems = [
-                CheckboxItem(text: "Take product photo"),
-                CheckboxItem(text: "Scan barcode", isChecked: true),
-                CheckboxItem(text: "Capture Sales Receipt")
-            ]
-        }
-    }
-}

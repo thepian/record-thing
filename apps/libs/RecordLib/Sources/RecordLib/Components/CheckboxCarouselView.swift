@@ -23,18 +23,6 @@ public enum CarouselOrientation {
     case horizontal
 }
 
-/// Style options for the checkbox
-public enum CheckboxStyle {
-    case boxed      // Traditional checkbox with a box
-    case simple     // Just a checkmark when checked, nothing when unchecked
-}
-
-/// Text alignment options for the checkbox items
-public enum CheckboxTextAlignment {
-    case left       // Checkmark on left, text on right (default)
-    case right      // Text on left, checkmark on right
-}
-
 /// A carousel of checkbox items with animations
 public struct CheckboxCarouselView: View {
     // MARK: - Properties
@@ -43,76 +31,34 @@ public struct CheckboxCarouselView: View {
     private let logger = Logger(subsystem: "com.record-thing", category: "ui.checkbox-carousel")
     
     // State
-    @State private var items: [CheckboxItem]
     @State private var visibleItems: [CheckboxItem] = []
     @State private var isAnimating = false
     @State private var bottomBorderOpacity: Double = 1.0
     @State private var newItemAppeared: Bool = false
-    
-    // Configuration
-    private let maxVisibleItems: Int
-    private let textColor: Color
-    private let checkboxColor: Color
-    private let animationDuration: Double
-    private let itemHeight: CGFloat
-    private let spacing: CGFloat
-    private let onItemToggled: ((CheckboxItem) -> Void)?
-    private let orientation: CarouselOrientation
-    private let checkboxStyle: CheckboxStyle
-    private let showBorder: Bool
-    private let textAlignment: CheckboxTextAlignment
-    
+     
+    // ViewModel
+    @ObservedObject private var viewModel: RecordedThingViewModel
+    let designSystem: DesignSystemSetup
+       
     // MARK: - Initialization
     
     /// Creates a new CheckboxCarouselView
     /// - Parameters:
-    ///   - items: Array of checkbox items to display
-    ///   - maxVisibleItems: Maximum number of items visible at once (default: 2)
-    ///   - textColor: Color of the text (default: white)
-    ///   - checkboxColor: Color of the checkbox (default: white)
-    ///   - animationDuration: Duration of animations in seconds (default: 0.5)
-    ///   - itemHeight: Height of each item (default: 44)
-    ///   - spacing: Spacing between items (default: 8)
-    ///   - orientation: Direction of the carousel (vertical or horizontal)
-    ///   - checkboxStyle: Style of the checkbox (boxed or simple)
-    ///   - showBorder: Whether to show the border line (default: true)
-    ///   - textAlignment: Alignment of text and checkmark (default: .left)
-    ///   - onItemToggled: Callback when an item is toggled
+    ///   - viewModel: The view model that manages the state and business logic
     public init(
-        items: [CheckboxItem],
-        maxVisibleItems: Int = 2,
-        textColor: Color = .white,
-        checkboxColor: Color = .white,
-        animationDuration: Double = 2.5,
-        itemHeight: CGFloat = 44,
-        spacing: CGFloat = 8,
-        orientation: CarouselOrientation = .vertical,
-        checkboxStyle: CheckboxStyle = .boxed,
-        showBorder: Bool = true,
-        textAlignment: CheckboxTextAlignment = .left,
-        onItemToggled: ((CheckboxItem) -> Void)? = nil
+        viewModel: RecordedThingViewModel
     ) {
-        self._items = State(initialValue: items)
-        self.maxVisibleItems = maxVisibleItems
-        self.textColor = textColor
-        self.checkboxColor = checkboxColor
-        self.animationDuration = animationDuration
-        self.itemHeight = itemHeight
-        self.spacing = spacing
-        self.orientation = orientation
-        self.checkboxStyle = checkboxStyle
-        self.showBorder = showBorder
-        self.textAlignment = textAlignment
-        self.onItemToggled = onItemToggled
-        
-        logger.debug("CheckboxCarouselView initialized with \(items.count) items, orientation: \(orientation == .vertical ? "vertical" : "horizontal"), textAlignment: \(textAlignment == .left ? "left" : "right")")
+        self.viewModel = viewModel
+        self.designSystem = viewModel.designSystem
+
+        logger.debug("CheckboxCarouselView initialized with view model")
     }
     
     // MARK: - Body
     
     public var body: some View {
         Group {
-            if orientation == .vertical {
+            if viewModel.checkboxOrientation == .vertical {
                 verticalCarousel
             } else {
                 horizontalCarousel
@@ -123,16 +69,16 @@ public struct CheckboxCarouselView: View {
             updateVisibleItems()
             
             // Start animation cycle if there are more items than visible slots
-            if items.count > maxVisibleItems {
+            if viewModel.checkboxItems.count > viewModel.maxCheckboxItems {
                 startAnimationCycle()
             }
             
             // Trigger checkmark animations after a delay to allow slide-in to complete
-            DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration + 0.1) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + designSystem.checkboxAnimationDuration + 0.1) {
                 newItemAppeared = true
             }
         }
-        .onChange(of: items) { _ in
+        .onChange(of: viewModel.checkboxItems) { _ in
             logger.debug("Items changed, updating visible items")
             updateVisibleItems()
         }
@@ -142,15 +88,13 @@ public struct CheckboxCarouselView: View {
     
     /// Vertical carousel layout
     private var verticalCarousel: some View {
-        VStack(spacing: spacing) {
+        VStack(spacing: designSystem.checkboxSpacing) {
             ForEach(visibleItems) { item in
                 CheckboxItemView(
                     item: item,
-                    textColor: textColor,
-                    checkboxColor: checkboxColor,
-                    height: itemHeight,
-                    checkboxStyle: checkboxStyle,
-                    textAlignment: textAlignment,
+                    designSystem: designSystem,
+                    height: designSystem.checkboxItemHeight,
+                    textAlignment: designSystem.checkboxTextAlignment,
                     animateOnAppear: newItemAppeared
                 ) { toggledItem in
                     toggleItem(toggledItem)
@@ -165,10 +109,10 @@ public struct CheckboxCarouselView: View {
             }
             
             // Bottom border that fades in/out during animations
-            if showBorder {
+            if designSystem.showCheckboxBorder {
                 Rectangle()
                     .frame(height: 1)
-                    .foregroundColor(textColor)
+                    .foregroundColor(designSystem.textColor)
                     .opacity(bottomBorderOpacity)
                     .padding(.top, 4)
             }
@@ -177,15 +121,13 @@ public struct CheckboxCarouselView: View {
     
     /// Horizontal carousel layout
     private var horizontalCarousel: some View {
-        HStack(spacing: spacing) {
+        HStack(spacing: designSystem.checkboxSpacing) {
             ForEach(visibleItems) { item in
                 CheckboxItemView(
                     item: item,
-                    textColor: textColor,
-                    checkboxColor: checkboxColor,
-                    height: itemHeight,
-                    checkboxStyle: checkboxStyle,
-                    textAlignment: textAlignment,
+                    designSystem: designSystem,
+                    height: designSystem.checkboxItemHeight,
+                    textAlignment: designSystem.checkboxTextAlignment,
                     animateOnAppear: newItemAppeared
                 ) { toggledItem in
                     toggleItem(toggledItem)
@@ -200,10 +142,10 @@ public struct CheckboxCarouselView: View {
             }
             
             // Right border that fades in/out during animations (only visible in horizontal mode)
-            if orientation == .horizontal && showBorder {
+            if viewModel.checkboxOrientation == .horizontal && designSystem.showCheckboxBorder {
                 Rectangle()
                     .frame(width: 1, height: 40)
-                    .foregroundColor(textColor)
+                    .foregroundColor(designSystem.textColor)
                     .opacity(bottomBorderOpacity)
                     .padding(.leading, 4)
             }
@@ -215,16 +157,16 @@ public struct CheckboxCarouselView: View {
     /// Updates the list of visible items
     private func updateVisibleItems() {
         // Show only the first maxVisibleItems
-        visibleItems = Array(items.prefix(maxVisibleItems))
+        visibleItems = Array(viewModel.checkboxItems.prefix(viewModel.maxCheckboxItems))
         logger.debug("Updated visible items: \(visibleItems.map { $0.text }.joined(separator: ", "))")
     }
     
     /// Starts the animation cycle
     private func startAnimationCycle() {
-        guard !isAnimating && items.count > maxVisibleItems else { return }
+        guard !isAnimating && viewModel.checkboxItems.count > viewModel.maxCheckboxItems else { return }
         
         isAnimating = true
-        logger.debug("Starting animation cycle with orientation: \(orientation == .vertical ? "vertical" : "horizontal")")
+        logger.debug("Starting animation cycle with orientation: \(viewModel.checkboxOrientation == .vertical ? "vertical" : "horizontal")")
         
         // Schedule the next animation
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
@@ -234,7 +176,7 @@ public struct CheckboxCarouselView: View {
     
     /// Animates the next item into view
     private func animateNextItem() {
-        guard items.count > maxVisibleItems else {
+        guard viewModel.checkboxItems.count > viewModel.maxCheckboxItems else {
             isAnimating = false
             return
         }
@@ -243,16 +185,16 @@ public struct CheckboxCarouselView: View {
         newItemAppeared = false
         
         // Fade out the border
-        withAnimation(.easeInOut(duration: animationDuration / 2)) {
+        withAnimation(.easeInOut(duration: designSystem.checkboxAnimationDuration / 2)) {
             bottomBorderOpacity = 0.0
         }
         
         // After a short delay, animate in the new item and remove the top/first one
-        DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration / 2) {
-            withAnimation(.easeInOut(duration: animationDuration)) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + designSystem.checkboxAnimationDuration / 2) {
+            withAnimation(.easeInOut(duration: designSystem.checkboxAnimationDuration)) {
                 // Find the next item to add
                 if let lastVisibleItem = self.visibleItems.last,
-                   let lastIndex = self.items.firstIndex(where: { $0.id == lastVisibleItem.id }) {
+                   let lastIndex = self.viewModel.checkboxItems.firstIndex(where: { $0.id == lastVisibleItem.id }) {
                     
                     // Remove the first item
                     if !self.visibleItems.isEmpty {
@@ -260,14 +202,14 @@ public struct CheckboxCarouselView: View {
                     }
                     
                     // Add the next item or cycle back to the beginning
-                    let nextIndex = (lastIndex + 1) % self.items.count
-                    self.visibleItems.append(self.items[nextIndex])
+                    let nextIndex = (lastIndex + 1) % self.viewModel.checkboxItems.count
+                    self.visibleItems.append(self.viewModel.checkboxItems[nextIndex])
                     
-                    self.logger.debug("Animated to next item: \(self.items[nextIndex].text), index: \(nextIndex)")
-                } else if !self.items.isEmpty {
+                    self.logger.debug("Animated to next item: \(self.viewModel.checkboxItems[nextIndex].text), index: \(nextIndex)")
+                } else if !self.viewModel.checkboxItems.isEmpty {
                     // Fallback if we can't find the last visible item in the items array
-                    self.visibleItems = [self.items[0]]
-                    self.logger.debug("Reset to first item: \(self.items[0].text)")
+                    self.visibleItems = [self.viewModel.checkboxItems[0]]
+                    self.logger.debug("Reset to first item: \(self.viewModel.checkboxItems[0].text)")
                 }
                 
                 // Fade in the border
@@ -275,7 +217,7 @@ public struct CheckboxCarouselView: View {
             }
             
             // Trigger checkmark animations after a delay to allow slide-in to complete
-            DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration + 0.1) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + designSystem.checkboxAnimationDuration + 0.1) {
                 self.newItemAppeared = true
             }
             
@@ -289,14 +231,9 @@ public struct CheckboxCarouselView: View {
     /// Toggles the checked state of an item
     private func toggleItem(_ item: CheckboxItem) {
         // Find and update the item in both arrays
-        if let index = items.firstIndex(where: { $0.id == item.id }) {
-            items[index].isChecked.toggle()
-            logger.debug("Toggled item: \(items[index].text), isChecked: \(items[index].isChecked)")
-            
-            // Call the callback if provided
-            if let onItemToggled = onItemToggled {
-                onItemToggled(items[index])
-            }
+        if let index = viewModel.checkboxItems.firstIndex(where: { $0.id == item.id }) {
+            viewModel.checkboxItems[index].isChecked.toggle()
+            logger.debug("Toggled item: \(viewModel.checkboxItems[index].text), isChecked: \(viewModel.checkboxItems[index].isChecked)")
         }
         
         if let visibleIndex = visibleItems.firstIndex(where: { $0.id == item.id }) {
@@ -310,10 +247,8 @@ struct CheckboxItemView: View {
     // MARK: - Properties
     
     @State var item: CheckboxItem
-    let textColor: Color
-    let checkboxColor: Color
+    let designSystem: DesignSystemSetup
     let height: CGFloat
-    let checkboxStyle: CheckboxStyle
     let textAlignment: CheckboxTextAlignment
     let animateOnAppear: Bool
     let onToggle: (CheckboxItem) -> Void
@@ -324,7 +259,7 @@ struct CheckboxItemView: View {
     // Computed shadow color (inverse of text color)
     private var shadowColor: Color {
         // Determine if text color is light or dark
-        let brightness = textColor.brightness
+        let brightness = designSystem.textColor.brightness
         // Return black for light colors, white for dark colors
         return brightness > 0.5 ? .black : .white
     }
@@ -338,7 +273,7 @@ struct CheckboxItemView: View {
                 
                 // Text on left, checkmark on right
                 Text(item.text)
-                    .foregroundColor(textColor)
+                    .foregroundColor(designSystem.textColor)
                     .font(.system(size: 18))
                     .fontWeight(.semibold)
                     .shadow(color: shadowColor.opacity(0.8), radius: 2, x: 0, y: 0)
@@ -352,7 +287,7 @@ struct CheckboxItemView: View {
                 
                 // Text on right
                 Text(item.text)
-                    .foregroundColor(textColor)
+                    .foregroundColor(designSystem.textColor)
                     .font(.system(size: 18))
                     .fontWeight(.semibold)
                     .shadow(color: shadowColor.opacity(0.8), radius: 2, x: 0, y: 0)
@@ -432,27 +367,23 @@ struct CheckboxItemView: View {
                 }
             }
         }) {
-            if checkboxStyle == .boxed {
+            if designSystem.checkboxStyle == .boxed {
                 // Traditional boxed checkbox
                 ZStack {
                     RoundedRectangle(cornerRadius: 4)
-                        .stroke(checkboxColor, lineWidth: 2)
+                        .stroke(designSystem.checkboxColor, lineWidth: 2)
                         .frame(width: 24, height: 24)
                     
                     if item.isChecked {
-                        FlourishingCheckmark(color: checkboxColor, animate: $animateCheckmark)
+                        FlourishingCheckmark(color: designSystem.checkboxColor, animate: $animateCheckmark)
                             .frame(width: 20, height: 20)
                     }
                 }
             } else {
                 // Simple flourishing checkmark style (no box)
                 if item.isChecked {
-                    FlourishingCheckmark(color: checkboxColor, animate: $animateCheckmark)
+                    FlourishingCheckmark(color: designSystem.checkboxColor, animate: $animateCheckmark)
                         .frame(width: 24, height: 24)
-                } else {
-                    // Empty space to maintain layout
-//                    Color.clear
-//                        .frame(width: 24, height: 24)
                 }
             }
         }
@@ -513,7 +444,70 @@ extension Color {
 
 struct CheckboxCarouselView_Previews: PreviewProvider {
     static var previews: some View {
-        Group {
+        @StateObject var viewModel = RecordedThingViewModel(
+            checkboxItems: [
+                CheckboxItem(text: "Take a photo of the product"),
+                CheckboxItem(text: "Scan the barcode"),
+                CheckboxItem(text: "Capture the receipt"),
+                CheckboxItem(text: "Add product details"),
+                CheckboxItem(text: "Save to your collection")
+            ],
+            cardImages: [
+            
+            ]
+        )
+        @StateObject var viewModel2 = RecordedThingViewModel(
+            checkboxItems: [
+                CheckboxItem(text: "Take a photo"),
+                CheckboxItem(text: "Scan barcode", isChecked: true),
+                CheckboxItem(text: "Add details"),
+                CheckboxItem(text: "Save item")
+            ],
+            cardImages: [
+                
+            ],
+            checkboxOrientation: .vertical,
+            designSystem: DesignSystemSetup(
+                checkboxStyle: .simple,
+                showCheckboxBorder: false,
+                checkboxTextAlignment: .right
+            )
+        )
+        @StateObject var viewModel3 = RecordedThingViewModel(
+            checkboxItems: [
+                CheckboxItem(text: "First simple item", isChecked: true),
+                CheckboxItem(text: "Second simple item")
+            ], cardImages: [
+            
+            ],
+            checkboxOrientation: .vertical,
+            designSystem: DesignSystemSetup(checkboxStyle: .simple)
+        )
+        
+        @StateObject var viewModel4 = RecordedThingViewModel(
+            checkboxItems: [
+                CheckboxItem(text: "First custom item"),
+                CheckboxItem(text: "Second custom item", isChecked: true),
+                CheckboxItem(text: "Third custom item")
+            ],
+            cardImages: [
+                
+            ],
+            checkboxOrientation: .horizontal,
+            designSystem: DesignSystemSetup(
+                textColor: .yellow,
+                accentColor: .orange,
+                checkboxSpacing: 12,
+                checkboxItemHeight: 50,
+                animationDuration: 0.7,
+                checkboxStyle: .simple,
+                showCheckboxBorder: false,
+                checkboxTextAlignment: .right
+            )
+        )
+        
+
+//        Group {
             // Dark background for better visibility
             ZStack {
                 Color.black.opacity(0.8)
@@ -528,16 +522,7 @@ struct CheckboxCarouselView_Previews: PreviewProvider {
                             .padding(.bottom, 10)
                         
                         CheckboxCarouselView(
-                            items: [
-                                CheckboxItem(text: "Take a photo of the product"),
-                                CheckboxItem(text: "Scan the barcode"),
-                                CheckboxItem(text: "Capture the receipt"),
-                                CheckboxItem(text: "Add product details"),
-                                CheckboxItem(text: "Save to your collection")
-                            ],
-                            onItemToggled: { item in
-                                print("Item toggled: \(item.text), isChecked: \(item.isChecked)")
-                            }
+                            viewModel: viewModel
                         )
                         .frame(width: 300)
                         .padding()
@@ -553,20 +538,7 @@ struct CheckboxCarouselView_Previews: PreviewProvider {
                             .padding(.bottom, 10)
                         
                         CheckboxCarouselView(
-                            items: [
-                                CheckboxItem(text: "Take a photo"),
-                                CheckboxItem(text: "Scan barcode", isChecked: true),
-                                CheckboxItem(text: "Add details"),
-                                CheckboxItem(text: "Save item")
-                            ],
-                            maxVisibleItems: 1,
-                            orientation: .horizontal,
-                            checkboxStyle: .simple,
-                            showBorder: false,
-                            textAlignment: .right,
-                            onItemToggled: { item in
-                                print("Item toggled: \(item.text), isChecked: \(item.isChecked)")
-                            }
+                            viewModel: viewModel2
                         )
                         .frame(width: 300)
                         .padding()
@@ -582,14 +554,7 @@ struct CheckboxCarouselView_Previews: PreviewProvider {
                             .padding(.bottom, 10)
                         
                         CheckboxCarouselView(
-                            items: [
-                                CheckboxItem(text: "First simple item", isChecked: true),
-                                CheckboxItem(text: "Second simple item")
-                            ],
-                            checkboxStyle: .simple,
-                            onItemToggled: { item in
-                                print("Item toggled: \(item.text), isChecked: \(item.isChecked)")
-                            }
+                            viewModel: viewModel3
                         )
                         .frame(width: 300)
                         .padding()
@@ -597,8 +562,8 @@ struct CheckboxCarouselView_Previews: PreviewProvider {
                         .cornerRadius(12)
                     }
                 }
-                .padding()
-            }
+//                .padding()
+//            }
             .previewDisplayName("Carousel Variations")
             
             // Custom theme with horizontal orientation and simple checkmarks
@@ -612,21 +577,7 @@ struct CheckboxCarouselView_Previews: PreviewProvider {
                 .edgesIgnoringSafeArea(.all)
                 
                 CheckboxCarouselView(
-                    items: [
-                        CheckboxItem(text: "First custom item"),
-                        CheckboxItem(text: "Second custom item", isChecked: true),
-                        CheckboxItem(text: "Third custom item")
-                    ],
-                    maxVisibleItems: 1,
-                    textColor: .yellow,
-                    checkboxColor: .orange,
-                    animationDuration: 0.7,
-                    itemHeight: 50,
-                    spacing: 12,
-                    orientation: .horizontal,
-                    checkboxStyle: .simple,
-                    showBorder: false,
-                    textAlignment: .right
+                    viewModel: viewModel4
                 )
                 .frame(width: 300)
                 .padding()
