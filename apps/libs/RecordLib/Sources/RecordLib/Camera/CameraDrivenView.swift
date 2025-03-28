@@ -18,6 +18,7 @@ import UIKit
 public struct CameraDrivenView<CameraOverlayView: View>: View {
     @Environment(\.cameraViewModel) var cameraViewModel: CameraViewModel?
     @StateObject var captureService: CaptureService
+    @State var bgImage: RecordImage?
     
     // Logger for debugging
     private let logger = Logger(subsystem: "com.record-thing", category: "ui.camera-driven-view")
@@ -27,10 +28,16 @@ public struct CameraDrivenView<CameraOverlayView: View>: View {
     // Get screen dimensions in a cross-platform way
     #if os(macOS)
     private var screenWidth: CGFloat {
-        NSScreen.main?.frame.width ?? 800
+        if let designSystem = cameraViewModel?.designSystem {
+            return min(max(designSystem.windowDefaultWidth, designSystem.windowMinWidth), designSystem.windowMaxWidth)
+        }
+        return 1280
     }
     private var screenHeight: CGFloat {
-        NSScreen.main?.frame.height ?? 600
+        if let designSystem = cameraViewModel?.designSystem {
+            return min(max(designSystem.windowDefaultHeight, designSystem.windowMinHeight), designSystem.windowMaxHeight)
+        }
+        return 720
     }
     #else
     private var screenWidth: CGFloat {
@@ -46,7 +53,7 @@ public struct CameraDrivenView<CameraOverlayView: View>: View {
         @ViewBuilder cameraOverlayView: () -> CameraOverlayView) {
         self._captureService = StateObject(wrappedValue: captureService)
         self.cameraOverlayView = cameraOverlayView()
-        logger.debug("CameraDrivenView initialized")
+        logger.trace("CameraDrivenView initialized")
     }
     
     func takeSnap() {
@@ -93,7 +100,14 @@ public struct CameraDrivenView<CameraOverlayView: View>: View {
         ZStack {
             if let cameraViewModel = cameraViewModel {
                 SimpleCameraView(model: cameraViewModel, image: captureService.frame)
+
+                // Semi-transparent background
+                if cameraViewModel.shaded {
+                    Color.black.opacity(0.2)
+                        .edgesIgnoringSafeArea(.all)
+                }
             }
+            
 
             if !captureService.permissionGranted {
                 VStack {
@@ -109,17 +123,26 @@ public struct CameraDrivenView<CameraOverlayView: View>: View {
                 }
             } else {
                 cameraOverlayView
-                .frame(maxWidth: screenWidth, maxHeight: screenHeight)
-                .onAppear {
-                    logger.debug("Camera permission granted, showing camera overlay view")
-                }
+                    .frame(width: screenWidth, height: screenHeight)
+                    .onAppear {
+                        logger.debug("Camera permission granted, showing camera overlay view")
+                    }
             }
         }
+        #if os(macOS)
+        .frame(minWidth: cameraViewModel?.designSystem.windowMinWidth ?? 800,
+               maxWidth: cameraViewModel?.designSystem.windowMaxWidth ?? 1920,
+               minHeight: cameraViewModel?.designSystem.windowMinHeight ?? 600,
+               maxHeight: cameraViewModel?.designSystem.windowMaxHeight ?? 1080)
+        #else
+        .frame(width: screenWidth, height: screenHeight)
+        #endif
         // From iOS 15: https://www.hackingwithswift.com/quick-start/swiftui/how-to-run-an-asynchronous-task-when-a-view-is-shown
         .task {
             logger.debug("CameraDrivenView task started")
             let status = captureService.checkPermission()
             cameraViewModel?.reflectCaptureDevice(status: status)
+            cameraViewModel?.setCaptureService(captureService)
             captureService.startSessionIfAuthorized(completion: { err in
                 if let error = err {
                     logger.error("Session not started: \(error.localizedDescription)")
@@ -128,42 +151,131 @@ public struct CameraDrivenView<CameraOverlayView: View>: View {
                 }
             })
         }
-        // Use the appropriate onChange modifier based on iOS version
-//        #if swift(>=5.9) // iOS 17 and later
-//        .onChange(of: captureService.permissionGranted) { oldValue, newValue in
-//            handlePermissionChange(oldValue: oldValue, newValue: newValue)
-//        }
-//        #else // iOS 16 and earlier
-        .onChange(of: captureService.permissionGranted) { newValue in
-            // For iOS 16, we don't have access to the old value directly
-            // We can infer it was the opposite of the new value if it changed
-            let oldValue = !newValue // This is an approximation
-            handlePermissionChange(oldValue: oldValue, newValue: newValue)
+        #if os(macOS)
+        .onChange(of: captureService.permissionGranted, initial: false) { _, newValue in
+            handlePermissionChange(oldValue: !newValue, newValue: newValue)
         }
-//        #endif
+        .onChange(of: cameraViewModel?.isCameraPaused ?? false, initial: false) { _, isPaused in
+            if isPaused {
+                captureService.pauseStream()
+                logger.debug("Camera stream paused from view model")
+            } else {
+                captureService.resumeStream()
+                logger.debug("Camera stream resumed from view model")
+            }
+        }
+        #else
+        .onChange(of: captureService.permissionGranted) { newValue in
+            handlePermissionChange(oldValue: !newValue, newValue: newValue)
+        }
+        .onChange(of: cameraViewModel?.isCameraPaused ?? false) { isPaused in
+            if isPaused {
+                captureService.pauseStream()
+                logger.debug("Camera stream paused from view model")
+            } else {
+                captureService.resumeStream()
+                logger.debug("Camera stream resumed from view model")
+            }
+        }
+        #endif
     }
 }
 
 #if DEBUG
 import AVFoundation
 
+enum ExampleDest: Hashable {
+    case evidence
+}
+
 struct CameraDrivenView_Previews: PreviewProvider {
+    private static let logger = Logger(subsystem: "com.evidently.recordthing", category: "CameraDrivenView_Previews")
+    
     static var previews: some View {
-        @StateObject var viewModel = RecordedThingViewModel(
-            checkboxItems: [
-                CheckboxItem(text: "Take a photo of the product"),
-                CheckboxItem(text: "Scan the barcode"),
-                CheckboxItem(text: "Capture the receipt")
-            ],
-            cardImages: [
-                .system("moon.fill"),
-                .system("star.fill")
-            ]
-//            checkboxTextColor: .white,
-//            checkboxColor: .white
-        )
+        @StateObject var viewModel = MockedRecordedThingViewModel.create(evidenceOptions: [])
         
         Group {
+            
+            NavigationStack {
+                CameraDrivenView(captureService: MockedCaptureService(.authorized)) {
+                    VStack {
+                        Spacer()
+                        NavigationLink("Evidence", value: ExampleDest.evidence)
+                        //                    ReservedForCameraView()
+                        RecordedStackAndRequirementsView(viewModel: viewModel)
+                            .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 32))
+                        StandardFloatingToolbar(
+                            useFullRounding: false,
+                            onDataBrowseTapped: {
+                            },
+                            onStackTapped: {
+                            },
+                            onCameraTapped: {
+                            },
+                            onAccountTapped: {
+                            }
+                        )
+                        .frame(height: 100)
+                        ClarifyEvidenceControl(viewModel: viewModel)
+                    }
+                }
+                .environment(\.cameraViewModel, CameraViewModel.authorizedMock())
+                .previewDisplayName("Record Advice")
+                .navigationDestination(for: ExampleDest.self) { dest in
+                    switch dest {
+                    case .evidence:
+                        CameraDrivenView(captureService: MockedCaptureService(.authorized)) {
+                            VStack {
+                                Spacer()
+                                RecordedStackAndRequirementsView(viewModel: viewModel)
+                                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 32))
+                                StandardFloatingToolbar(                            useFullRounding: false,
+                                    onDataBrowseTapped: { },
+                                    onStackTapped: { },
+                                    onCameraTapped: { },
+                                    onAccountTapped: { })
+                                    .frame(height: 100)
+                                ClarifyEvidenceControl(viewModel: viewModel)
+                            }
+                        }
+                        .environment(\.cameraViewModel, CameraViewModel.authorizedMock())
+                        .navigationTitle("Evidence")
+//                            }
+//                        }
+                    }
+                }
+            }
+            
+            CameraDrivenView(captureService: MockedCaptureService(.authorized)) {
+                VStack {
+                    Spacer()
+                    //                    ReservedForCameraView()
+                    RecordedStackAndRequirementsView(viewModel: viewModel)
+                        .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 32))
+                    StandardFloatingToolbar(
+                        useFullRounding: false,
+                        onDataBrowseTapped: {
+                        },
+                        onStackTapped: {
+                        },
+                        onCameraTapped: {
+                        },
+                        onAccountTapped: {
+                        }
+                    )
+                    .frame(height: 100)
+                    ClarifyEvidenceControl(viewModel: viewModel)
+                }
+//                if let designSystem = cameraViewModel?.designSystem {
+                    EvidenceReview(viewModel: viewModel)
+                    .offset(x: 80, y: 60)
+                    .frame(width: 1080, height: 1480)
+//                        .frame(width: designSystem.screenWidth, height: designSystem.height * 0.8)
+//                }
+            }
+            .environment(\.cameraViewModel, CameraViewModel.authorizedShadedMock())
+            .previewDisplayName("Record Review")
+            
             // Create preview with authorized camera
             CameraDrivenView(captureService: MockedCaptureService(.authorized)) {
                 VStack {
@@ -176,22 +288,55 @@ struct CameraDrivenView_Previews: PreviewProvider {
                     .cornerRadius(12)
                 }
             }
-            .environment(\.cameraViewModel, CameraViewModel(.authorized))
+            .environment(\.cameraViewModel, CameraViewModel.authorizedMock())
             .previewDisplayName("Authorized")
 
             // Create preview with undefined camera permissions
             CameraDrivenView(captureService: MockedCaptureService(.notDetermined)) {
                 EmptyView()
             }
-            .environment(\.cameraViewModel, CameraViewModel(.notDetermined))
+            .environment(\.cameraViewModel, CameraViewModel.notDeterminedMock())
             .previewDisplayName("Missing Permissions")
 
             // Create preview with denied camera permissions
             CameraDrivenView(captureService: MockedCaptureService(.denied)) {
                 EmptyView()
             }
-            .environment(\.cameraViewModel, CameraViewModel(.denied))
+            .environment(\.cameraViewModel, CameraViewModel.deniedMock())
             .previewDisplayName("Denied Capture")
+        }
+        
+        Group {
+            // Video File Service Preview
+            if let videoURL = Bundle.module.url(forResource: "sample_video", withExtension: "mp4") {
+                let videoService = VideoFileStreamService(videoURL: videoURL)
+                let mockService = MockedCaptureService(videoService, status: .authorized)
+                
+                CameraDrivenView(captureService: mockService) {
+                    VStack {
+                        Spacer()
+                        ReservedForCameraView()
+                        CheckboxCarouselView(
+                            viewModel: viewModel
+                        )
+                        .padding()
+                        .cornerRadius(12)
+                    }
+                }
+                .environment(\.cameraViewModel, CameraViewModel(status: .authorized))
+                .previewDisplayName("Video File Service")
+            }
+            
+            // Camera Service Preview (if available)
+//            if let cameraService = try? CameraService() {
+//                CameraDrivenView(
+//                    viewModel: RecordedThingViewModel(
+//                        captureService: cameraService,
+//                        onOptionConfirmed: { _, _ in }
+//                    )
+//                )
+//                .previewDisplayName("Camera Service")
+//            }
         }
     }
 }

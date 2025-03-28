@@ -10,94 +10,120 @@ import SwiftUIIntrospect
 import Blackbird
 import RecordLib
 
+struct AppTabsView: View {
+    @EnvironmentObject private var model: Model
+
+    private func switchTab(_ tab: LifecycleView) {
+        model.lifecycleView = tab
+        // Clear or preserve path based on tab
+        // path.removeLast(path.count)
+    }
+
+    var body: some View {
+        // The floating toolbar
+        StandardFloatingToolbar(
+            useFullRounding: false,
+            onDataBrowseTapped: {
+                switchTab(.development)
+            },
+            onStackTapped: {
+                switchTab(.assets)
+            },
+            onCameraTapped: {
+                switchTab(.record)
+            },
+            onAccountTapped: {
+                switchTab(.actions)
+            }
+        )
+        .frame(height: 100)
+//        #if DEBUG
+//        .background(Color.red.opacity(0.3))
+//        #endif
+    }
+}
+
 struct ContentView: View {
     @EnvironmentObject private var model: Model
     @StateObject public var captureService: CaptureService
     @StateObject public var cameraViewModel = CameraViewModel()
-    @StateObject private var recordedThingViewModel: RecordedThingViewModel
+    @StateObject private var recordedThingViewModel: RecordedThingViewModel = MockedRecordedThingViewModel.createDefault()
 
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     #endif
     
     @State private var path = NavigationPath()
-    @State private var selectedTab: BrowseNavigationTab = .record
-        
+    
+    // MARK: - Initialization
+    
     init(captureService: CaptureService = CaptureService()) {
         _captureService = StateObject(wrappedValue: captureService)
-        // Initialize the RecordedThingViewModel with the model's checkbox items and card images
-        _recordedThingViewModel = StateObject(wrappedValue: RecordedThingViewModel(
-            checkboxItems: [
-                CheckboxItem(text: "Take product photo"),
-                CheckboxItem(text: "Scan barcode", isChecked: true),
-                CheckboxItem(text: "Capture Sales Receipt")
-            ],
-            cardImages: [
-                .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.main)),
-                .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.main)),
-                .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.main)),
-                .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.main)),
-                .custom(Image("beige_kitchen_table_with_a_professional_DSLR_standing", bundle: Bundle.main))
-//                .system("photo"),
-//                .system("camera"),
-//                .system("doc")
-            ],
-            direction: .horizontal,
-            maxCheckboxItems: 1,
-            designSystem: .cameraOverlay,
-            evidenceOptions: [
-                "Electric Mountain Bike",
-                "Mountain Bike",
-                "E-Bike"
-            ],
-            onCardStackTapped: {
-                print("Card stack tapped")
-            }
-        ))
     }
     
-    var sampleNavBars: some View {
-        GeometryReader { geometry in
+    // MARK: - Navigation Handlers
+    
+    private func switchTab(_ tab: LifecycleView) {
+        model.lifecycleView = tab
+        // Clear or preserve path based on tab
+        // path.removeLast(path.count)
+    }
+    
+    // MARK: - View Components
+    
+    var recordView2: some View {
+//        NavigationStack(path: $path) {
             ZStack {
-                // Controls positioned at the bottom
                 VStack(alignment: .center, spacing: 0) {
                     Spacer() // Push everything to the bottom
-                    RecordedStackAndRequirementsView(viewModel: recordedThingViewModel)
-                        .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 32))
-                    
-                    // The floating toolbar
-                    StandardFloatingToolbar(
-                        useFullRounding: false,
-                        onDataBrowseTapped: {
-                            selectedTab = .things
-                            path.append(DataBrowsingNav(title: "Title", path: ""))
-                        },
-                        onStackTapped: {
-                            selectedTab = .assets
-                            path.append(FeedNav(path: "1")) },
-                        onCameraTapped: { print("Camera tapped") },
-                        onAccountTapped: {
-                            selectedTab = .actions
-                            path.append(AccountNav(path: "A")) }
-                    )
-                    .frame(height: 100) // FIXME not sure why it expands to fille space otherwise
-                    
-                    ClarifyEvidenceControl(
-                        viewModel: recordedThingViewModel,
-                        onOptionConfirmed: { option in
-                            recordedThingViewModel.evidenceTitle = option
-                        }
-                    )
+                    AppTabsView()
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                #if DEBUG
+                .background(Color.blue.opacity(0.1))
+                #endif
             }
-            .frame(width: geometry.size.width, height: geometry.size.height)
-            .onAppear {
-                print("sampleNavBars size: \(geometry.size)")
+//            .background(Color.yellow.opacity(0.1))
+//            #if os(iOS)
+//            .introspect(.navigationStack, on: .iOS(.v16, .v17, .v18)) {
+//                $0.viewControllers.forEach { controller in
+//                    controller.view.backgroundColor = .clear
+//                }
+//            }
+//            #else
+//            .introspect(.navigationStack, on: .macOS(.v13, .v14)) {
+//                $0.view.window?.backgroundColor = .clear
+//            }
+//            #endif
+//        }
+    }
+    
+    var recordView: some View {
+        NavigationStack(path: $path) {
+            CameraDrivenView(captureService: captureService) {
+                ZStack {
+                    VStack(alignment: .center, spacing: 0) {
+                        Spacer() // Push everything to the bottom
+                        RecordedStackAndRequirementsView(viewModel: recordedThingViewModel)
+                            .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 32))
+                        
+                        AppTabsView()
+                        
+                        ClarifyEvidenceControl(viewModel: recordedThingViewModel)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                }
             }
+            .onAppear() {
+                cameraViewModel.onAppear()
+            }
+            .onDisappear() {
+                cameraViewModel.onDisappear()
+            }
+            .environment(\.cameraViewModel, cameraViewModel)
         }
     }
     
+
     var mountainBike: some View {
         // Background content (would be the camera in the real app)
         GeometryReader { geometry in
@@ -110,14 +136,15 @@ struct ContentView: View {
         .ignoresSafeArea()
     }
     
-    var browseTab: some View {
+    var developerTab: some View {
         // TODO pass the path to keep it persisted
         BrowseNavigationView(
-            selectedTab: $selectedTab,
             navigationPath: $path,
             useSlideTransition: true,
             onRecordTapped: {
-                selectedTab = .record
+                model.lifecycleView = .record
+                path.removeLast(path.count)
+                // path.append(NavigationDestination.record)
             },
             thingsContent: {
                 ThingsMenu()
@@ -160,58 +187,68 @@ struct ContentView: View {
                 print("Selected asset: \(asset.name)")
             },
             onRecordTapped: {
-                selectedTab = .record
+                switchTab(.record)
             }
         )
     }
     
+    // MARK: - Body
+    
     var body: some View {
         ZStack {
-            mountainBike
-            if model.loadedLang == nil {
+            switch model.lifecycleView {
+
+            case .development:
+                developerTab
+
+            case .record:
+                recordView
+
+            case .assets:
+                assetsBrowsingView
+
+            case .actions:
+                EmptyView()
+                
+            case .loading:
+                mountainBike
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle(tint: Color.yellow))
                     .frame(width: 50, height: 50, alignment: .center)
                     .scaleEffect(3)
-            } else {
-                CameraDrivenView(captureService: captureService)  {
-                    switch selectedTab {
-                    case .record: sampleNavBars
-                    case .assets: assetsBrowsingView
-                    case .actions: sampleNavBars
-                    default: browseTab
-                    }
-                }
-                    .onAppear() {
-                        model.isCameraActive = true
-                        cameraViewModel.onAppear()
-                    }
-                    .onDisappear() {
-                        model.isCameraActive = false
-//                        cameraViewModel.onDisappear()
-                    }
-                    .environmentObject(model)
-                    .environment(\.cameraViewModel, cameraViewModel)
-    //                .accentColor(UIColor(named: "AccentColor").cgColor())
-
             }
         }
     }
 }
+
 
 import AVFoundation
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            // Regular view preview
-            ContentView(captureService: MockedCaptureService(.authorized))
+            // Regular view preview with video stream
+            if let (_, mockService) = VideoPreviewHelper.createVideoPreview() {
+                ContentView(captureService: mockService)
+                    .environmentObject(Model(loadedLangConst: "en"))
+                    .environment(\.blackbirdDatabase, AppDatasource.shared.db)
+                    .previewDisplayName("Loaded & Authorized (Video Stream)")
+            }
+            
+            // Regular view preview with camera (working on macOS)
+            ContentView(captureService: CaptureService()) // MockedCaptureService(.authorized))
                 .environmentObject(Model(loadedLangConst: "en"))
                 .environment(\.blackbirdDatabase, AppDatasource.shared.db)
-                .previewDisplayName("Loaded & Authorized")
+                .previewDisplayName("Loaded & Authorized (Camera)")
             
+            // Permission not determined
+            ContentView(captureService: MockedCaptureService(.notDetermined))
+                .environmentObject(Model(loadedLangConst: "en"))
+                .environment(\.blackbirdDatabase, AppDatasource.shared.db)
+                .previewDisplayName("Not Determined")
+
             // Redacted view preview
-            ContentView()
+            ContentView(captureService: MockedCaptureService(.notDetermined))
                 .environmentObject(Model(loadedLangConst: "en"))
                 .environment(\.blackbirdDatabase, AppDatasource.shared.db)
                 .redacted(reason: .placeholder)
@@ -229,76 +266,3 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 
-/*
-struct ContentView_Previews: PreviewProvider {
-    // Create a MockedCaptureService class that extends CaptureService
-    class MockedCaptureService: CaptureService {
-        var status: AVAuthorizationStatus
-        
-        init(status: AVAuthorizationStatus) {
-            self.status = status
-            super.init()
-            // Set permissionGranted based on status
-            self.permissionGranted = (status == .authorized)
-        }
-        
-        override func checkPermission() -> AVAuthorizationStatus {
-            return status
-        }
-        
-        // Override any other methods that depend on authorization status
-        override func startSessionIfAuthorized(completion: @escaping (Error?) -> ()) {
-            if status == .authorized {
-                permissionGranted = true
-                completion(nil)
-            } else {
-                permissionGranted = false
-                completion(CaptureError.notAuthorized(comment: "Not authorized in preview"))
-            }
-        }
-    }
-    
-    // Create a custom ContentView initializer for previews
-    struct PreviewContentView: View {
-        @StateObject var captureService: CaptureService
-        @StateObject var cameraViewModel: CameraViewModel
-        
-        init(captureStatus: AVAuthorizationStatus) {
-            // Create the mocked capture service with the specified status
-            let mockedService = MockedCaptureService(status: captureStatus)
-            // Create a camera view model with the same status
-            let viewModel = CameraViewModel(captureStatus)
-            
-            // Initialize the StateObjects
-            _captureService = StateObject(wrappedValue: mockedService)
-            _cameraViewModel = StateObject(wrappedValue: viewModel)
-        }
-        
-        var body: some View {
-            ContentView(captureService: captureService, cameraViewModel: cameraViewModel)
-        }
-    }
-    
-    static var previews: some View {
-        Group {
-            // Authorized preview
-            PreviewContentView(captureStatus: .authorized)
-                .environmentObject(Model(loadedLangConst: "en"))
-                .environment(\.blackbirdDatabase, AppDatasource.shared.db)
-                .previewDisplayName("Camera Authorized")
-            
-            // Not determined preview
-            PreviewContentView(captureStatus: .notDetermined)
-                .environmentObject(Model(loadedLangConst: "en"))
-                .environment(\.blackbirdDatabase, AppDatasource.shared.db)
-                .previewDisplayName("Camera Permission Not Determined")
-            
-            // Denied preview
-            PreviewContentView(captureStatus: .denied)
-                .environmentObject(Model(loadedLangConst: "en"))
-                .environment(\.blackbirdDatabase, AppDatasource.shared.db)
-                .previewDisplayName("Camera Permission Denied")
-        }
-    }
-}
-*/

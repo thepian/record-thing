@@ -52,6 +52,12 @@ struct RecordThingApp: App {
     @StateObject var datasource = AppDatasource.shared // Important for triggering updates after translation loaded.
     @StateObject private var model = Model(loadedLang: AppDatasource.shared.$loadedLang)
     
+    init() {
+        // Configure logging to omit trace level logs
+        Logger.configureLogging()
+        logger.debug("RecordThingApp initialized")
+    }
+    
     var body: some Scene {
         WindowGroup {
             ContentView()

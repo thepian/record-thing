@@ -160,3 +160,4 @@ cython_debug/
 #.idea/
 
 record-thing-debug.*
+/apps/RecordThing/DerivedData

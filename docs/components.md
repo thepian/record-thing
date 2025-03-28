@@ -3,6 +3,24 @@
 
 Components use common design system properties. The components have a local variable `designSystem` that can be passed via the View Model.
 
+## SimpleCameraView
+
+The SimpleCameraView shows a preview of the camera feed if frames are or have been captured by CaptureService. The latest `frame` is held by the CaptureService.
+If no frame is present a background image is shown based on loading asset named by `cameraViewModel?.bgImageSet` in the RecordLib module Assets.
+
+Background Image
+
+- Keep the aspect ratio
+- Fill the background
+- Make sure it doesn't overflow the component borders
+- Show as much of the background image as possible
+
+
+## CameraDrivenView
+
+For macOS I want to constrain the App Window size to something resonable. Set good defaults in the CameraViewModel and constrain the frame using those.
+These should be defined in the DesignSystemSetup
+
 
 ## ClarifyEvidenceControl
 
@@ -24,6 +42,42 @@ objectName will show the evidence option text.
 If evidenceTitle is not empty, show the title instead of cycling through options showing SimpleConfirmDenyStatement.
 
 Support a callback onOptionConfirmed set on ClarifyEvidenceControl for the confirmation of an option. The default behavior for the callback is to set the evidenceTitle from the option. This is what ContentView should do when an option is chosen. Do not support a handleOptionConfirmed function on the viewmodel.
+
+## EvidenceReview
+
+When evidence has been recorded, the evidence is shown as an overlay within CameraDrivenView.
+The overlay doesn't take up the full screen. It uses most of the top two thirds of the screen, showing a scaled recording with a white border. This EvidenceReview is also used to cycle through evidence when the ImageCardStack is pressed. The EvidenceReview is showing the RecordedThingViewModel.evidenceReviewImage or RecordedThingViewModel.evidenceReviewClip.
+The width/height of the EvidenceReview is determined by setup in DesignSystemSetup.
+
+EvidenceReview(viewModel: recordedThingViewModel)
+
+## DeveloperSidebar (RecordLib/Developer)
+
+When shown on an iPad, the DeveloperSidebar is permanently shown at the top or to the left of the ContentView. It gives access to state information about the CaptureService, CameraViewModel and Model.
+
+The DeveloperSidebar is also shown in BrowseNavigationView at the tail of the NavigationSplitView Toolbar. 
+
+### Reset Database & Update Database buttons
+
+The DeveloperSidebar has three buttons.
+
+"Reload Database" is a button that calls AppDatasource instance method `reloadDatabase`.
+
+"Reset Database" is a button that calls AppDatasource instance method `resetDatabase`. 
+
+"Update Database" is a button that calls AppDatasource instance method `updateDatabase`. 
+
+Create protocol AppDatasourceAPI and make AppDatasource an implementation. Refer to AppDatasourceAPI in DeveloperSidebar.
+
+`reloadDatabase` will recreate the Blackbird database object instance and refresh the application with the new instance.
+
+`resetDatabase` will replace the `record-thing.sqlite` in the documentsPath with the 
+`default-record-thing.sqlite` from the App Resource Bundle. It will then reloadDatabase.
+
+`updateDatabase` will refresh the translations table in  `record-thing.sqlite` in the documentsPath to overwrite with records from `default-record-thing.sqlite` from the App Resource Bundle. It will then reloadDatabase.
+Make updateDatabase async and call it in a task.
+
+Create a MockAppDatasource: AppDatasourceAPI and use it for BrowseNavigationView previews.
 
 
 ## RecordThingViewModel

@@ -16,6 +16,7 @@ public enum BrowseNavigationTab: String, Codable, CaseIterable {
     case assets
     case actions
 
+    case internalData
     // Data Browsing tabs
     case things
     case types
@@ -27,6 +28,7 @@ public enum BrowseNavigationTab: String, Codable, CaseIterable {
         case .record: return "camera"
         case .assets: return "photo.stack"
         case .actions: return "bolt"
+        case .internalData: return "folder"
         case .things: return "list.bullet"
         case .types: return "heart.fill"
         case .feed: return "tray"
@@ -39,6 +41,7 @@ public enum BrowseNavigationTab: String, Codable, CaseIterable {
         case .record: return "Record"
         case .assets: return "Assets"
         case .actions: return "Actions"
+        case .internalData: return "Internal"
         case .things: return "Things"
         case .types: return "Types"
         case .feed: return "Feed"
@@ -48,31 +51,64 @@ public enum BrowseNavigationTab: String, Codable, CaseIterable {
 }
 
 /// Navigation destination model for the app
-public struct BrowseDestination: Hashable, Identifiable, Codable {
-    public var id: UUID = UUID()
-    public var tab: BrowseNavigationTab
-    public var recordType: String
-    public var recordId: String?
-    public var additionalContext: [String: String]?
+public enum BrowseDestination: Hashable, Identifiable, Codable {
+    // Things tab destinations
+    case things
+    case thingDetail(id: String)
+    case categoryDetail(id: String)
     
-    public init(tab: BrowseNavigationTab, recordType: String, recordId: String? = nil, additionalContext: [String: String]? = nil) {
-        self.tab = tab
-        self.recordType = recordType
-        self.recordId = recordId
-        self.additionalContext = additionalContext
+    // Types tab destinations
+    case types
+    case productTypeDetail(id: String)
+    case browseByDetail(type: String, id: String)
+    
+    // Feed tab destinations
+    case feed
+    case feedItem(id: String)
+    
+    // Favorites tab destinations
+    case favorites
+    case favoriteItem(id: String)
+    
+    // Helper computed property for tab identification
+    public var tab: BrowseNavigationTab {
+        switch self {
+        case .things, .thingDetail, .categoryDetail:
+            return .things
+        case .types, .productTypeDetail, .browseByDetail:
+            return .types
+        case .feed, .feedItem:
+            return .feed
+        case .favorites, .favoriteItem:
+            return .favorites
+        }
     }
     
-    // Helper to create a destination for a specific tab with default record type
-    public static func forTab(_ tab: BrowseNavigationTab) -> BrowseDestination {
-        let defaultRecordType: String
-        switch tab {
-        case .things: defaultRecordType = "thing"
-        case .types: defaultRecordType = "type"
-        case .feed: defaultRecordType = "feed"
-        case .favorites: defaultRecordType = "favorite"
-        default: defaultRecordType = "unknown"
+    // Conformance to Identifiable
+    public var id: String {
+        switch self {
+        case .things: return "things"
+        case .thingDetail(let id): return "thing-\(id)"
+        case .categoryDetail(let id): return "category-\(id)"
+        case .types: return "types"
+        case .productTypeDetail(let id): return "type-\(id)"
+        case .browseByDetail(let type, let id): return "browse-\(type)-\(id)"
+        case .feed: return "feed"
+        case .feedItem(let id): return "feed-\(id)"
+        case .favorites: return "favorites"
+        case .favoriteItem(let id): return "favorite-\(id)"
         }
-        return BrowseDestination(tab: tab, recordType: defaultRecordType)
+    }
+    
+    // Helper to create a destination for a specific tab
+    public static func forTab(_ tab: BrowseNavigationTab) -> BrowseDestination {
+        switch tab {
+        case .things: return .things
+        case .types: return .types
+        case .feed: return .feed
+        case .favorites: return .favorites
+        default: return .things
+        }
     }
 }
 
@@ -82,8 +118,8 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
     private let logger = Logger(subsystem: "com.evidently.recordthing", category: "BrowseNavigationView")
     
     // State
-    @Binding private var selectedTab: BrowseNavigationTab
-    @State private var previousTab: BrowseNavigationTab
+    @State private var selectedTab: BrowseNavigationTab = .things
+    @State private var previousTab: BrowseNavigationTab = .things
     @State private var columnVisibility: NavigationSplitViewVisibility = .automatic
     
     // Navigation state
@@ -102,7 +138,6 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
     
     /// Creates a new BrowseNavigationView
     /// - Parameters:
-    ///   - selectedTab: Binding to the selected tab
     ///   - navigationPath: Binding to the navigation path
     ///   - useSlideTransition: Whether to use slide transitions between tabs
     ///   - showToolbar: Whether to show the toolbar
@@ -112,7 +147,6 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
     ///   - feedContent: Content for the Feed tab
     ///   - favoritesContent: Content for the Favorites tab
     public init(
-        selectedTab: Binding<BrowseNavigationTab>,
         navigationPath: Binding<NavigationPath>,
         useSlideTransition: Bool = true,
         showToolbar: Bool = true,
@@ -122,8 +156,6 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
         @ViewBuilder feedContent: () -> FeedContent,
         @ViewBuilder favoritesContent: () -> FavoritesContent
     ) {
-        self._selectedTab = selectedTab
-        self._previousTab = State(initialValue: selectedTab.wrappedValue)
         self._navigationPath = navigationPath
         self.useSlideTransition = useSlideTransition
         self.showToolbar = showToolbar
@@ -133,12 +165,11 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
         self.feedContent = feedContent()
         self.favoritesContent = favoritesContent()
         
-        logger.debug("BrowseNavigationView initialized with selected tab: \(selectedTab.wrappedValue.rawValue)")
+//        logger.debug("BrowseNavigationView initialized with selected tab: \(selectedTab.wrappedValue.rawValue)")
     }
     
     /// Creates a new BrowseNavigationView without navigation path (for backward compatibility)
     /// - Parameters:
-    ///   - selectedTab: Binding to the selected tab
     ///   - useSlideTransition: Whether to use slide transitions between tabs
     ///   - showToolbar: Whether to show the toolbar
     ///   - onRecordTapped: Action to perform when the record button is tapped
@@ -147,7 +178,6 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
     ///   - feedContent: Content for the Feed tab
     ///   - favoritesContent: Content for the Favorites tab
     public init(
-        selectedTab: Binding<BrowseNavigationTab>,
         useSlideTransition: Bool = true,
         showToolbar: Bool = true,
         onRecordTapped: (() -> Void)? = nil,
@@ -157,7 +187,6 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
         @ViewBuilder favoritesContent: () -> FavoritesContent
     ) {
         self.init(
-            selectedTab: selectedTab,
             navigationPath: .constant(NavigationPath()),
             useSlideTransition: useSlideTransition,
             showToolbar: showToolbar,
@@ -215,11 +244,25 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
                         onRecordTapped: onRecordTapped
                     )
                 }
+                ToolbarItem {
+                    DeveloperSidebar(
+                        captureService: CaptureService(),
+                        cameraViewModel: CameraViewModel(),
+                        isCompact: true
+                    )
+                }
                 #else
                 ToolbarItem(placement: .navigationBarTrailing) {
                     RecordButtonToolbarItem(
                         showToolbar: showToolbar,
                         onRecordTapped: onRecordTapped
+                    )
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    DeveloperSidebar(
+                        captureService: CaptureService(),
+                        cameraViewModel: CameraViewModel(),
+                        isCompact: true
                     )
                 }
                 #endif
@@ -706,11 +749,7 @@ struct BrowseNavigationView_Previews: PreviewProvider {
             List {
                 Section(header: Text("Recently Added")) {
                     ForEach(sampleThings) { thing in
-                        NavigationLink(value: BrowseDestination(
-                            tab: .things,
-                            recordType: "thing",
-                            recordId: thing.id
-                        )) {
+                        NavigationLink(value: BrowseDestination.thingDetail(id: thing.id)) {
                             HStack {
                                 Image(systemName: thing.imageSystemName)
                                     .foregroundColor(.accentColor)
@@ -730,29 +769,14 @@ struct BrowseNavigationView_Previews: PreviewProvider {
                 }
                 
                 Section(header: Text("Categories")) {
-                    NavigationLink("Kitchen Items", value: BrowseDestination(
-                        tab: .things,
-                        recordType: "category",
-                        recordId: "kitchen"
-                    ))
-                    
-                    NavigationLink("Electronics", value: BrowseDestination(
-                        tab: .things,
-                        recordType: "category",
-                        recordId: "electronics"
-                    ))
-                    
-                    NavigationLink("Clothing", value: BrowseDestination(
-                        tab: .things,
-                        recordType: "category",
-                        recordId: "clothing"
-                    ))
+                    NavigationLink("Kitchen Items", value: BrowseDestination.categoryDetail(id: "kitchen"))
+                    NavigationLink("Electronics", value: BrowseDestination.categoryDetail(id: "electronics"))
+                    NavigationLink("Clothing", value: BrowseDestination.categoryDetail(id: "clothing"))
                 }
             }
-            .navigationDestination(for: BrowseDestination.self, destination: {
-                dest in
-                DetailView(destination: dest)
-            })
+            .navigationDestination(for: BrowseDestination.self) { destination in
+                DetailView(destination: destination)
+            }
             #if os(iOS)
             .listStyle(InsetGroupedListStyle())
             #endif
@@ -764,11 +788,7 @@ struct BrowseNavigationView_Previews: PreviewProvider {
             List {
                 Section(header: Text("Popular Types")) {
                     ForEach(sampleTypes) { type in
-                        NavigationLink(value: BrowseDestination(
-                            tab: .types,
-                            recordType: "productType",
-                            recordId: type.id
-                        )) {
+                        NavigationLink(value: BrowseDestination.productTypeDetail(id: type.id)) {
                             HStack {
                                 Image(systemName: type.imageSystemName)
                                     .foregroundColor(.accentColor)
@@ -794,64 +814,43 @@ struct BrowseNavigationView_Previews: PreviewProvider {
                 }
                 
                 Section(header: Text("Browse By")) {
-                    NavigationLink("Brands", value: BrowseDestination(
-                        tab: .types,
-                        recordType: "browseBy",
-                        recordId: "brands"
-                    ))
-                    
-                    NavigationLink("Price Range", value: BrowseDestination(
-                        tab: .types,
-                        recordType: "browseBy",
-                        recordId: "priceRange"
-                    ))
-                    
-                    NavigationLink("Ratings", value: BrowseDestination(
-                        tab: .types,
-                        recordType: "browseBy",
-                        recordId: "ratings"
-                    ))
+                    NavigationLink("Brands", value: BrowseDestination.browseByDetail(type: "brands", id: "all"))
+                    NavigationLink("Price Range", value: BrowseDestination.browseByDetail(type: "price", id: "all"))
+                    NavigationLink("Ratings", value: BrowseDestination.browseByDetail(type: "ratings", id: "all"))
                 }
             }
-#if os(iOS)
+            #if os(iOS)
             .listStyle(InsetGroupedListStyle())
-#endif
-            .navigationDestination(for: BrowseDestination.self, destination: {
-                destination in
+            #endif
+            .navigationDestination(for: BrowseDestination.self) { destination in
                 DetailView(destination: destination)
-            })
+            }
         }
     }
     
     struct FeedView: View {
         var body: some View {
             List(1...10, id: \.self) { item in
-                NavigationLink("Feed Item \(item)", value: BrowseDestination(
-                    tab: .feed,
-                    recordType: "feed",
-                    recordId: "\(item)"
-                ))
+                NavigationLink(value: BrowseDestination.feedItem(id: "\(item)")) {
+                    Text("Feed Item \(item)")
+                }
             }
-            .navigationDestination(for: BrowseDestination.self, destination: {
-                destination in
+            .navigationDestination(for: BrowseDestination.self) { destination in
                 DetailView(destination: destination)
-            })
+            }
         }
     }
     
     struct FavoritesView: View {
         var body: some View {
             List(1...5, id: \.self) { item in
-                NavigationLink("Favorite \(item)", value: BrowseDestination(
-                    tab: .favorites,
-                    recordType: "favorite",
-                    recordId: "\(item)"
-                ))
+                NavigationLink(value: BrowseDestination.favoriteItem(id: "\(item)")) {
+                    Text("Favorite \(item)")
+                }
             }
-            .navigationDestination(for: BrowseDestination.self, destination: {
-                destination in
+            .navigationDestination(for: BrowseDestination.self) { destination in
                 DetailView(destination: destination)
-            })
+            }
         }
     }
     
@@ -927,11 +926,7 @@ struct BrowseNavigationView_Previews: PreviewProvider {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 16) {
                                 ForEach(sampleThings.filter { $0.id != thing.id && $0.category == thing.category }) { relatedThing in
-                                    NavigationLink(value: BrowseDestination(
-                                        tab: .things,
-                                        recordType: "thing",
-                                        recordId: relatedThing.id
-                                    )) {
+                                    NavigationLink(value: BrowseDestination.thingDetail(id: relatedThing.id)) {
                                         VStack {
                                             Image(systemName: relatedThing.imageSystemName)
                                                 .font(.system(size: 30))
@@ -978,11 +973,7 @@ struct BrowseNavigationView_Previews: PreviewProvider {
             List {
                 Section(header: Text("\(categoryName) Items")) {
                     ForEach(filteredThings) { thing in
-                        NavigationLink(value: BrowseDestination(
-                            tab: .things,
-                            recordType: "thing",
-                            recordId: thing.id
-                        )) {
+                        NavigationLink(value: BrowseDestination.thingDetail(id: thing.id)) {
                             HStack {
                                 Image(systemName: thing.imageSystemName)
                                     .foregroundColor(.accentColor)
@@ -1119,39 +1110,34 @@ struct BrowseNavigationView_Previews: PreviewProvider {
         
         var body: some View {
             Group {
-                if destination.recordType == "thing", let thingId = destination.recordId, let thing = sampleThings.first(where: { $0.id == thingId }) {
-                    ThingDetailView(thing: thing)
-                }
-                else if destination.recordType == "category", let categoryId = destination.recordId {
-                    CategoryDetailView(categoryId: categoryId)
-                }
-                else if destination.recordType == "productType", let typeId = destination.recordId, let productType = sampleTypes.first(where: { $0.id == typeId }) {
-                    ProductTypeDetailView(productType: productType)
-                }
-                else {
-                    // Fallback for other record types
+                switch destination {
+                case .thingDetail(let id):
+                    if let thing = sampleThings.first(where: { $0.id == id }) {
+                        ThingDetailView(thing: thing)
+                    }
+                case .categoryDetail(let id):
+                    CategoryDetailView(categoryId: id)
+                case .productTypeDetail(let id):
+                    if let productType = sampleTypes.first(where: { $0.id == id }) {
+                        ProductTypeDetailView(productType: productType)
+                    }
+                case .feedItem(let id):
+                    VStack {
+                        Text("Feed Item \(id)")
+                            .font(.title)
+                    }
+                case .favoriteItem(let id):
+                    VStack {
+                        Text("Favorite Item \(id)")
+                            .font(.title)
+                    }
+                default:
                     VStack {
                         Text("Tab: \(destination.tab.title)")
                             .font(.headline)
-                        
-                        Text("Record Type: \(destination.recordType)")
+                        Text("Destination: \(destination.id)")
                             .font(.subheadline)
-                        
-                        if let recordId = destination.recordId {
-                            Text("Record ID: \(recordId)")
-                                .font(.subheadline)
-                        }
-                        
-                        Spacer().frame(height: 20)
-                        
-                        NavigationLink("Go deeper", value: BrowseDestination(
-                            tab: destination.tab,
-                            recordType: destination.recordType,
-                            recordId: destination.recordId,
-                            additionalContext: ["level": "deeper"]
-                        ))
                     }
-                    .padding()
                 }
             }
         }
@@ -1162,31 +1148,10 @@ struct BrowseNavigationView_Previews: PreviewProvider {
     }
     
     struct PreviewContainer: View {
-        @State private var selectedTab: BrowseNavigationTab = .things
         @State private var navigationPath = NavigationPath()
         
         var body: some View {
             VStack {
-                // Tab switcher for testing
-                HStack {
-                    Button("Things") { selectedTab = .things }
-                        .buttonStyle(.borderedProminent)
-                        .opacity(selectedTab == .things ? 1.0 : 0.7)
-                    
-                    Button("Types") { selectedTab = .types }
-                        .buttonStyle(.borderedProminent)
-                        .opacity(selectedTab == .types ? 1.0 : 0.7)
-                    
-                    Button("Feed") { selectedTab = .feed }
-                        .buttonStyle(.borderedProminent)
-                        .opacity(selectedTab == .feed ? 1.0 : 0.7)
-                    
-                    Button("Favorites") { selectedTab = .favorites }
-                        .buttonStyle(.borderedProminent)
-                        .opacity(selectedTab == .favorites ? 1.0 : 0.7)
-                }
-                .padding(.top, 8)
-                
                 // Navigation path display for debugging
                 Text("Path items: \(navigationPath.count)")
                     .font(.caption)
@@ -1200,7 +1165,6 @@ struct BrowseNavigationView_Previews: PreviewProvider {
                 
                 // Main content
                 BrowseNavigationView(
-                    selectedTab: $selectedTab,
                     navigationPath: $navigationPath,
                     useSlideTransition: true,
                     onRecordTapped: { print("Record tapped") },
@@ -1209,10 +1173,9 @@ struct BrowseNavigationView_Previews: PreviewProvider {
                     feedContent: { FeedView() },
                     favoritesContent: { FavoritesView() }
                 )
-                .navigationDestination(for: BrowseDestination.self) { destination in
-                    DetailView(destination: destination)
-                }
+                .environment(\.appDatasource, MockAppDatasource())
             }
         }
     }
 } 
+

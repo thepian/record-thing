@@ -67,6 +67,7 @@ public struct PermitRequiredView: View {
                             .padding()
                         
                     }
+                    .buttonStyle(.plain)
                 } else if cameraViewModel?.onboardingState == .CaptureInAppSettings {
                     HStack {
                         if iconName != nil {
@@ -95,6 +96,7 @@ public struct PermitRequiredView: View {
                             .padding()
                         
                     }
+                    .buttonStyle(.plain)
                 }
 
             }
@@ -121,12 +123,13 @@ public struct PermitRequiredView: View {
     }
 #endif
 
+#if DEBUG
 struct PermitRequiredView_Previews: PreviewProvider {
     
     static var previews: some View {
-        let deniedModel = CameraViewModel(.denied)
-        let indeterminateModel = CameraViewModel(.notDetermined)
-        let restrictedModel = CameraViewModel(.restricted)
+        let deniedModel = CameraViewModel(status: .denied)
+        let indeterminateModel = CameraViewModel(status: .notDetermined)
+        let restrictedModel = CameraViewModel(status: .restricted)
         @State var permits: Int = 0
         @State var settings: Int = 0
 
@@ -177,3 +180,4 @@ struct PermitRequiredView_Previews: PreviewProvider {
         .previewDisplayName("Indeterminate")
     }
 }
+#endif

@@ -17,6 +17,17 @@ private let logger = Logger(
     category: "App"
 )
 
+// Overall lifecycle for the app
+// TODO set using callbacks and define in App, make selectedTab internal
+public enum LifecycleView {
+    case loading
+    case development
+    case record
+    case assets
+    case actions
+}
+
+
 class Model: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
@@ -74,6 +85,7 @@ class Model: ObservableObject {
 //    private var fetchedProducts: [ProductDef] = []
     private var updatesHandler: Task<Void, Error>? = nil
     
+    @Published var lifecycleView: LifecycleView = .loading
     @Published var loadedLang: String?
     
     // Add state management for AssetsBrowsingView
@@ -137,10 +149,6 @@ class Model: ObservableObject {
         )
     ]
     
-    // Add state management for CameraDrivenView
-    @Published var isCameraActive: Bool = false
-    @Published var cameraError: Error?
-    
     init() {
         // Start listening for transaction info updates, like if the user
         // refunds the purchase or if a parent approves a child's request to
@@ -168,6 +176,7 @@ class Model: ObservableObject {
         if let _loadedLang = _loadedLang {
             _loadedLang.sink { [weak self] newValue in
                 self?.loadedLang = newValue
+                self?.lifecycleView = .record
             }
             .store(in: &cancellables)
         }
@@ -176,6 +185,7 @@ class Model: ObservableObject {
     convenience init(loadedLangConst _loadedLang: String) {
         self.init()
         loadedLang = _loadedLang
+        lifecycleView = .record
     }
     
     deinit {

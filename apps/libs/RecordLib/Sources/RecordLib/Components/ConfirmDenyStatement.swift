@@ -66,7 +66,7 @@ public struct SimpleConfirmDenyStatement: View {
         self.onConfirm = onConfirm
         self.onDeny = onDeny
         
-        logger.debug("SimpleConfirmDenyStatement initialized for object: \(objectName)")
+        logger.trace("SimpleConfirmDenyStatement initialized for object: \(objectName)")
     }
     
     public var body: some View {

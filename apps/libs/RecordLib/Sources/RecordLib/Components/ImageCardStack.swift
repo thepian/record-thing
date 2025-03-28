@@ -96,7 +96,7 @@ public struct ImageCardStack: View {
 
         self.replacementAnimationDuration = replacementAnimationDuration
         self.onTap = onTap
-        logger.debug("ImageCardStack initialized with view model")
+        logger.trace("ImageCardStack initialized with view model")
     }
     
     // MARK: - Body
@@ -289,7 +289,7 @@ public struct ImageCardStack: View {
 }
 
 // MARK: - Preview
-
+#if DEBUG
 struct ImageCardStack_Previews: PreviewProvider {
     struct AnimatedCardStackDemo: View {
         @StateObject private var viewModel = RecordedThingViewModel(
@@ -469,3 +469,4 @@ struct ImageCardStack_Previews: PreviewProvider {
         .previewLayout(.sizeThatFits)
     }
 } 
+#endif
