@@ -237,7 +237,7 @@ public struct CameraPreviewView: View {
         self.onTap = onTap
         self.onObjectTap = onObjectTap
         
-        logger.debug("CameraPreviewView initialized with camera position: \(cameraPosition.rawValue)")
+        logger.trace("CameraPreviewView initialized with camera position: \(cameraPosition.rawValue)")
     }
     
     // MARK: - Body
@@ -727,6 +727,7 @@ extension CGRect {
 }
 
 // MARK: - Preview
+#if DEBUG
 struct CameraPreviewView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -825,3 +826,5 @@ struct CameraPreviewView_Previews: PreviewProvider {
         }
     }
 }
+#endif
+

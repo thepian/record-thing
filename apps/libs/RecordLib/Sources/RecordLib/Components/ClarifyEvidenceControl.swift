@@ -33,8 +33,10 @@ public struct ClarifyEvidenceControl: View {
     ) {
         self.viewModel = viewModel
         designSystem = viewModel.designSystem
-        self.onOptionConfirmed = onOptionConfirmed
-        logger.debug("ClarifyEvidenceControl initialized with view model")
+        self.onOptionConfirmed = onOptionConfirmed ?? { option in
+            viewModel.evidenceTitle = option
+        }
+        logger.trace("ClarifyEvidenceControl initialized with view model")
     }
     
     // MARK: - Body
@@ -156,7 +158,7 @@ public struct ClarifyEvidenceControl: View {
 }
 
 // MARK: - Preview
-
+#if DEBUG
 struct ClarifyEvidenceControl_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
@@ -219,3 +221,5 @@ struct ClarifyEvidenceControl_Previews: PreviewProvider {
         .previewDisplayName("No Options")
     }
 } 
+#endif
+

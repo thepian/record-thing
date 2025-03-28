@@ -41,7 +41,7 @@ public struct AssetsBrowsingView: View {
         self.onAssetSelected = onAssetSelected
         self.onRecordTapped = onRecordTapped
         
-        logger.debug("AssetsBrowsingView initialized with \(assetGroups.count) groups")
+        logger.trace("AssetsBrowsingView initialized with \(assetGroups.count) groups")
     }
     
     // MARK: - Body
@@ -522,6 +522,7 @@ struct FlowLayout: Layout {
 }
 
 // MARK: - Preview
+#if DEBUG
 struct AssetsBrowsingView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
@@ -620,3 +621,4 @@ struct AssetsBrowsingView_Previews: PreviewProvider {
         ]
     }
 } 
+#endif

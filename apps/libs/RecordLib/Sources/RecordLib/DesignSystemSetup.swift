@@ -104,6 +104,56 @@ public struct DesignSystemSetup {
     public let checkboxTextAlignment: CheckboxTextAlignment
     public let animateCheckboxOnAppear: Bool
     
+    
+    // MARK: - Screen Size
+    
+    // Window size constraints for macOS
+    #if os(macOS)
+    public let windowMinWidth: CGFloat = 800
+    public let windowMinHeight: CGFloat = 600
+    public let windowMaxWidth: CGFloat = 1920
+    public let windowMaxHeight: CGFloat = 1080
+    public let windowDefaultWidth: CGFloat = 1280
+    public let windowDefaultHeight: CGFloat = 720
+    #endif
+    
+    // Get screen dimensions in a cross-platform way
+    #if os(macOS)
+    public var screenWidth: CGFloat {
+        if let cameraViewModel = cameraViewModel {
+            return min(max(windowDefaultWidth, windowMinWidth), windowMaxWidth)
+        }
+        return 1280
+    }
+    public var screenHeight: CGFloat {
+        if let cameraViewModel = cameraViewModel {
+            return min(max(windowDefaultHeight, windowMinHeight), windowMaxHeight)
+        }
+        return 720
+    }
+    #else
+    public var screenWidth: CGFloat {
+        UIScreen.main.bounds.width
+    }
+    public var screenHeight: CGFloat {
+        UIScreen.main.bounds.height
+    }
+    #endif
+    
+    // Calculate the size for the evidence review using design system
+    public var evidenceReviewWidth: CGFloat {
+        screenWidth * evidenceReviewWidthMultiplier
+    }
+    
+    public var evidenceReviewHeight: CGFloat {
+        screenHeight * evidenceReviewHeightMultiplier
+    }
+    
+
+    // MARK: - Evidence Review Dimensions
+    public let evidenceReviewWidthMultiplier: CGFloat
+    public let evidenceReviewHeightMultiplier: CGFloat
+    
     // MARK: - Initialization
     
     /// Creates a new DesignSystemSetup with default values
@@ -134,7 +184,9 @@ public struct DesignSystemSetup {
         checkboxStyle: CheckboxStyle = .simple,
         showCheckboxBorder: Bool = false,
         checkboxTextAlignment: CheckboxTextAlignment = .left,
-        animateCheckboxOnAppear: Bool = true
+        animateCheckboxOnAppear: Bool = true,
+        evidenceReviewWidthMultiplier: CGFloat = 0.6,  // 60% of screen width
+        evidenceReviewHeightMultiplier: CGFloat = 0.6   // 60% of screen height
     ) {
         self.textColor = textColor
         self.dynamicTextColor = dynamicTextColor
@@ -176,6 +228,9 @@ public struct DesignSystemSetup {
         cardShadowColor = shadowColor
         cardShadowRadius = shadowRadius
         cardPlaceholderColor = placeholderColor
+
+        self.evidenceReviewWidthMultiplier = evidenceReviewWidthMultiplier
+        self.evidenceReviewHeightMultiplier = evidenceReviewHeightMultiplier
     }
     
     // MARK: - Presets

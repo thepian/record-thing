@@ -27,6 +27,10 @@ public class RecordedThingViewModel: ObservableObject {
     @Published public var evidenceDecision: String?
     @Published public var evidenceTitle: String = ""
     
+    // Evidence review properties
+    @Published public var evidenceReviewImage: RecordImage?
+    @Published public var evidenceReviewClip: URL?
+    
     // Configuration
     public var direction: RecordedStackAndRequirementsView.LayoutDirection
     public let spacing: CGFloat
@@ -60,6 +64,8 @@ public class RecordedThingViewModel: ObservableObject {
     ///   - evidenceOptions: Array of evidence options to cycle through
     ///   - evidenceDecision: The selected evidence option
     ///   - evidenceTitle: Title to display instead of cycling through options
+    ///   - evidenceReviewImage: Image to display in the evidence review overlay
+    ///   - evidenceReviewClip: URL of the video clip to display in the evidence review overlay
     ///   - onCardStackTapped: Callback when the image card stack is tapped
     public init(
         checkboxItems: [CheckboxItem],
@@ -73,6 +79,8 @@ public class RecordedThingViewModel: ObservableObject {
         evidenceOptions: [String] = [],
         evidenceDecision: String? = nil,
         evidenceTitle: String = "",
+        evidenceReviewImage: RecordImage? = nil,
+        evidenceReviewClip: URL? = nil,
         onCardStackTapped: (() -> Void)? = nil
     ) {
         self.checkboxItems = checkboxItems
@@ -87,6 +95,8 @@ public class RecordedThingViewModel: ObservableObject {
         self.evidenceOptions = evidenceOptions
         self.evidenceDecision = evidenceDecision
         self.evidenceTitle = evidenceTitle
+        self.evidenceReviewImage = evidenceReviewImage
+        self.evidenceReviewClip = evidenceReviewClip
         
         // Checkbox configuration
         self.checkboxOrientation = checkboxOrientation

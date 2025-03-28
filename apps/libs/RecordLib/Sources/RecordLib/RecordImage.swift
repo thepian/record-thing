@@ -63,6 +63,17 @@ public extension RecordImage {
         #endif
     }
     
+    /// Creates a platform-specific image from a resource in the library bundle
+    /// - Parameter name: The name of the image resource
+    /// - Returns: The image if found, nil otherwise
+    static func named(_ name: String) -> RecordImage? {
+        #if canImport(UIKit)
+        return UIImage(named: name, in: .module, compatibleWith: nil)
+        #elseif canImport(AppKit)
+        return NSImage(named: name)
+        #endif
+    }
+    
     /// Converts the image to JPEG data with the specified compression quality
     /// - Parameter compressionQuality: The quality of the resulting JPEG image, expressed as a value from 0.0 to 1.0
     /// - Returns: JPEG data representation of the image, or nil if conversion failed
@@ -100,3 +111,33 @@ public extension RecordImage {
         #endif
     }
 }
+
+
+/**
+ Image(nsImage: RecordImage.named("box_with_a_Swiss_watch_with_standing_on_a_coffee_table")! )
+     .resizable()
+     .aspectRatio(contentMode: .fit)
+ */
+
+#if DEBUG
+struct RecordImage_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+            ZStack {
+                // Use a color instead of an image for better cross-platform preview
+                Image("box_with_a_Swiss_watch_with_standing_on_a_coffee_table", bundle: Bundle.module)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .edgesIgnoringSafeArea(.all)
+                VStack {
+//                    Text("Before")
+//                    Text("After")
+                }
+                .frame(width: 720, height: 1024)
+            }
+            .previewDisplayName("With frame")
+
+        }
+    }
+}
+#endif

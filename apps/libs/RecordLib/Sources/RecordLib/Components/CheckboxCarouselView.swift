@@ -329,6 +329,23 @@ struct CheckboxItemView: View {
                 animateCheckmark = item.isChecked
             }
         }
+        #if os(macOS)
+        .onChange(of: animateOnAppear, initial: false) { _, newValue in
+            // When animateOnAppear changes to true, trigger the checkmark animation
+            if newValue && item.isChecked && !animateCheckmark {
+                withAnimation(.easeInOut(duration: 0.6)) {
+                    animateCheckmark = true
+                }
+            }
+        }
+        .onChange(of: item.isChecked, initial: false) { _, isChecked in
+            if isChecked {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
+                    animateCheckmark = true
+                }
+            }
+        }
+        #else
         .onChange(of: animateOnAppear) { newValue in
             // When animateOnAppear changes to true, trigger the checkmark animation
             if newValue && item.isChecked && !animateCheckmark {
@@ -344,6 +361,7 @@ struct CheckboxItemView: View {
                 }
             }
         }
+        #endif
     }
     
     // MARK: - UI Components
@@ -441,7 +459,7 @@ extension Color {
 }
 
 // MARK: - Preview
-
+#if DEBUG
 struct CheckboxCarouselView_Previews: PreviewProvider {
     static var previews: some View {
         @StateObject var viewModel = RecordedThingViewModel(
@@ -588,3 +606,4 @@ struct CheckboxCarouselView_Previews: PreviewProvider {
         }
     }
 } 
+#endif

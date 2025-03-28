@@ -38,6 +38,7 @@ public struct RecordButton: View {
                         .frame(width: 50, height: 50)
                 )
         }
+          .buttonStyle(.plain)
           .simultaneousGesture(
             LongPressGesture(minimumDuration: 0.2)
                 .onEnded { _ in
@@ -51,9 +52,10 @@ public struct RecordButton: View {
     }
 }
 
+#if DEBUG
 struct RecordButton_Previews: PreviewProvider {
     static var previews: some View {
-        let model = CameraViewModel(.authorized)
+        let model = CameraViewModel(status: .authorized)
         @State var snaps: Int = 0
         @State var recordings: Int = 0
         @State var recording = false
@@ -90,3 +92,4 @@ struct RecordButton_Previews: PreviewProvider {
         }
     }
 }
+#endif

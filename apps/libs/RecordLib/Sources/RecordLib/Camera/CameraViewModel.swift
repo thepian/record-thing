@@ -9,6 +9,7 @@ import Foundation
 import AVFoundation
 import Combine
 import SwiftUICore
+import os
 
 struct Step {
     var iconName: String
@@ -65,13 +66,18 @@ public extension EnvironmentValues {
  */
 public class CameraViewModel: ObservableObject {
     
+    // Logger for debugging
+    private let logger = Logger(subsystem: "com.record-thing", category: "ui.camera-view-model")
+    
     @Published public var showTopBar = true
     @Published public var title = "" // "Point at a Sales Receipt"
-    @Published public var bgImageSet = "lined_room" // "orange_room"
+    @Published public var bgImageSet = "box_with_a_Swiss_watch_with_standing_on_a_coffee_table" // TODO change to branding asset. Copy with build script.
     @Published public var showViewfinderFrame = false
     
     @Published public var adviceIconName = "doc.viewfinder"
     @Published public var adviceText: String = "Show the full sales receipt in the view finder"
+    
+    @Published public var shaded: Bool = false
 
     @Published public var onboardingState = OnboardingState.PermitVideoCapture
     @Published public var showCamera = true
@@ -81,22 +87,71 @@ public class CameraViewModel: ObservableObject {
     @Published public var videoCaptureEnabled = false // If not, camera preview is hidden and explanation is shown
     @Published public var videoCaptureCTA = true // If so, show button for video capture permission
     
+    // Add state management for CameraDrivenView
+    @Published var isCameraActive: Bool = false
+    @Published var cameraError: Error?
+    @Published var isCameraPaused: Bool = false
+    
+    // Design system
+    public let designSystem: DesignSystemSetup
+    
     /*
      Photos, Topographical Maps, Clips, 3D scans captured by User Interactions
      are fed through this subject
      */
     public let captures = PassthroughSubject<Captured, Error>()
     
-    public init() {
+    // Reference to the capture service
+    private(set) var captureService: CaptureService?
+    
+    public init(designSystem: DesignSystemSetup = .light) {
+        self.designSystem = designSystem
     }
     
-    public init(_ status: AVAuthorizationStatus, showViewfinderFrame: Bool = false) {
+    public init(status: AVAuthorizationStatus, showViewfinderFrame: Bool = false, shaded: Bool = false, designSystem: DesignSystemSetup = .light) {
+        self.designSystem = designSystem
         reflectCaptureDevice(status: status)
         self.showViewfinderFrame = showViewfinderFrame
+        self.shaded = shaded
     }
     
     public func onAppear() {
+        isCameraActive = true
 //        print("TODO View Model on Appear")
+    }
+    
+    public func onDisappear() {
+        isCameraActive = false
+    }
+    
+    /// Sets the capture service reference
+    public func setCaptureService(_ service: CaptureService) {
+        self.captureService = service
+        logger.debug("Capture service set in CameraViewModel")
+    }
+    
+    /// Pauses the camera stream
+    public func pauseCamera() {
+        guard let captureService = captureService else {
+            logger.error("Cannot pause camera: capture service not set")
+            return
+        }
+        
+        captureService.pauseStream()
+        isCameraPaused = true
+        logger.debug("Camera paused")
+    }
+    
+    /// Resumes the camera stream
+    public func resumeCamera() {
+        guard let captureService = captureService else {
+            logger.error("Cannot resume camera: capture service not set")
+            return
+        }
+        
+        captureService.resumeStream()
+        isCameraPaused = false
+        logger.debug("Camera resumed")
     }
     
     public func reflectCaptureDevice(status: AVAuthorizationStatus) {
@@ -159,3 +214,44 @@ public class CameraViewModel: ObservableObject {
     }
     */
 }
+
+// MARK: Mock CameraViewModel
+
+#if DEBUG
+extension CameraViewModel {
+    static public var authorizedMock = {
+        var viewModel = CameraViewModel(status: .authorized, shaded: false)
+        viewModel.setCaptureService(MockedCaptureService(.authorized))
+        return viewModel
+    }
+    
+    static public var authorizedShadedMock = {
+        var viewModel = CameraViewModel(status: .authorized, shaded: true)
+        viewModel.setCaptureService(MockedCaptureService(.authorized))
+        return viewModel
+    }
+    
+    static public var deniedMock = {
+        var viewModel = CameraViewModel(status: .denied, shaded: false)
+        viewModel.setCaptureService(MockedCaptureService(.denied))
+        return viewModel
+    }
+    
+    static public var notDeterminedMock = {
+        var viewModel = CameraViewModel(status: .notDetermined, shaded: false)
+        viewModel.setCaptureService(MockedCaptureService(.notDetermined))
+        return viewModel
+    }
+
+    static public var authorizedSampleVideoMock = {
+        var viewModel = CameraViewModel(status: .authorized, shaded: false)
+        if let videoURL = Bundle.module.url(forResource: "sample_video", withExtension: "mp4") {
+            let videoService = VideoFileStreamService(videoURL: videoURL)
+            let mockService = MockedCaptureService(videoService, status: .authorized)
+            
+            viewModel.setCaptureService(mockService)
+        }
+        return viewModel
+    }
+}
+#endif

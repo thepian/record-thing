@@ -28,7 +28,7 @@ public class CaptureService: NSObject, ObservableObject {
     // Logger for debugging
     private let logger = Logger(subsystem: "com.record-thing", category: "capture-service")
     
-    @Published var frame: CGImage? // For streaming to view via CoreImage
+    @Published public var frame: CGImage? // For streaming to view via CoreImage
     private let session = AVCaptureSession()  // Should be possible to reuse the capture session
     private let sessionQueue = DispatchQueue(label: "sessionQueue")
     private let context = CIContext()
@@ -41,6 +41,9 @@ public class CaptureService: NSObject, ObservableObject {
     
     // Timer for permission monitoring
     private var permissionCheckTimer: Timer?
+    
+    // Track if the session is paused
+    @Published public var isPaused = false
     
     let photoOutput = AVCapturePhotoOutput() // For capturing photos
     
@@ -444,6 +447,48 @@ public class CaptureService: NSObject, ObservableObject {
             self.logger.debug("Photo capture initiated")
         }
     }
+    
+    /// Pauses the camera stream without stopping the session
+    public func pauseStream() {
+        guard !isPaused else {
+            logger.debug("Stream already paused")
+            return
+        }
+        
+        sessionQueue.async { [weak self] in
+            guard let self = self else { return }
+            
+            if self.session.isRunning {
+                self.session.stopRunning()
+                self.logger.debug("Camera stream paused")
+                
+                DispatchQueue.main.async {
+                    self.isPaused = true
+                }
+            }
+        }
+    }
+    
+    /// Resumes the camera stream if it was previously paused
+    public func resumeStream() {
+        guard isPaused else {
+            logger.debug("Stream already running")
+            return
+        }
+        
+        sessionQueue.async { [weak self] in
+            guard let self = self else { return }
+            
+            if !self.session.isRunning {
+                self.session.startRunning()
+                self.logger.debug("Camera stream resumed")
+                
+                DispatchQueue.main.async {
+                    self.isPaused = false
+                }
+            }
+        }
+    }
 }
 
 // Core Image sample buffer streaming
@@ -466,23 +511,3 @@ extension CaptureService: AVCaptureVideoDataOutputSampleBufferDelegate {
         return cgImage
     }
 }
-
-public class MockedCaptureService: CaptureService {
-    var status: AVAuthorizationStatus
-    
-    public init(_ status: AVAuthorizationStatus) {
-        self.status = status
-        super.init()
-    }
-    
-    override func checkPermission() -> AVAuthorizationStatus {
-        permissionGranted = (status == .authorized)
-        return status
-    }
-    
-    override func startSessionIfAuthorized(completion: @escaping (Error?) -> ()) {
-        // Mock implementation - just call completion
-        completion(status == .authorized ? nil : CaptureError.notAuthorized(comment: "Mock service denied permission"))
-    }
-}
-

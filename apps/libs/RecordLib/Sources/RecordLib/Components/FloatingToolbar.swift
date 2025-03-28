@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import os
 
 /// A floating toolbar with configurable buttons that can be used within a NavigationStack
 public struct FloatingToolbar<Content: View>: View {
@@ -46,7 +47,7 @@ public struct FloatingToolbar<Content: View>: View {
         self.padding = padding
         self.useFullRounding = useFullRounding
         self.content = content()
-        logger.debug("FloatingToolbar initialized with cornerRadius: \(cornerRadius), useFullRounding: \(useFullRounding)")
+//        logger.trace("FloatingToolbar initialized with cornerRadius: \(cornerRadius), useFullRounding: \(useFullRounding)")
     }
     
     public var body: some View {
@@ -93,16 +94,29 @@ public struct CameraButton: View {
     
     public var body: some View {
         Button(action: action) {
-            Circle()
-                .fill(Color.white)
-                .frame(width: size, height: size)
-                .overlay(
-                    Circle()
-                        .stroke(Color.gray.opacity(0.2), lineWidth: 2)
-                        .padding(4)
-                )
-                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+            if false {
+                Circle()
+                    .fill(Color.white)
+                    .frame(width: size, height: size)
+                    .overlay(
+                        Circle()
+                            .stroke(Color.gray.opacity(0.4), lineWidth: 2)
+                            .padding(4)
+                    )
+                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+            } else {
+                Circle()
+                    .stroke(.white, lineWidth: 3)
+                    .frame(width: size, height: size)
+                    .overlay(
+                        Circle()
+                            .fill(.white)
+                            .frame(width: size - 8, height: size - 8)
+                    )
+
+            }
         }
+        .buttonStyle(.plain)
         .accessibilityLabel("Take Picture")
     }
 }
@@ -120,6 +134,7 @@ public struct DataBrowseButton: View {
                 .font(.system(size: 22))
                 .foregroundColor(.white)
         }
+        .buttonStyle(.plain)
         .accessibilityLabel("Data browse")
     }
 }
@@ -140,6 +155,7 @@ public struct StackButton: View {
                 .font(.system(size: 22))
                 .foregroundColor(.white)
         }
+        .buttonStyle(.plain)
         .accessibilityLabel("Stack")
     }
 }
@@ -160,6 +176,7 @@ public struct AccountButton: View {
                 .font(.system(size: 22))
                 .foregroundColor(.white)
         }
+        .buttonStyle(.plain)
         .accessibilityLabel("Account")
     }
 }
@@ -260,6 +277,7 @@ fileprivate struct Logger {
 }
 
 // MARK: - Preview
+#if DEBUG
 struct FloatingToolbar_Previews: PreviewProvider {
     static var previews: some View {
         ZStack {
@@ -348,6 +366,7 @@ struct FloatingToolbar_Previews: PreviewProvider {
                             .font(.system(size: 22))
                             .foregroundColor(.white)
                     }
+                    .buttonStyle(.plain)
                     Spacer()
                     CameraButton(action: { print("Camera tapped") })
                     Spacer()
@@ -356,6 +375,7 @@ struct FloatingToolbar_Previews: PreviewProvider {
                             .font(.system(size: 22))
                             .foregroundColor(.white)
                     }
+                    .buttonStyle(.plain)
                     Spacer()
                 }
             }
@@ -363,3 +383,4 @@ struct FloatingToolbar_Previews: PreviewProvider {
         .previewDisplayName("Custom Toolbar")
     }
 }
+#endif

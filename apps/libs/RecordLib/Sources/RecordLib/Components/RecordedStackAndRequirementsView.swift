@@ -54,7 +54,7 @@ public struct RecordedStackAndRequirementsView: View {
     /// - Parameter viewModel: The view model that manages the state and business logic
     public init(viewModel: RecordedThingViewModel) {
         self._viewModel = StateObject(wrappedValue: viewModel)
-        logger.debug("RecordedStackAndRequirementsView initialized with view model")
+        logger.trace("RecordedStackAndRequirementsView initialized with view model")
     }
     
     // MARK: - Body

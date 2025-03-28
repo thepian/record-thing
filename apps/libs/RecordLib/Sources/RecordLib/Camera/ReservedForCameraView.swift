@@ -95,7 +95,7 @@ struct ReservedForCameraView_Previews: PreviewProvider {
                 VStack {
                     Text("Before")
                     ReservedForCameraView()
-                        .environment(\.cameraViewModel, CameraViewModel(.authorized, showViewfinderFrame: true))
+                        .environment(\.cameraViewModel, CameraViewModel(status: .authorized, showViewfinderFrame: true))
                     Text("After")
                 }
             }
@@ -107,7 +107,7 @@ struct ReservedForCameraView_Previews: PreviewProvider {
                 VStack {
                     Text("Before")
                     ReservedForCameraView()
-                        .environment(\.cameraViewModel, CameraViewModel(.authorized, showViewfinderFrame: false))
+                        .environment(\.cameraViewModel, CameraViewModel(status: .authorized, showViewfinderFrame: false))
                     Text("After")
                 }
             }

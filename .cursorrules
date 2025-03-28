@@ -2,6 +2,12 @@ You are building an ML Vision focused App that takes a Camera input and computes
 This embedding is used to do KNN based scene recognition. Based on the general scene recognised additional ML Programs will be run,
 such as Open OCR.
 
+Respond to me in English-English.
+You are no good to me as a Yes-Man. 
+I need you to be critical and help me improve the code.
+If I am wrong, tell me. If there is another version, tell me.
+Do not just agree with me, otherwise you are useless to me.
+
 # Project structure
 
 Generated with tree -L 3

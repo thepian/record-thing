@@ -9,6 +9,7 @@
 import SwiftUI
 import Blackbird
 import Foundation
+import RecordLib
 import os
 
 #if os(macOS)
@@ -111,7 +112,7 @@ extension Bundle {
 
 
 // MARK: - App Datasource
-class AppDatasource: ObservableObject {
+class AppDatasource: ObservableObject, AppDatasourceAPI {
     static let shared = AppDatasource() // (debugDb: true)
 
     var db: Blackbird.Database?
@@ -120,11 +121,12 @@ class AppDatasource: ObservableObject {
     
     @Published private(set) var loadedLang: String?
     
-    init() {
-        setupDatabase()
-    }
-    init(debugDb: Bool = true) {
+//    init() {
+//        setupDatabase()
+//    }
+    init(debugDb: Bool = false) {
         setupDatabase(debugDb: debugDb)
+        logger.info("Finished setup of AppDatasource.")
     }
     
     func forceLocalizeReload() {
@@ -134,15 +136,18 @@ class AppDatasource: ObservableObject {
     private func setupDatabase(debugDb: Bool = false) {
         if (debugDb) {
             let debugPath = "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing-debug.sqlite"
-            logger.info("Using test database at \(debugPath)")
-            let url = URL(fileURLWithPath: debugPath)
-            
-            do {
-                db = try Blackbird.Database(path: url.absoluteString)
-            } catch {
-                logger.error("\(url.absoluteString)\nDatabase connection error: \(error)")
+            if FileManager.default.fileExists(atPath: debugPath) {
+                logger.info("Using test database at \(debugPath)")
+                let url = URL(fileURLWithPath: debugPath)
+                
+                do {
+                    db = try Blackbird.Database(path: url.absoluteString)
+                    logger.debug("Opened Debug DB: \(url.absoluteString)")
+                } catch {
+                    logger.error("\(url.absoluteString)\nDatabase connection error: \(error)")
+                }
+                return
             }
-            return
         }
         // First check for test database on external volume
         let testPath = "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite"
@@ -152,6 +157,7 @@ class AppDatasource: ObservableObject {
             
             do {
                 db = try Blackbird.Database(path: url.absoluteString)
+                logger.debug("Opened Dev DB: \(url.absoluteString)")
             } catch {
                 logger.error("\(url.absoluteString)\nDatabase connection error: \(error)")
             }
@@ -165,12 +171,14 @@ class AppDatasource: ObservableObject {
         if !FileManager.default.fileExists(atPath: documentsPath.path) {
             if let bundleDbPath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite") {
                 try? FileManager.default.copyItem(atPath: bundleDbPath, toPath: documentsPath.path)
+                logger.debug("Copied DB from assets to: \(documentsPath.path)")
             }
         }
         
         // Connect to database
         do {
             db = try Blackbird.Database(path: documentsPath.path)
+            logger.debug("Opened DB: \(documentsPath.path)")
         } catch {
             logger.error("Database connection error: \(error)")
         }
@@ -215,26 +223,64 @@ class AppDatasource: ObservableObject {
         translations.removeAll()
         await loadTranslations(for: newLocale)
     }
-}
-
-// MARK: - Database Environment Key
-private struct DatabaseKey: EnvironmentKey {
-    static let defaultValue: Blackbird.Database? = nil
-}
-
-private struct DatasourceKey: EnvironmentKey {
-    static let defaultValue: AppDatasource? = nil
-}
-
-extension EnvironmentValues {
-    var database: Blackbird.Database? {
-        get { self[DatabaseKey.self] }
-        set { self[DatabaseKey.self] = newValue }
+    
+    // MARK: - AppDatasourceAPI Implementation
+    
+    func reloadDatabase() {
+        logger.debug("Reloading database")
+        setupDatabase(debugDb: false)
     }
     
-    var appDatasource: AppDatasource? {
-        get { self[DatasourceKey.self] }
-        set { self[DatasourceKey.self] = newValue }
+    func resetDatabase() {
+        logger.debug("Resetting database")
+        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("record-thing.sqlite")
+        
+        // Remove existing database
+        try? FileManager.default.removeItem(atPath: documentsPath.path)
+        
+        // Copy default database
+        if let bundleDbPath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite") {
+            try? FileManager.default.copyItem(atPath: bundleDbPath, toPath: documentsPath.path)
+            logger.debug("Copied default DB to: \(documentsPath.path)")
+        }
+        
+        // Reload database
+        reloadDatabase()
+    }
+    
+    func updateDatabase() async {
+        logger.debug("Updating database")
+        guard let db = db else { return }
+        
+        // Update translations table from default database
+        if let bundleDbPath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite") {
+            do {
+                let defaultDb = try Blackbird.Database(path: bundleDbPath)
+                let rows: [Dictionary] = try await defaultDb.query("SELECT lang, key, value FROM translations")
+                
+                // Update translations in current database
+                for row in rows {
+                    if let lang = row["lang"]?.stringValue,
+                       let key = row["key"]?.stringValue,
+                       let value = row["value"]?.stringValue {
+                        try await db.query("""
+                            INSERT OR REPLACE INTO translations (lang, key, value)
+                            VALUES (?, ?, ?)
+                        """, lang, key, value)
+                    }
+                }
+                
+                logger.debug("Updated translations from default database")
+                
+                // Reload database to apply changes
+                await MainActor.run {
+                    reloadDatabase()
+                }
+            } catch {
+                logger.error("Failed to update database: \(error)")
+            }
+        }
     }
 }
 
@@ -259,6 +305,10 @@ class RecordAppDelegate : NSObject {
 #if os(iOS)
 extension RecordAppDelegate: UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        // Configure logging to omit trace level logs
+        Logger.configureLogging()
+        logger.debug("iOS app delegate initialized")
+        
         let locale = Locale.current.language.languageCode?.identifier ?? "en"
         loadTranslations(for: locale)
         return true
@@ -269,37 +319,16 @@ extension RecordAppDelegate: UIApplicationDelegate {
 extension RecordAppDelegate: NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // Create the window and set the content view
-        window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 1000, height: 600),
-            styleMask: [.titled, .closable, .miniaturizable, .resizable],
-            backing: .buffered,
-            defer: false
-        )
+        // Configure logging to omit trace level logs
+        Logger.configureLogging()
+        logger.debug("macOS app delegate initialized")
         
-        window?.center()
-        window?.setFrameAutosaveName("Main Window")
-        window?.title = "Record Thing"
-        
-        // Set the content view
-        window?.contentView = NSHostingView(
-            rootView: ContentView()
-                .environment(\.blackbirdDatabase, AppDatasource.shared.db)
-                .environmentObject(Model(loadedLangConst: "en"))
-        )
-        
-        window?.makeKeyAndOrderFront(nil)
+        // Initialize any necessary app state here
     }
     
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         return true
     }
-    
-//    func application(_ application: NSApplication, didFinishLaunchingWithOptions launchOptions: [NSApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-//        let locale = Locale.current.language.languageCode?.identifier ?? "en"
-//        loadTranslations(for: locale)
-//        return true
-//    }
 }
 #endif
 
