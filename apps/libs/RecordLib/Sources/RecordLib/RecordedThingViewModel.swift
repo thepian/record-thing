@@ -1,6 +1,144 @@
 import SwiftUI
 import os
 
+/// Used by Carousel for cards
+public protocol CardViewData: Equatable, Identifiable {
+    var id: UUID { get }
+    var _index: Int { get }
+    var title: String { get }
+    var image: Image? { get }
+    var color: Color { get }
+}
+
+/// The type of evidence piece
+public enum EvidenceType: Equatable {
+    case system(String)      // System SF Symbol name
+    case custom(Image)       // Custom image
+    case video(URL)         // Video URL
+}
+
+/// Represents a piece of evidence with associated metadata
+public struct EvidencePiece: CardViewData {
+    public let id: UUID
+    public let _index: Int
+    public let title: String
+    public var color: Color
+    public let type: EvidenceType
+    public let timestamp: Date
+    public let metadata: [String: String]
+    
+    /// Creates a new piece of evidence
+    /// - Parameters:
+    ///   - type: The type of evidence (system image, custom image, or video)
+    ///   - metadata: Optional metadata associated with the evidence
+    ///   - timestamp: When the evidence was captured (defaults to now)
+    public init(
+        index: Int = -1,
+        title: String,
+        type: EvidenceType,
+        metadata: [String: String] = [:],
+        timestamp: Date = Date(),
+        color: Color = .red
+    ) {
+        self.id = UUID()
+        self.title = title
+        self.type = type
+        self.metadata = metadata
+        self.timestamp = timestamp
+        self._index = index
+        self.color = color
+    }
+    
+    /// Creates a copy of an existing evidence piece with optional updates
+    /// - Parameters:
+    ///   - original: The piece to copy
+    ///   - type: Optional new type (uses original if nil)
+    ///   - metadata: Optional new metadata (merges with original if provided)
+    ///   - timestamp: Optional new timestamp (uses original if nil)
+    public init(
+        _ original: EvidencePiece,
+        index: Int? = nil,
+        title: String? = nil,
+        type: EvidenceType? = nil,
+        metadata: [String: String]? = nil,
+        timestamp: Date? = nil,
+        color: Color = .red
+    ) {
+        self.id = original.id  // Preserve the original ID
+        self._index = index ?? original._index
+        self.title = title ?? original.title
+        self.type = type ?? original.type
+        self.metadata = metadata ?? original.metadata
+        self.timestamp = timestamp ?? original.timestamp
+        self.color = color
+    }
+    
+    public static func == (lhs: EvidencePiece, rhs: EvidencePiece) -> Bool {
+        // Compare IDs for equality since images can't be directly compared
+        lhs.id == rhs.id
+    }
+    
+    /// The visual representation of this evidence piece
+    public var image: Image? {
+        switch type {
+        case .system(let name):
+            return Image(systemName: name)
+        case .custom(let image):
+            return image
+        case .video:
+            // Default video thumbnail
+            return Image(systemName: "play.circle.fill")
+        }
+    }
+    
+    /// Whether this evidence piece represents a video
+    public var isVideo: Bool {
+        if case .video = type {
+            return true
+        }
+        return false
+    }
+    
+    /// The video URL if this is a video piece
+    public var videoURL: URL? {
+        if case .video(let url) = type {
+            return url
+        }
+        return nil
+    }
+    
+    // MARK: - Convenience Initializers
+    
+    /// Creates a system icon evidence piece
+    /// - Parameter name: The SF Symbol name
+    public static func system(_ name: String) -> EvidencePiece {
+        EvidencePiece(title: name, type: .system(name))
+    }
+    
+    /// Creates a custom image evidence piece
+    /// - Parameter image: The custom image
+    public static func custom(_ image: Image, title: String = "Title") -> EvidencePiece {
+        EvidencePiece(title: title, type: .custom(image))
+    }
+    
+    /// Creates a video evidence piece
+    /// - Parameter url: The video URL
+    public static func video(_ url: URL, title: String = "Title") -> EvidencePiece {
+        EvidencePiece(title: title, type: .video(url))
+    }
+    
+    #if DEBUG
+    // Sample pieces for previews and testing
+    public static let samplePieces: [EvidencePiece] = [
+        EvidencePiece(title: "photo", type: .system("photo"), metadata: ["type": "photo"]),
+        EvidencePiece(title: "mountain bike", type: .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)), metadata: ["type": "photo"]),
+        EvidencePiece(title: "video", type: .video(URL(string: "video.mp4")!), metadata: ["type": "video"]),
+        EvidencePiece(title: "document", type: .system("doc.text.image"), metadata: ["type": "document"]),
+        EvidencePiece(title: "photo", type: .system("photo.fill"), metadata: ["type": "photo"])
+    ]
+    #endif
+}
+
 /// ViewModel for managing the state and business logic of RecordedStackAndRequirementsView
 /*
     This view model is responsible for managing the state and business logic of the RecordedStackAndRequirementsView.
@@ -12,6 +150,8 @@ import os
 */
 @MainActor
 public class RecordedThingViewModel: ObservableObject {
+    // MARK: - Types
+    
     // MARK: - Properties
     
     // Logger for debugging
@@ -19,13 +159,64 @@ public class RecordedThingViewModel: ObservableObject {
     
     // Published state
     @Published public var checkboxItems: [CheckboxItem]
-    @Published public var cardImages: [ImageCardStack.CardImage]
+    @Published public var pieces: [EvidencePiece]
+    @Published public var currentPiece: EvidencePiece?
     @Published public var isAnimating: Bool = false
+    @Published public var focusMode: Bool = false
+    @Published public var reviewing: Bool = false
     
     // Evidence properties
-    @Published public var evidenceOptions: [String] = []
-    @Published public var evidenceDecision: String?
-    @Published public var evidenceTitle: String = ""
+    public var evidenceOptions: [String] {
+        get {
+            guard let currentPiece = currentPiece,
+                  let optionsString = currentPiece.metadata["evidenceOptions"] else {
+                return []
+            }
+            return optionsString.components(separatedBy: "|")
+        }
+        set {
+            guard let currentPiece = currentPiece else { return }
+            var metadata = currentPiece.metadata
+            metadata["evidenceOptions"] = newValue.joined(separator: "|")
+            let updatedPiece = EvidencePiece(currentPiece, metadata: metadata)
+            if let index = pieces.firstIndex(where: { $0.id == currentPiece.id }) {
+                pieces[index] = updatedPiece
+                self.currentPiece = updatedPiece
+            }
+        }
+    }
+    
+    public var evidenceDecision: String? {
+        get {
+            currentPiece?.metadata["evidenceDecision"]
+        }
+        set {
+            guard let currentPiece = currentPiece else { return }
+            var metadata = currentPiece.metadata
+            metadata["evidenceDecision"] = newValue
+            let updatedPiece = EvidencePiece(currentPiece, metadata: metadata)
+            if let index = pieces.firstIndex(where: { $0.id == currentPiece.id }) {
+                pieces[index] = updatedPiece
+                self.currentPiece = updatedPiece
+            }
+        }
+    }
+    
+    public var evidenceTitle: String {
+        get {
+            currentPiece?.metadata["evidenceTitle"] ?? ""
+        }
+        set {
+            guard let currentPiece = currentPiece else { return }
+            var metadata = currentPiece.metadata
+            metadata["evidenceTitle"] = newValue
+            let updatedPiece = EvidencePiece(currentPiece, metadata: metadata)
+            if let index = pieces.firstIndex(where: { $0.id == currentPiece.id }) {
+                pieces[index] = updatedPiece
+                self.currentPiece = updatedPiece
+            }
+        }
+    }
     
     // Evidence review properties
     @Published public var evidenceReviewImage: RecordImage?
@@ -47,68 +238,52 @@ public class RecordedThingViewModel: ObservableObject {
     public var showCardBorder: Bool
     public var cardPlaceholderSystemImage: String?
     
-    // Callbacks
-    private let onCardStackTapped: (() -> Void)?
-    
     // MARK: - Initialization
     
     /// Creates a new RecordedThingViewModel
     /// - Parameters:
     ///   - checkboxItems: Array of checkbox items to display
-    ///   - cardImages: Array of images to display in the card stack
+    ///   - pieces: Array of evidence pieces to display in the stack
+    ///   - currentPiece: The currently selected evidence piece (defaults to last piece if not specified)
     ///   - direction: Direction of the layout (horizontal or vertical)
     ///   - spacing: Spacing between the checkbox carousel and image stack
     ///   - alignment: Horizontal alignment of the components
     ///   - maxCheckboxItems: Maximum number of checkbox items visible at once
     ///   - designSystem: Design system configuration for styling
-    ///   - evidenceOptions: Array of evidence options to cycle through
-    ///   - evidenceDecision: The selected evidence option
-    ///   - evidenceTitle: Title to display instead of cycling through options
-    ///   - evidenceReviewImage: Image to display in the evidence review overlay
-    ///   - evidenceReviewClip: URL of the video clip to display in the evidence review overlay
-    ///   - onCardStackTapped: Callback when the image card stack is tapped
+    ///   - focusMode: Whether the view is in focus mode
+    ///   - reviewing: Mode for full review evidence cards
     public init(
         checkboxItems: [CheckboxItem],
-        cardImages: [ImageCardStack.CardImage],
+        pieces: [EvidencePiece],
+        currentPiece: EvidencePiece? = nil,
         direction: RecordedStackAndRequirementsView.LayoutDirection = .horizontal,
         spacing: CGFloat = 2,
         alignment: HorizontalAlignment = .leading,
         maxCheckboxItems: Int = 1,
         checkboxOrientation: CarouselOrientation = .horizontal,
         designSystem: DesignSystemSetup = .light,
-        evidenceOptions: [String] = [],
-        evidenceDecision: String? = nil,
-        evidenceTitle: String = "",
-        evidenceReviewImage: RecordImage? = nil,
-        evidenceReviewClip: URL? = nil,
-        onCardStackTapped: (() -> Void)? = nil
+        focusMode: Bool = false,
+        reviewing: Bool = false
     ) {
         self.checkboxItems = checkboxItems
-        self.cardImages = cardImages
+        self.pieces = pieces
+        self.currentPiece = currentPiece ?? pieces.last
         self.direction = direction
         self.spacing = spacing
         self.alignment = alignment
         self.maxCheckboxItems = maxCheckboxItems
         self.designSystem = designSystem
-        
-        // Evidence properties
-        self.evidenceOptions = evidenceOptions
-        self.evidenceDecision = evidenceDecision
-        self.evidenceTitle = evidenceTitle
-        self.evidenceReviewImage = evidenceReviewImage
-        self.evidenceReviewClip = evidenceReviewClip
-        
-        // Checkbox configuration
-        self.checkboxOrientation = checkboxOrientation
+        self.focusMode = focusMode
+        self.reviewing = reviewing
         
         // Image stack configuration
         self.showCardBorder = true
         self.cardPlaceholderSystemImage = nil
         
-        // Callbacks
-        self.onCardStackTapped = onCardStackTapped
+        // Checkbox configuration
+        self.checkboxOrientation = checkboxOrientation
         
-        logger.debug("RecordedThingViewModel initialized with \(checkboxItems.count) checkbox items, \(cardImages.count) card images, \(evidenceOptions.count) evidence options")
+        logger.debug("RecordedThingViewModel initialized with \(checkboxItems.count) checkbox items, \(pieces.count) evidence pieces")
     }
     
     // MARK: - Public Methods
@@ -120,41 +295,151 @@ public class RecordedThingViewModel: ObservableObject {
         logger.debug("Updated checkbox items to \(newItems.count) items")
     }
     
-    /// Updates the card images
-    /// - Parameter newImages: The new card images
-    public func updateCardImages(_ newImages: [ImageCardStack.CardImage]) {
-        cardImages = newImages
-        logger.debug("Updated card images to \(newImages.count) images")
+    /// Updates the evidence pieces
+    /// - Parameter newPieces: The new evidence pieces
+    public func updatePieces(_ newPieces: [EvidencePiece]) {
+        pieces = newPieces
+        // Update currentPiece if it's no longer in the pieces array
+        if let current = currentPiece, !newPieces.contains(current) {
+            currentPiece = newPieces.last
+        }
+        logger.debug("Updated evidence pieces to \(newPieces.count) pieces")
     }
     
-    /// Replaces the top card in the image stack with a new image
-    /// - Parameter newImage: The new image to place on top of the stack
-    public func replaceTopCard(with newImage: ImageCardStack.CardImage) {
-        guard !cardImages.isEmpty else {
-            logger.debug("Cannot replace top card: no cards in stack")
+    /// Sets the current piece to the specified piece
+    /// - Parameter piece: The piece to set as current
+    /// - Returns: True if the piece was found and set as current, false otherwise
+    @discardableResult
+    public func setCurrentPiece(_ piece: EvidencePiece) -> Bool {
+        guard pieces.contains(piece) else {
+            logger.debug("Cannot set current piece: piece not found in pieces array")
+            return false
+        }
+        currentPiece = piece
+        logger.debug("Set current piece with ID: \(piece.id)")
+        return true
+    }
+    
+    /// Sets the current piece by index
+    /// - Parameter index: The index of the piece to set as current
+    /// - Returns: True if the index was valid and the piece was set as current, false otherwise
+    @discardableResult
+    public func setCurrentPiece(at index: Int) -> Bool {
+        guard index >= 0 && index < pieces.count else {
+            logger.debug("Cannot set current piece: index \(index) out of bounds")
+            return false
+        }
+        currentPiece = pieces[index]
+        logger.debug("Set current piece at index: \(index)")
+        return true
+    }
+    
+    /// Moves to the next piece in the stack
+    /// - Parameter wrap: Whether to wrap around to the first piece when at the end
+    /// - Returns: True if successfully moved to the next piece, false otherwise
+    @discardableResult
+    public func moveToNextPiece(wrap: Bool = true) -> Bool {
+        guard !pieces.isEmpty else { return false }
+        guard let current = currentPiece, let currentIndex = pieces.firstIndex(of: current) else {
+            // If no current piece, set to first piece
+            currentPiece = pieces.first
+            return true
+        }
+        
+        let nextIndex = currentIndex + 1
+        if nextIndex < pieces.count {
+            currentPiece = pieces[nextIndex]
+            logger.debug("Moved to next piece at index: \(nextIndex)")
+            return true
+        } else if wrap {
+            currentPiece = pieces.first
+            logger.debug("Wrapped to first piece")
+            return true
+        }
+        return false
+    }
+    
+    /// Moves to the previous piece in the stack
+    /// - Parameter wrap: Whether to wrap around to the last piece when at the beginning
+    /// - Returns: True if successfully moved to the previous piece, false otherwise
+    @discardableResult
+    public func moveToPreviousPiece(wrap: Bool = true) -> Bool {
+        guard !pieces.isEmpty else { return false }
+        guard let current = currentPiece, let currentIndex = pieces.firstIndex(of: current) else {
+            // If no current piece, set to last piece
+            currentPiece = pieces.last
+            return true
+        }
+        
+        let previousIndex = currentIndex - 1
+        if previousIndex >= 0 {
+            currentPiece = pieces[previousIndex]
+            logger.debug("Moved to previous piece at index: \(previousIndex)")
+            return true
+        } else if wrap {
+            currentPiece = pieces.last
+            logger.debug("Wrapped to last piece")
+            return true
+        }
+        return false
+    }
+    
+    /// Replaces the top piece in the evidence stack with a new piece
+    /// - Parameter newPiece: The new piece to place on top of the stack
+    public func replaceTopPiece(with newPiece: EvidencePiece) {
+        guard !pieces.isEmpty else {
+            logger.debug("Cannot replace top piece: no pieces in stack")
             return
         }
         
         isAnimating = true
-        logger.debug("Starting card replacement animation")
+        logger.debug("Starting piece replacement animation")
         
-        // Update the card images after the animation completes
+        // Update the pieces after the animation completes
         Task { @MainActor in
             try? await Task.sleep(nanoseconds: UInt64(0.6 * 1_000_000_000))
-            if !cardImages.isEmpty {
-                var updatedImages = cardImages
-                updatedImages[updatedImages.count - 1] = newImage
-                cardImages = updatedImages
+            if !pieces.isEmpty {
+                var updatedPieces = pieces
+                updatedPieces[updatedPieces.count - 1] = newPiece
+                pieces = updatedPieces
+                // Update currentPiece if it was the replaced piece
+                if currentPiece == pieces.last {
+                    currentPiece = newPiece
+                }
                 isAnimating = false
-                logger.debug("Completed card replacement animation")
+                logger.debug("Completed piece replacement animation")
             }
         }
     }
     
-    /// Handles the card stack being tapped
-    public func handleCardStackTapped() {
-        logger.debug("Card stack tapped")
-        onCardStackTapped?()
+    /// Adds a new piece to the stack
+    /// - Parameters:
+    ///   - piece: The piece to add
+    ///   - setAsCurrent: Whether to set the new piece as the current piece
+    public func addPiece(_ piece: EvidencePiece, setAsCurrent: Bool = true) {
+        pieces.append(piece)
+        if setAsCurrent {
+            currentPiece = piece
+        }
+        logger.debug("Added new piece with ID: \(piece.id)")
+    }
+    
+    /// Removes a piece from the stack
+    /// - Parameter piece: The piece to remove
+    /// - Returns: True if the piece was found and removed, false otherwise
+    @discardableResult
+    public func removePiece(_ piece: EvidencePiece) -> Bool {
+        guard let index = pieces.firstIndex(of: piece) else {
+            logger.debug("Cannot remove piece: piece not found in stack")
+            return false
+        }
+        pieces.remove(at: index)
+        // Update currentPiece if removed piece was current
+        if currentPiece == piece {
+            currentPiece = pieces.last
+        }
+        logger.debug("Removed piece with ID: \(piece.id)")
+        return true
     }
     
     /// Resets all checkbox items to unchecked state
@@ -199,6 +484,83 @@ public class RecordedThingViewModel: ObservableObject {
         if let index = checkboxItems.firstIndex(where: { $0.id == item.id }) {
             checkboxItems[index].isChecked.toggle()
             logger.debug("Toggled checkbox item: \(self.checkboxItems[index].text), isChecked: \(self.checkboxItems[index].isChecked)")
+        }
+    }
+    
+    // MARK: - Helper Methods
+    
+    /// Sets evidence options for a piece
+    /// - Parameters:
+    ///   - options: Array of evidence options
+    ///   - piece: The piece to update (defaults to current piece)
+    public func setEvidenceOptions(_ options: [String], for piece: EvidencePiece? = nil) {
+        let targetPiece = piece ?? currentPiece
+        guard var updatingPiece = targetPiece else { return }
+        
+        var metadata = updatingPiece.metadata
+        metadata["evidenceOptions"] = options.joined(separator: "|")
+        let updatedPiece = EvidencePiece(
+            title: "",
+            type: updatingPiece.type,
+            metadata: metadata,
+            timestamp: updatingPiece.timestamp
+        )
+        
+        if let index = pieces.firstIndex(where: { $0.id == updatingPiece.id }) {
+            pieces[index] = updatedPiece
+            if targetPiece == currentPiece {
+                self.currentPiece = updatedPiece
+            }
+        }
+    }
+    
+    /// Sets evidence decision for a piece
+    /// - Parameters:
+    ///   - decision: The decision to set
+    ///   - piece: The piece to update (defaults to current piece)
+    public func setEvidenceDecision(_ decision: String?, for piece: EvidencePiece? = nil) {
+        let targetPiece = piece ?? currentPiece
+        guard var updatingPiece = targetPiece else { return }
+        
+        var metadata = updatingPiece.metadata
+        metadata["evidenceDecision"] = decision
+        let updatedPiece = EvidencePiece(
+            title: "",
+            type: updatingPiece.type,
+            metadata: metadata,
+            timestamp: updatingPiece.timestamp
+        )
+        
+        if let index = pieces.firstIndex(where: { $0.id == updatingPiece.id }) {
+            pieces[index] = updatedPiece
+            if targetPiece == currentPiece {
+                self.currentPiece = updatedPiece
+            }
+        }
+    }
+    
+    /// Sets evidence title for a piece
+    /// - Parameters:
+    ///   - title: The title to set
+    ///   - piece: The piece to update (defaults to current piece)
+    public func setEvidenceTitle(_ title: String, for piece: EvidencePiece? = nil) {
+        let targetPiece = piece ?? currentPiece
+        guard var updatingPiece = targetPiece else { return }
+        
+        var metadata = updatingPiece.metadata
+        metadata["evidenceTitle"] = title
+        let updatedPiece = EvidencePiece(
+            title: "",
+            type: updatingPiece.type,
+            metadata: metadata,
+            timestamp: updatingPiece.timestamp
+        )
+        
+        if let index = pieces.firstIndex(where: { $0.id == updatingPiece.id }) {
+            pieces[index] = updatedPiece
+            if targetPiece == currentPiece {
+                self.currentPiece = updatedPiece
+            }
         }
     }
 } 

@@ -164,9 +164,8 @@ struct ClarifyEvidenceControl_Previews: PreviewProvider {
         VStack {
             // Preview with title
             ClarifyEvidenceControl(
-                viewModel: RecordedThingViewModel(
-                    checkboxItems: [],
-                    cardImages: [],
+                viewModel: MockedRecordedThingViewModel.create(
+                    evidenceOptions: [],
                     evidenceTitle: "Electric Mountain Bike"
                 )
             )
@@ -174,12 +173,9 @@ struct ClarifyEvidenceControl_Previews: PreviewProvider {
         .previewDisplayName("With Title")
 
         VStack {
-            
             // Preview with options
             ClarifyEvidenceControl(
-                viewModel: RecordedThingViewModel(
-                    checkboxItems: [],
-                    cardImages: [],
+                viewModel: MockedRecordedThingViewModel.create(
                     evidenceOptions: [
                         "Electric Mountain Bike",
                         "Mountain Bike",
@@ -188,14 +184,12 @@ struct ClarifyEvidenceControl_Previews: PreviewProvider {
                 )
             )
         }
-            .previewDisplayName("With Options")
+        .previewDisplayName("With Options")
          
         VStack {
             // Preview with decision
             ClarifyEvidenceControl(
-                viewModel: RecordedThingViewModel(
-                    checkboxItems: [],
-                    cardImages: [],
+                viewModel: MockedRecordedThingViewModel.create(
                     evidenceOptions: [
                         "Electric Mountain Bike",
                         "Mountain Bike",
@@ -205,14 +199,12 @@ struct ClarifyEvidenceControl_Previews: PreviewProvider {
                 )
             )
         }
-            .previewDisplayName("With Decision")
+        .previewDisplayName("With Decision")
          
         VStack {
             // Preview with no options
             ClarifyEvidenceControl(
-                viewModel: RecordedThingViewModel(
-                    checkboxItems: [],
-                    cardImages: [],
+                viewModel: MockedRecordedThingViewModel.create(
                     evidenceOptions: []
                 )
             )

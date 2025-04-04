@@ -67,37 +67,100 @@ public struct RecordedStackAndRequirementsView: View {
                 verticalLayout
             }
         }
+        .onAppear {
+            // Add observer for exit reviewing mode notification
+            NotificationCenter.default.addObserver(
+                forName: .exitReviewingMode,
+                object: nil,
+                queue: .main
+            ) { _ in
+                withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                    viewModel.reviewing = false
+                }
+            }
+        }
+        .onDisappear {
+            // Remove observer when view disappears
+            NotificationCenter.default.removeObserver(self)
+        }
+//        .gesture(
+//            DragGesture(minimumDistance: 20)
+//                .onEnded { value in
+//                    let verticalMovement = value.translation.height
+//                    let threshold: CGFloat = 50 // Minimum swipe distance to trigger
+//                    
+//                    withAnimation(.spring()) {
+//                        if viewModel.reviewing && verticalMovement > threshold {
+//                            // Swipe down to collapse
+//                            viewModel.reviewing = false
+//                        }
+//                    }
+//                }
+//        )
     }
     
     // MARK: - UI Components
     
     /// Horizontal layout with checkbox on left, images on right
     private var horizontalLayout: some View {
-        HStack(alignment: .center, spacing: viewModel.spacing) {
-            // Checkbox section
-            VStack(alignment: viewModel.alignment) {
-                checkboxCarousel
+        GeometryReader { geometry in
+            VStack(alignment: .center) {
+                Spacer()
+                if viewModel.reviewing {
+                    Carousel(cards: viewModel.pieces, designSystem: viewModel.designSystem)
+                        .frame(width: viewModel.designSystem.evidenceReviewWidth)
+                    HStack(alignment: .center, spacing: viewModel.spacing) {
+                        Spacer()
+                        
+                        // Image stack section
+                        VStack(alignment: viewModel.alignment) {
+                            imageCardStack
+                                .grayscale(1.0)
+                                .contrast(0.75)
+//                                .brightness(-0.2)
+                        }
+                    }
+                } else {
+                    HStack(alignment: .center, spacing: viewModel.spacing) {
+                        // Checkbox section
+                        VStack(alignment: viewModel.alignment) {
+                            checkboxCarousel
+                        }
+                        
+                        // Image stack section
+                        VStack(alignment: viewModel.alignment) {
+                            imageCardStack
+                        }
+                    }
+                }
             }
-            
-            // Image stack section
-            VStack(alignment: viewModel.alignment) {
-                imageCardStack
-            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
     
     /// Vertical layout with checkbox on top, images on bottom
     private var verticalLayout: some View {
-        VStack(alignment: viewModel.alignment, spacing: viewModel.spacing) {
-            // Checkbox section
-            VStack(alignment: viewModel.alignment) {
-                checkboxCarousel
+        GeometryReader { geometry in
+            VStack(alignment: .center) {
+                Spacer()
+                if viewModel.reviewing {
+                    Spacer()
+                    Carousel(cards: viewModel.pieces, designSystem: viewModel.designSystem)
+                        .frame(width: viewModel.designSystem.evidenceReviewWidth)
+                    Spacer()
+                } else {
+                    // Checkbox section
+                    VStack(alignment: viewModel.alignment) {
+                        checkboxCarousel
+                    }
+                    
+                    // Image stack section
+                    VStack(alignment: viewModel.alignment) {
+                        imageCardStack
+                    }
+                }
             }
-            
-            // Image stack section
-            VStack(alignment: viewModel.alignment) {
-                imageCardStack
-            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
     
@@ -109,6 +172,28 @@ public struct RecordedStackAndRequirementsView: View {
     /// Image card stack component
     private var imageCardStack: some View {
         ImageCardStack(viewModel: viewModel)
+            .onTapGesture {
+                withAnimation(.spring()) {
+                    viewModel.reviewing.toggle()
+                }
+            }
+            .gesture(
+                DragGesture(minimumDistance: 20)
+                    .onEnded { value in
+                        let verticalMovement = value.translation.height
+                        let threshold: CGFloat = 50 // Minimum swipe distance to trigger
+                        
+                        withAnimation(.spring()) {
+                            if !viewModel.reviewing && verticalMovement < -threshold {
+                                // Swipe up to expand
+                                viewModel.reviewing = true
+                            } else if viewModel.reviewing && verticalMovement > threshold {
+                                // Swipe down to collapse
+                                viewModel.reviewing = false
+                            }
+                        }
+                    }
+            )
     }
 }
 
@@ -116,87 +201,90 @@ public struct RecordedStackAndRequirementsView: View {
 
 struct CheckboxImageCardView_Previews: PreviewProvider {
     static var previews: some View {
-        @StateObject var viewModel = RecordedThingViewModel(
-            checkboxItems: [
-                CheckboxItem(text: "Take a photo of the product"),
-                CheckboxItem(text: "Scan the barcode", isChecked: true),
-                CheckboxItem(text: "Capture the receipt"),
-                CheckboxItem(text: "Add product details")
-            ],
-            cardImages: [
-                .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)),
-                .custom(Image("beige_kitchen_table_with_a_professional_DSLR_standing", bundle: Bundle.module))
-            ],
-            direction: .horizontal,
-            designSystem: DesignSystemSetup(
-                textColor: .primary,
-                accentColor: .blue,
-                backgroundColor: .white,
-                borderColor: .gray.opacity(0.2),
-                shadowColor: .black.opacity(0.1)
-            ),
-            onCardStackTapped: {
-                print("Card stack tapped")
-            }
-        )
-        
-        @StateObject var viewModel2 = RecordedThingViewModel(
-            checkboxItems: [
-                CheckboxItem(text: "First item"),
-                CheckboxItem(text: "Second item", isChecked: true)
-            ],
-            cardImages: [
-                .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)),
-                .custom(Image("beige_kitchen_table_with_a_professional_DSLR_standing", bundle: Bundle.module))
-            ],
-            direction: .vertical,
-            designSystem: DesignSystemSetup(
-                textColor: .blue,
-                accentColor: .orange,
-                backgroundColor: .white,
-                borderColor: .orange.opacity(0.3),
-                shadowColor: .orange.opacity(0.2),
-                cardSize: 50,
-                cardRotation: 5
-            )
-        )
-        
-        @StateObject var viewModel3 = RecordedThingViewModel(
-            checkboxItems: [
-                CheckboxItem(text: "Dark mode item 1"),
-                CheckboxItem(text: "Dark mode item 2")
-            ],
-            cardImages: [
-                .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)),
-                .custom(Image("beige_kitchen_table_with_a_professional_DSLR_standing", bundle: Bundle.module))
-            ],
-            designSystem: DesignSystemSetup(
-                textColor: .white,
-                accentColor: .white,
-                backgroundColor: .black,
-                borderColor: .white.opacity(0.2),
-                shadowColor: .white.opacity(0.3)
-            )
-        )
-
         Group {
             // Horizontal layout with titles
             RecordedStackAndRequirementsView(
-                viewModel: viewModel
+                viewModel: MockedRecordedThingViewModel.create(
+                    checkboxItems: [
+                        CheckboxItem(text: "Take a photo of the product"),
+                        CheckboxItem(text: "Scan the barcode", isChecked: true),
+                        CheckboxItem(text: "Capture the receipt"),
+                        CheckboxItem(text: "Add product details")
+                    ],
+                    direction: .horizontal,
+                    designSystem: DesignSystemSetup(
+                        textColor: .primary,
+                        accentColor: .blue,
+                        backgroundColor: .white,
+                        borderColor: .gray.opacity(0.2),
+                        shadowColor: .black.opacity(0.1)
+                    )
+                )
             )
             .previewLayout(.sizeThatFits)
             .previewDisplayName("Horizontal with Titles")
             
+            // Horizontal layout with titles
+            RecordedStackAndRequirementsView(
+                viewModel: MockedRecordedThingViewModel.create(
+                    pieces: [
+                        EvidencePiece(index: 0, title: "mb1", type: .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)), metadata: ["type": "photo"]),
+                        EvidencePiece(index: 1, title: "mb2", type: .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)), metadata: ["type": "photo"]),
+                        EvidencePiece(index: 2, title: "mb3", type: .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)), metadata: ["type": "photo"]),
+                        EvidencePiece(index: 3, title: "mb4", type: .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)), metadata: ["type": "photo"]),
+                        EvidencePiece(index: 4, title: "DSLR", type: .custom(Image("beige_kitchen_table_with_a_professional_DSLR_standing", bundle: Bundle.module)), metadata: ["type": "photo"])
+                    ],
+                    reviewing: true,
+                    designSystem: DesignSystemSetup(
+                        textColor: .primary,
+                        accentColor: .blue,
+                        backgroundColor: .white,
+                        borderColor: .gray.opacity(0.2),
+                        shadowColor: .black.opacity(0.1)
+                    )
+                )
+            )
+            .previewLayout(.sizeThatFits)
+            .previewDisplayName("Reviewing")
+            
             // Vertical layout with custom styling
             RecordedStackAndRequirementsView(
-                viewModel: viewModel2
+                viewModel: MockedRecordedThingViewModel.create(
+                    checkboxItems: [
+                        CheckboxItem(text: "First item"),
+                        CheckboxItem(text: "Second item", isChecked: true)
+                    ],
+                    direction: .vertical,
+                    designSystem: DesignSystemSetup(
+                        textColor: .blue,
+                        accentColor: .orange,
+                        backgroundColor: .white,
+                        borderColor: .orange.opacity(0.3),
+                        shadowColor: .orange.opacity(0.2),
+                        cardSize: 50,
+                        cardRotation: 5
+                    )
+                )
             )
             .previewLayout(.sizeThatFits)
             .previewDisplayName("Vertical with Custom Styling")
             
             // Dark mode preview
             RecordedStackAndRequirementsView(
-                viewModel: viewModel3
+                viewModel: MockedRecordedThingViewModel.create(
+                    checkboxItems: [
+                        CheckboxItem(text: "Dark mode item 1"),
+                        CheckboxItem(text: "Dark mode item 2")
+                    ],
+                    direction: .vertical,
+                    designSystem: DesignSystemSetup(
+                        textColor: .white,
+                        accentColor: .white,
+                        backgroundColor: .black,
+                        borderColor: .white.opacity(0.2),
+                        shadowColor: .white.opacity(0.3)
+                    )
+                )
             )
             .previewLayout(.sizeThatFits)
             .background(Color.black)

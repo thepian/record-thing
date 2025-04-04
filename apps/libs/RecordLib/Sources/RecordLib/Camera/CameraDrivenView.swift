@@ -193,7 +193,8 @@ struct CameraDrivenView_Previews: PreviewProvider {
     
     static var previews: some View {
         @StateObject var viewModel = MockedRecordedThingViewModel.create(evidenceOptions: [])
-        
+        @StateObject var reviewViewModel = MockedRecordedThingViewModel.create(evidenceOptions: [], reviewing: true)
+
         Group {
             
             NavigationStack {
@@ -201,7 +202,6 @@ struct CameraDrivenView_Previews: PreviewProvider {
                     VStack {
                         Spacer()
                         NavigationLink("Evidence", value: ExampleDest.evidence)
-                        //                    ReservedForCameraView()
                         RecordedStackAndRequirementsView(viewModel: viewModel)
                             .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 32))
                         StandardFloatingToolbar(
@@ -218,6 +218,7 @@ struct CameraDrivenView_Previews: PreviewProvider {
                         .frame(height: 100)
                         ClarifyEvidenceControl(viewModel: viewModel)
                     }
+                    .frame(maxWidth: viewModel.designSystem.screenWidth, maxHeight: viewModel.designSystem.screenHeight)
                 }
                 .environment(\.cameraViewModel, CameraViewModel.authorizedMock())
                 .previewDisplayName("Record Advice")
@@ -249,8 +250,7 @@ struct CameraDrivenView_Previews: PreviewProvider {
             CameraDrivenView(captureService: MockedCaptureService(.authorized)) {
                 VStack {
                     Spacer()
-                    //                    ReservedForCameraView()
-                    RecordedStackAndRequirementsView(viewModel: viewModel)
+                    RecordedStackAndRequirementsView(viewModel: reviewViewModel)
                         .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 32))
                     StandardFloatingToolbar(
                         useFullRounding: false,
@@ -264,14 +264,10 @@ struct CameraDrivenView_Previews: PreviewProvider {
                         }
                     )
                     .frame(height: 100)
-                    ClarifyEvidenceControl(viewModel: viewModel)
+                    ClarifyEvidenceControl(viewModel: reviewViewModel)
                 }
-//                if let designSystem = cameraViewModel?.designSystem {
-                    EvidenceReview(viewModel: viewModel)
-                    .offset(x: 80, y: 60)
-                    .frame(width: 1080, height: 1480)
-//                        .frame(width: designSystem.screenWidth, height: designSystem.height * 0.8)
-//                }
+                .offset(x: 16) // magic
+                
             }
             .environment(\.cameraViewModel, CameraViewModel.authorizedShadedMock())
             .previewDisplayName("Record Review")

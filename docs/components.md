@@ -43,13 +43,55 @@ If evidenceTitle is not empty, show the title instead of cycling through options
 
 Support a callback onOptionConfirmed set on ClarifyEvidenceControl for the confirmation of an option. The default behavior for the callback is to set the evidenceTitle from the option. This is what ContentView should do when an option is chosen. Do not support a handleOptionConfirmed function on the viewmodel.
 
+## EvidenceCarousel
+
+View that shows an interactive carousel of images, documents and video clips. It lays out pieces horizontally. The current piece is shown in the center. Other pieces are faded. Pieces cut off by the edges are highly faded out. It will be rendered on a darkened background when used, but the darkened background isn't part of the EvidenceCarousel.
+The user can pan through the evidence. A list of evidence is kept in RecordedThingViewModel.
+The current evidence is also determined by the view model.
+
+EvidenceCarousel(viewModel: RecordedThingViewModel)
+
+Multiple previews show a range of configurations, including 4 pieces of evidence
+
+Use library assets for preview sample evidence:
+
+- sample_video
+- professional_DSLR_camera
+- thepia_a_high-end_electric_mountain_bike_1
+- box_with_a_Swiss_watch_with_standing_on_a_coffee_table
+
+
 ## EvidenceReview
+
+View that shows an interactive carousel of evidence.
 
 When evidence has been recorded, the evidence is shown as an overlay within CameraDrivenView.
 The overlay doesn't take up the full screen. It uses most of the top two thirds of the screen, showing a scaled recording with a white border. This EvidenceReview is also used to cycle through evidence when the ImageCardStack is pressed. The EvidenceReview is showing the RecordedThingViewModel.evidenceReviewImage or RecordedThingViewModel.evidenceReviewClip.
 The width/height of the EvidenceReview is determined by setup in DesignSystemSetup.
 
-EvidenceReview(viewModel: recordedThingViewModel)
+EvidenceReview(viewModel: RecordedThingViewModel)
+
+`focusMode` highlights the current piece of evidence and fades out the other pieces that are partially shown. It disables swiping to other pieces of evidence. `focusMode` is used to force the user to respond to the ConfirmDenyStatements for the piece of evidence.
+
+The EvidenceReview shows a single piece of evidence in focus(horizontally centered) with other pieces of evidence shown partially left and right.
+
+
+## RecordedStackAndRequirementsView
+
+The Image Stack can be expanded or collapsed by toggling the ImageStack. It is reflected as reviewing state in RecordedThingViewModel. This can be done by tapping or swiping up/down depending on the current reviewing state.
+The Carousel shows the expanded state of Evidence Pieces.
+The Image Stack represents the collapsed state.
+
+### RecordedStackAndRequirementsView Carousel
+
+CardViews shown within Carousel can be dragged downwards. The path followed will be on a trajectory gravitating towards bottom right. The transition away from reviewing mode should animate all cards in the direction of the bottom right corner.
+
+Dragging of Carousel Cards will be either horizontal or vertical. 
+Dragging a card horizontally will change the current evidence piece. The other cards will snap into place to reflect the new viewModel value of currentPiece.
+Dragging a card up is not possible.
+Dragging a card down will trigger the end of reviewing mode at a certain threshold.
+Gestures must have precise effects at a level of quality befitting of Apple Design Awards.
+
 
 ## DeveloperSidebar (RecordLib/Developer)
 

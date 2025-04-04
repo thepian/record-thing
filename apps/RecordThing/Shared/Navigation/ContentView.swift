@@ -105,6 +105,7 @@ struct ContentView: View {
                         Spacer() // Push everything to the bottom
                         RecordedStackAndRequirementsView(viewModel: recordedThingViewModel)
                             .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 32))
+                            .offset(x: 16)
                         
                         AppTabsView()
                         

@@ -204,8 +204,6 @@ public struct CheckboxCarouselView: View {
                     // Add the next item or cycle back to the beginning
                     let nextIndex = (lastIndex + 1) % self.viewModel.checkboxItems.count
                     self.visibleItems.append(self.viewModel.checkboxItems[nextIndex])
-                    
-                    self.logger.debug("Animated to next item: \(self.viewModel.checkboxItems[nextIndex].text), index: \(nextIndex)")
                 } else if !self.viewModel.checkboxItems.isEmpty {
                     // Fallback if we can't find the last visible item in the items array
                     self.visibleItems = [self.viewModel.checkboxItems[0]]
@@ -462,148 +460,127 @@ extension Color {
 #if DEBUG
 struct CheckboxCarouselView_Previews: PreviewProvider {
     static var previews: some View {
-        @StateObject var viewModel = RecordedThingViewModel(
-            checkboxItems: [
-                CheckboxItem(text: "Take a photo of the product"),
-                CheckboxItem(text: "Scan the barcode"),
-                CheckboxItem(text: "Capture the receipt"),
-                CheckboxItem(text: "Add product details"),
-                CheckboxItem(text: "Save to your collection")
-            ],
-            cardImages: [
-            
-            ]
-        )
-        @StateObject var viewModel2 = RecordedThingViewModel(
-            checkboxItems: [
-                CheckboxItem(text: "Take a photo"),
-                CheckboxItem(text: "Scan barcode", isChecked: true),
-                CheckboxItem(text: "Add details"),
-                CheckboxItem(text: "Save item")
-            ],
-            cardImages: [
-                
-            ],
-            checkboxOrientation: .vertical,
-            designSystem: DesignSystemSetup(
-                checkboxStyle: .simple,
-                showCheckboxBorder: false,
-                checkboxTextAlignment: .right
-            )
-        )
-        @StateObject var viewModel3 = RecordedThingViewModel(
-            checkboxItems: [
-                CheckboxItem(text: "First simple item", isChecked: true),
-                CheckboxItem(text: "Second simple item")
-            ], cardImages: [
-            
-            ],
-            checkboxOrientation: .vertical,
-            designSystem: DesignSystemSetup(checkboxStyle: .simple)
-        )
-        
-        @StateObject var viewModel4 = RecordedThingViewModel(
-            checkboxItems: [
-                CheckboxItem(text: "First custom item"),
-                CheckboxItem(text: "Second custom item", isChecked: true),
-                CheckboxItem(text: "Third custom item")
-            ],
-            cardImages: [
-                
-            ],
-            checkboxOrientation: .horizontal,
-            designSystem: DesignSystemSetup(
-                textColor: .yellow,
-                accentColor: .orange,
-                checkboxSpacing: 12,
-                checkboxItemHeight: 50,
-                animationDuration: 0.7,
-                checkboxStyle: .simple,
-                showCheckboxBorder: false,
-                checkboxTextAlignment: .right
-            )
-        )
-        
-
-//        Group {
-            // Dark background for better visibility
-            ZStack {
-                Color.black.opacity(0.8)
-                    .edgesIgnoringSafeArea(.all)
-                
-                VStack(spacing: 40) {
-                    // Vertical carousel (default)
-                    VStack {
-                        Text("Vertical Carousel")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .padding(.bottom, 10)
-                        
-                        CheckboxCarouselView(
-                            viewModel: viewModel
-                        )
-                        .frame(width: 300)
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(12)
-                    }
-                    
-                    // Horizontal carousel with right-aligned text
-                    VStack {
-                        Text("Right-Aligned Checkmarks")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .padding(.bottom, 10)
-                        
-                        CheckboxCarouselView(
-                            viewModel: viewModel2
-                        )
-                        .frame(width: 300)
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(12)
-                    }
-                    
-                    // Simple checkmark style
-                    VStack {
-                        Text("Simple Checkmark Style")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .padding(.bottom, 10)
-                        
-                        CheckboxCarouselView(
-                            viewModel: viewModel3
-                        )
-                        .frame(width: 300)
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(12)
-                    }
-                }
-//                .padding()
-//            }
-            .previewDisplayName("Carousel Variations")
-            
-            // Custom theme with horizontal orientation and simple checkmarks
-            ZStack {
-                // Gradient background
-                LinearGradient(
-                    gradient: Gradient(colors: [.blue.opacity(0.6), .purple.opacity(0.6)]),
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
+        // Dark background for better visibility
+        ZStack {
+            Color.black.opacity(0.8)
                 .edgesIgnoringSafeArea(.all)
+            
+            VStack(spacing: 40) {
+                // Vertical carousel (default)
+                VStack {
+                    Text("Vertical Carousel")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding(.bottom, 10)
+                    
+                    CheckboxCarouselView(
+                        viewModel: MockedRecordedThingViewModel.create(
+                            checkboxItems: [
+                                CheckboxItem(text: "Take a photo of the product"),
+                                CheckboxItem(text: "Scan the barcode"),
+                                CheckboxItem(text: "Capture the receipt"),
+                                CheckboxItem(text: "Add product details"),
+                                CheckboxItem(text: "Save to your collection")
+                            ]
+                        )
+                    )
+                    .frame(width: 300)
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(12)
+                }
                 
-                CheckboxCarouselView(
-                    viewModel: viewModel4
-                )
-                .frame(width: 300)
-                .padding()
-                .background(Color.black.opacity(0.3))
-                .cornerRadius(12)
+                // Horizontal carousel with right-aligned text
+                VStack {
+                    Text("Right-Aligned Checkmarks")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding(.bottom, 10)
+                    
+                    CheckboxCarouselView(
+                        viewModel: MockedRecordedThingViewModel.create(
+                            checkboxItems: [
+                                CheckboxItem(text: "Take a photo"),
+                                CheckboxItem(text: "Scan barcode", isChecked: true),
+                                CheckboxItem(text: "Add details"),
+                                CheckboxItem(text: "Save item")
+                            ],
+                            direction: .horizontal,
+                            designSystem: DesignSystemSetup(
+                                checkboxStyle: .simple,
+                                showCheckboxBorder: false,
+                                checkboxTextAlignment: .right
+                            )
+                        )
+                    )
+                    .frame(width: 300)
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(12)
+                }
+                
+                // Simple checkmark style
+                VStack {
+                    Text("Simple Checkmark Style")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding(.bottom, 10)
+                    
+                    CheckboxCarouselView(
+                        viewModel: MockedRecordedThingViewModel.create(
+                            checkboxItems: [
+                                CheckboxItem(text: "First simple item", isChecked: true),
+                                CheckboxItem(text: "Second simple item")
+                            ],
+                            direction: .horizontal,
+                            designSystem: DesignSystemSetup(checkboxStyle: .simple)
+                        )
+                    )
+                    .frame(width: 300)
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(12)
+                }
             }
-            .previewDisplayName("Right-Aligned (No Border)")
         }
+        .previewDisplayName("Carousel Variations")
+        
+        // Custom theme with horizontal orientation and simple checkmarks
+        ZStack {
+            // Gradient background
+            LinearGradient(
+                gradient: Gradient(colors: [.blue.opacity(0.6), .purple.opacity(0.6)]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .edgesIgnoringSafeArea(.all)
+            
+            CheckboxCarouselView(
+                viewModel: MockedRecordedThingViewModel.create(
+                    checkboxItems: [
+                        CheckboxItem(text: "First custom item"),
+                        CheckboxItem(text: "Second custom item", isChecked: true),
+                        CheckboxItem(text: "Third custom item")
+                    ],
+                    direction: .horizontal,
+                    designSystem: DesignSystemSetup(
+                        textColor: .yellow,
+                        accentColor: .orange,
+                        checkboxSpacing: 12,
+                        checkboxItemHeight: 50,
+                        animationDuration: 0.7,
+                        checkboxStyle: .simple,
+                        showCheckboxBorder: false,
+                        checkboxTextAlignment: .right
+                    )
+                )
+            )
+            .frame(width: 300)
+            .padding()
+            .background(Color.black.opacity(0.3))
+            .cornerRadius(12)
+        }
+        .previewDisplayName("Right-Aligned (No Border)")
     }
 } 
 #endif
