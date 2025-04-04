@@ -39,18 +39,13 @@ public struct RecordedStackAndRequirementsViewDemo: View {
     // MARK: - Initialization
     
     public init() {
-        // Initialize the ViewModel with default values
-        _viewModel = StateObject(wrappedValue: RecordedThingViewModel(
+        // Initialize the ViewModel with default values using MockedRecordedThingViewModel
+        _viewModel = StateObject(wrappedValue: MockedRecordedThingViewModel.create(
             checkboxItems: [
                 CheckboxItem(text: "Take a photo of the product"),
                 CheckboxItem(text: "Scan the barcode"),
                 CheckboxItem(text: "Capture the receipt"),
                 CheckboxItem(text: "Add product details")
-            ],
-            cardImages: [
-                .system("camera.viewfinder"),
-                .system("barcode.viewfinder"),
-                .system("doc.text.image")
             ],
             direction: .horizontal,
             designSystem: .light
@@ -119,10 +114,6 @@ public struct RecordedStackAndRequirementsViewDemo: View {
             }
             .pickerStyle(SegmentedPickerStyle())
             .padding(.horizontal)
-//            .onChange(of: selectedStyle) { newValue in
-//                viewModel.checkboxStyle = newValue == .simple ? .simple : .boxed
-//                viewModel.showCheckboxBorder = newValue != .simple
-//            }
             
             // Theme picker
             Picker("Theme", selection: $selectedTheme) {
@@ -150,12 +141,6 @@ public struct RecordedStackAndRequirementsViewDemo: View {
                     )
                 }
                 viewModel.designSystem = designSystem
-//                viewModel = RecordedThingViewModel(
-//                    checkboxItems: viewModel.checkboxItems,
-//                    cardImages: viewModel.cardImages,
-//                    direction: viewModel.direction,
-//                    designSystem: designSystem
-//                )
             }
         }
     }
@@ -198,19 +183,14 @@ public struct RecordedStackAndRequirementsViewDemo: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 Text("""
                 RecordedStackAndRequirementsView(
-                    viewModel: RecordedThingViewModel(
+                    viewModel: MockedRecordedThingViewModel.create(
                         checkboxItems: [
                             CheckboxItem(text: "Take a photo"),
                             CheckboxItem(text: "Scan barcode", isChecked: true),
                             CheckboxItem(text: "Add details")
                         ],
-                        cardImages: [
-                            .system("photo"),
-                            .system("camera"),
-                            .system("doc.text.image")
-                        ],
-                        direction: .\(selectedLayout == .horizontal ? "horizontal" : "vertical"),
-                        checkboxStyle: .\(selectedStyle == .simple ? "simple" : "boxed")
+                        checkboxOrientation: .\(selectedLayout == .horizontal ? "horizontal" : "vertical"),
+                        designSystem: .\(selectedTheme == .light ? "light" : selectedTheme == .dark ? "dark" : "custom")
                     )
                 )
                 """)

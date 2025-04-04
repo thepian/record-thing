@@ -142,17 +142,17 @@ public struct DesignSystemSetup {
     
     // Calculate the size for the evidence review using design system
     public var evidenceReviewWidth: CGFloat {
-        screenWidth * evidenceReviewWidthMultiplier
+        screenWidth * evidenceReviewFactor
     }
     
     public var evidenceReviewHeight: CGFloat {
-        screenHeight * evidenceReviewHeightMultiplier
+        screenHeight * evidenceReviewFactor
     }
+
     
 
     // MARK: - Evidence Review Dimensions
-    public let evidenceReviewWidthMultiplier: CGFloat
-    public let evidenceReviewHeightMultiplier: CGFloat
+    public let evidenceReviewFactor: CGFloat
     
     // MARK: - Initialization
     
@@ -185,8 +185,7 @@ public struct DesignSystemSetup {
         showCheckboxBorder: Bool = false,
         checkboxTextAlignment: CheckboxTextAlignment = .left,
         animateCheckboxOnAppear: Bool = true,
-        evidenceReviewWidthMultiplier: CGFloat = 0.6,  // 60% of screen width
-        evidenceReviewHeightMultiplier: CGFloat = 0.6   // 60% of screen height
+        evidenceReviewFactor: CGFloat = 0.6   // 60% of screen height
     ) {
         self.textColor = textColor
         self.dynamicTextColor = dynamicTextColor
@@ -229,8 +228,7 @@ public struct DesignSystemSetup {
         cardShadowRadius = shadowRadius
         cardPlaceholderColor = placeholderColor
 
-        self.evidenceReviewWidthMultiplier = evidenceReviewWidthMultiplier
-        self.evidenceReviewHeightMultiplier = evidenceReviewHeightMultiplier
+        self.evidenceReviewFactor = evidenceReviewFactor
     }
     
     // MARK: - Presets
@@ -280,3 +278,13 @@ public struct DesignSystemSetup {
         checkboxTextAlignment: .right
     )
 } 
+
+
+open class ViewModelWithDesignSystem: ObservableObject {
+    // Design system
+    @Published public var designSystem: DesignSystemSetup
+    
+    public init(designSystem: DesignSystemSetup = .light) {
+        self.designSystem = designSystem
+    }
+}
