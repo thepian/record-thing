@@ -61,6 +61,10 @@
 		3E5A35C12D75F05200069A95 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3E5A35C02D75F05200069A95 /* Blackbird */; };
 		3E5A35C32D75F05A00069A95 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3E5A35C22D75F05A00069A95 /* Blackbird */; };
 		3E5A35C52D75F06000069A95 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3E5A35C42D75F06000069A95 /* Blackbird */; };
+		3E78498E2DA7D0270030C91D /* AppSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E78498D2DA7D0270030C91D /* AppSplitView.swift */; };
+		3E78498F2DA7D0270030C91D /* AppSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E78498D2DA7D0270030C91D /* AppSplitView.swift */; };
+		3E7849902DA7D0270030C91D /* AppSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E78498D2DA7D0270030C91D /* AppSplitView.swift */; };
+		3E7849912DA7D0270030C91D /* AppSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E78498D2DA7D0270030C91D /* AppSplitView.swift */; };
 		3ECA68482D96B08E0003CB58 /* NavigationDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECA68472D96B0860003CB58 /* NavigationDestination.swift */; };
 		3ECA68492D96B08E0003CB58 /* NavigationDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECA68472D96B0860003CB58 /* NavigationDestination.swift */; };
 		3ECA684A2D96B08F0003CB58 /* NavigationDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECA68472D96B0860003CB58 /* NavigationDestination.swift */; };
@@ -326,6 +330,7 @@
 		3E5373682D7E2A740082BF62 /* SimpleEvidenceTypeList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleEvidenceTypeList.swift; sourceTree = "<group>"; };
 		3E5373692D7E2A740082BF62 /* TestList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestList.swift; sourceTree = "<group>"; };
 		3E5373A02D7F295E0082BF62 /* BrowseTabNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowseTabNavigation.swift; sourceTree = "<group>"; };
+		3E78498D2DA7D0270030C91D /* AppSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSplitView.swift; sourceTree = "<group>"; };
 		3ECA68472D96B0860003CB58 /* NavigationDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationDestination.swift; sourceTree = "<group>"; };
 		3ECD50AD2C96E3E000755E83 /* RecordLib */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = RecordLib; path = ../libs/RecordLib; sourceTree = "<group>"; };
 		3ECD50D22C9759EF00755E83 /* MLModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MLModel.swift; sourceTree = "<group>"; };
@@ -580,6 +585,7 @@
 		6111A1DE26157D870046AAA9 /* Navigation */ = {
 			isa = PBXGroup;
 			children = (
+				3E78498D2DA7D0270030C91D /* AppSplitView.swift */,
 				3ECA68472D96B0860003CB58 /* NavigationDestination.swift */,
 				3E5373A02D7F295E0082BF62 /* BrowseTabNavigation.swift */,
 				6111A1E026157D870046AAA9 /* ContentView.swift */,
@@ -849,6 +855,7 @@
 				61A8CB8A26166F2A002845E4 /* Model.swift in Sources */,
 				610F54EE26158DDB001D3AA0 /* AppTabNavigation.swift in Sources */,
 				3ED6C4692D57CDB300FF632C /* EvidenceCard.swift in Sources */,
+				3E78498F2DA7D0270030C91D /* AppSplitView.swift in Sources */,
 				3EE0BDB92D560C2A00AD1085 /* ThingsMenu.swift in Sources */,
 				3ED6C4A72D5B6F3C00FF632C /* Evidence+Facts.swift in Sources */,
 				3ECA684B2D96B08F0003CB58 /* NavigationDestination.swift in Sources */,
@@ -870,6 +877,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3ED6C4A62D5B6F3C00FF632C /* Evidence+Facts.swift in Sources */,
+				3E78498E2DA7D0270030C91D /* AppSplitView.swift in Sources */,
 				3EE0BDF12D56B4A700AD1085 /* Evidence.swift in Sources */,
 				610F550C26158DE2001D3AA0 /* CountButton.swift in Sources */,
 				3EE0BDE72D566EB400AD1085 /* Things+SwiftUI.swift in Sources */,
@@ -952,6 +960,7 @@
 				E0DC7FC227B72FDC00A6417B /* Model.swift in Sources */,
 				E0DC7FC427B72FDC00A6417B /* AppTabNavigation.swift in Sources */,
 				3ED6C46B2D57CDB300FF632C /* EvidenceCard.swift in Sources */,
+				3E7849902DA7D0270030C91D /* AppSplitView.swift in Sources */,
 				3EE0BDBC2D560C2A00AD1085 /* ThingsMenu.swift in Sources */,
 				3ED6C4A52D5B6F3C00FF632C /* Evidence+Facts.swift in Sources */,
 				3ECA684A2D96B08F0003CB58 /* NavigationDestination.swift in Sources */,
@@ -973,6 +982,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3ED6C4A82D5B6F3C00FF632C /* Evidence+Facts.swift in Sources */,
+				3E7849912DA7D0270030C91D /* AppSplitView.swift in Sources */,
 				3EE0BDF02D56B4A700AD1085 /* Evidence.swift in Sources */,
 				E0DC7FEA27B7307600A6417B /* CountButton.swift in Sources */,
 				3EE0BDE62D566EB400AD1085 /* Things+SwiftUI.swift in Sources */,

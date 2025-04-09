@@ -8,6 +8,7 @@
 import Foundation
 import AVFoundation
 import CoreImage
+import CoreMotion
 import os
 
 #if os(macOS)
@@ -24,13 +25,14 @@ enum CaptureError: Error {
 }
 
 public class CaptureService: NSObject, ObservableObject {
+    let leaveMostRecentFrameOnSleep: Bool = true
     
     // Logger for debugging
-    private let logger = Logger(subsystem: "com.record-thing", category: "capture-service")
+    let logger = Logger(subsystem: "com.record-thing", category: "capture-service")
     
     @Published public var frame: CGImage? // For streaming to view via CoreImage
-    private let session = AVCaptureSession()  // Should be possible to reuse the capture session
-    private let sessionQueue = DispatchQueue(label: "sessionQueue")
+    public let session = AVCaptureSession()  // Should be possible to reuse the capture session
+    let sessionQueue = DispatchQueue(label: "sessionQueue")
     private let context = CIContext()
 
     var delegate: AVCapturePhotoCaptureDelegate?
@@ -47,6 +49,33 @@ public class CaptureService: NSObject, ObservableObject {
     
     let photoOutput = AVCapturePhotoOutput() // For capturing photos
     
+    // Motion detection properties
+    #if os(iOS)
+    let motionManager = CMMotionManager()
+    #else
+    var mouseMonitor: Any?
+    var lastMouseMoveTime: Date = Date()
+    #endif
+    var lastMotionTime: Date = Date()
+    var motionTimer: Timer?
+    let motionTimeout: TimeInterval = 30.0 // 30 seconds of no motion before pausing
+    let accelerometerUpdateInterval: TimeInterval = 0.1 // 10 Hz
+    let motionThreshold: Double = 1.01 // Threshold for significant motion
+    
+    @Published public var isSubdued: Bool = false {
+        didSet {
+            if oldValue != isSubdued {
+                updateSessionConfiguration()
+            }
+        }
+    }
+
+    // Session duration monitoring
+    var sessionStartTime: Date?
+    var sessionDurationTimer: Timer?
+    let defaultSessionDuration: TimeInterval = 30 * 60 // 30 minutes in seconds
+    
+
     public override init() {
         super.init()
         logger.debug("CaptureService initialized")
@@ -58,14 +87,53 @@ public class CaptureService: NSObject, ObservableObject {
         
         // Setup notification observers for app state changes
         setupNotificationObservers()
+        
+        // Setup motion detection
+        setupMotionDetection()
     }
     
     deinit {
         // Remove notification observers
         NotificationCenter.default.removeObserver(self)
         
-        // Invalidate timer
+        // Invalidate timers
         permissionCheckTimer?.invalidate()
+        motionTimer?.invalidate()
+        
+        #if os(iOS)
+        // Stop motion updates
+        motionManager.stopAccelerometerUpdates()
+        #else
+        // Remove mouse monitor
+        if let monitor = mouseMonitor {
+            NSEvent.removeMonitor(monitor)
+        }
+        #endif
+        
+        // Clean up capture resources directly
+        if session.isRunning {
+            session.stopRunning()
+        }
+        
+        // Remove all inputs and outputs
+        session.beginConfiguration()
+        
+        // Remove all inputs
+        for input in session.inputs {
+            session.removeInput(input)
+        }
+        
+        // Remove all outputs
+        for output in session.outputs {
+            session.removeOutput(output)
+        }
+        
+        session.commitConfiguration()
+        
+        // Clear the current frame
+        frame = nil
+        
+        logger.debug("CaptureService deinitialized")
     }
     
     private func setupNotificationObservers() {
@@ -77,6 +145,12 @@ public class CaptureService: NSObject, ObservableObject {
             name: NSApplication.didBecomeActiveNotification,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationWillResignActive),
+            name: NSApplication.willResignActiveNotification,
+            object: nil
+        )
         #else
         NotificationCenter.default.addObserver(
             self,
@@ -84,22 +158,66 @@ public class CaptureService: NSObject, ObservableObject {
             name: UIApplication.didBecomeActiveNotification,
             object: nil
         )
-        
-        // For iOS, also observe settings bundle changes
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(applicationDidBecomeActive),
-            name: UIApplication.didBecomeActiveNotification,
+            selector: #selector(applicationWillResignActive),
+            name: UIApplication.willResignActiveNotification,
             object: nil
         )
+        
+        // Doesn't seem to exist
+//        NotificationCenter.default.addObserver(
+//            self,
+//            selector: #selector(applicationWillTerminate),
+//            name: UIApplication.willResignActiveNotification,
+//            object: nil
+//        )
         #endif
         
         logger.debug("Notification observers set up for permission monitoring")
     }
     
+    @objc private func applicationWillResignActive() {
+        logger.debug("Application will resign active, cleaning up capture resources")
+        
+        cleanupCaptureResources()
+    }
+    
     @objc private func applicationDidBecomeActive() {
-        logger.debug("Application became active, checking camera permissions")
-        checkAndUpdatePermissions()
+        logger.debug("Application became active, restoring capture session")
+        
+        sessionQueue.async { [weak self] in
+            guard let self = self else { return }
+            
+            // Only proceed if we have permission
+            guard self.permissionGranted else {
+                self.logger.debug("Not restoring session - no camera permission")
+                return
+            }
+            
+            // Reconfigure the session with fresh inputs and outputs
+            self.setupCaptureSession { [weak self] error in
+                guard let self = self else { return }
+                
+                if let error = error {
+                    self.logger.error("Failed to reconfigure session: \(error.localizedDescription)")
+                    return
+                }
+                
+                // Start the session if it's not already running
+                if !self.session.isRunning {
+                    self.session.startRunning()
+                    self.logger.debug("Capture session restored and running")
+                    
+                    // Update the paused state on the main thread
+                    DispatchQueue.main.async {
+                        self.isPaused = false
+                    }
+                } else {
+                    self.logger.debug("Capture session already running")
+                }
+            }
+        }
     }
     
     private func checkAndUpdatePermissions() {
@@ -232,6 +350,82 @@ public class CaptureService: NSObject, ObservableObject {
         }
     }
     
+    private func updateSessionConfiguration() {
+        sessionQueue.async { [weak self] in
+            guard let self = self else { return }
+            
+            self.session.beginConfiguration()
+            
+            // Set session preset based on subdued mode
+            if self.isSubdued {
+                // Use a lower resolution preset
+                if self.session.canSetSessionPreset(.medium) {
+                    self.session.sessionPreset = .medium
+                }
+                
+                // Configure video input for lower frame rate
+                if let videoInput = self.session.inputs.first as? AVCaptureDeviceInput {
+                    do {
+                        try videoInput.device.lockForConfiguration()
+                        
+                        // Set a lower frame rate
+                        if let format = videoInput.device.formats.first(where: { format in
+                            let description = format.formatDescription
+                            let dimensions = CMVideoFormatDescriptionGetDimensions(description)
+                            return dimensions.width <= 1280 && dimensions.height <= 720
+                        }) {
+                            videoInput.device.activeFormat = format
+                            
+                            // Set frame rate to 15fps in subdued mode
+                            let frameDuration = CMTime(value: 1, timescale: 15)
+                            // FIXME this blows up on macOS
+                            videoInput.device.activeVideoMinFrameDuration = frameDuration
+                            videoInput.device.activeVideoMaxFrameDuration = frameDuration
+                        }
+                        
+                        videoInput.device.unlockForConfiguration()
+                    } catch {
+                        self.logger.error("Failed to configure video input for subdued mode: \(error.localizedDescription)")
+                    }
+                }
+            } else {
+                // Restore to high quality settings
+                if self.session.canSetSessionPreset(.high) {
+                    self.session.sessionPreset = .high
+                }
+                
+                // Configure video input for normal frame rate
+                if let videoInput = self.session.inputs.first as? AVCaptureDeviceInput {
+                    do {
+                        try videoInput.device.lockForConfiguration()
+                        
+                        // Restore to highest quality format
+                        if let format = videoInput.device.formats.max(by: { format1, format2 in
+                            let dim1 = CMVideoFormatDescriptionGetDimensions(format1.formatDescription)
+                            let dim2 = CMVideoFormatDescriptionGetDimensions(format2.formatDescription)
+                            return dim1.width * dim1.height < dim2.width * dim2.height
+                        }) {
+                            videoInput.device.activeFormat = format
+                            
+                            // Set frame rate to 30fps in normal mode
+                            let frameDuration = CMTime(value: 1, timescale: 30)
+                            videoInput.device.activeVideoMinFrameDuration = frameDuration
+                            videoInput.device.activeVideoMaxFrameDuration = frameDuration
+                        }
+                        
+                        videoInput.device.unlockForConfiguration()
+                    } catch {
+                        self.logger.error("Failed to configure video input for normal mode: \(error.localizedDescription)")
+                    }
+                }
+            }
+            
+            self.session.commitConfiguration()
+            self.logger.debug("Session configuration updated for \(self.isSubdued ? "subdued" : "normal") mode")
+        }
+    }
+    
+    // Modify setupCaptureSession to respect subdued mode
     func setupCaptureSession(completion: @escaping (Error?) -> ()) {
         // Find appropriate camera device based on platform
         var videoDevice: AVCaptureDevice?
@@ -266,6 +460,24 @@ public class CaptureService: NSObject, ObservableObject {
         // Configure the session
         session.beginConfiguration()
         
+        // Set initial session preset based on subdued mode
+        if isSubdued {
+            if session.canSetSessionPreset(.medium) {
+                session.sessionPreset = .medium
+            }
+        } else {
+            if session.canSetSessionPreset(.high) {
+                session.sessionPreset = .high
+            }
+        }
+        
+        // Configure session to discard late frames
+        #if os(iOS)
+        session.usesApplicationAudioSession = false
+        session.automaticallyConfiguresApplicationAudioSession = false
+        session.automaticallyConfiguresCaptureDeviceForWideColor = true
+        #endif
+        
         // Remove any existing inputs and outputs
         for input in session.inputs {
             session.removeInput(input)
@@ -296,6 +508,7 @@ public class CaptureService: NSObject, ObservableObject {
         // Add video output for frame preview
         let videoOutput = AVCaptureVideoDataOutput()
         videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "sampleBufferQueue"))
+        videoOutput.alwaysDiscardsLateVideoFrames = true
         if session.canAddOutput(videoOutput) {
             session.addOutput(videoOutput)
             logger.debug("Added video output to session")
@@ -479,12 +692,65 @@ public class CaptureService: NSObject, ObservableObject {
         sessionQueue.async { [weak self] in
             guard let self = self else { return }
             
-            if !self.session.isRunning {
-                self.session.startRunning()
-                self.logger.debug("Camera stream resumed")
+            // Only proceed if we have permission
+            guard self.permissionGranted else {
+                self.logger.debug("Not resuming stream - no camera permission")
+                return
+            }
+            
+            // Reconfigure the session with fresh inputs and outputs
+            self.setupCaptureSession { [weak self] error in
+                guard let self = self else { return }
                 
+                if let error = error {
+                    self.logger.error("Failed to reconfigure session: \(error.localizedDescription)")
+                    return
+                }
+                
+                if !self.session.isRunning {
+                    self.session.startRunning()
+                    self.logger.debug("Camera stream resumed")
+                    
+                    DispatchQueue.main.async {
+                        self.isPaused = false
+                    }
+                }
+            }
+        }
+    }
+    
+    func cleanupCaptureResources() {
+        sessionQueue.async { [weak self] in
+            guard let self = self else { return }
+            
+            // Stop the session if it's running
+            if self.session.isRunning {
+                self.session.stopRunning()
+                self.logger.debug("Capture session stopped")
+            }
+            
+            // Remove all inputs and outputs
+            self.session.beginConfiguration()
+            
+            // Remove all inputs
+            for input in self.session.inputs {
+                self.session.removeInput(input)
+                self.logger.debug("Removed input: \(input)")
+            }
+            
+            // Remove all outputs
+            for output in self.session.outputs {
+                self.session.removeOutput(output)
+                self.logger.debug("Removed output: \(output)")
+            }
+            
+            self.session.commitConfiguration()
+            self.logger.debug("Capture session configuration cleaned up")
+            
+            // Clear the current frame
+            if !self.leaveMostRecentFrameOnSleep {
                 DispatchQueue.main.async {
-                    self.isPaused = false
+                    self.frame = nil
                 }
             }
         }

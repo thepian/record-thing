@@ -23,6 +23,71 @@ private let logger = Logger(
     category: "App"
 )
 
+// MARK: - Window State Observer
+#if os(macOS)
+class WindowStateObserver: NSObject {
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.thepia.RecordThing", category: "WindowState")
+    private let captureService: CaptureService
+    
+    init(captureService: CaptureService) {
+        self.captureService = captureService
+        super.init()
+        setupObservers()
+    }
+    
+    private func setupObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(windowWillMiniaturize),
+            name: NSWindow.willMiniaturizeNotification,
+            object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(windowDidDeminiaturize),
+            name: NSWindow.didDeminiaturizeNotification,
+            object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(windowDidBecomeKey),
+            name: NSWindow.didBecomeKeyNotification,
+            object: nil
+        )
+    }
+    
+    @objc private func windowWillMiniaturize() {
+        logger.debug("Window will minimize")
+        captureService.pauseStream()
+    }
+    
+    @objc private func windowDidDeminiaturize() {
+        logger.debug("Window did restore")
+        captureService.resumeStream()
+    }
+    
+    @objc private func windowDidBecomeKey() {
+        logger.debug("Window became key window")
+        captureService.resumeStream()
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+}
+
+// MARK: - Window Management
+extension NSApplication {
+    @objc func showAllWindows() {
+        windows.forEach { window in
+            window.makeKeyAndOrderFront(nil)
+        }
+    }
+}
+#endif
+
 struct DataBrowsingNav: Hashable {
     var title: String
     var path: String
@@ -51,16 +116,37 @@ struct RecordThingApp: App {
     
     @StateObject var datasource = AppDatasource.shared // Important for triggering updates after translation loaded.
     @StateObject private var model = Model(loadedLang: AppDatasource.shared.$loadedLang)
+    @StateObject private var captureService = CaptureService()
+    
+    #if os(macOS)
+    @State private var windowStateObserver: WindowStateObserver?
+    #endif
     
     init() {
         // Configure logging to omit trace level logs
         Logger.configureLogging()
         logger.debug("RecordThingApp initialized")
+        
+        #if os(macOS)
+        // Initialize window state observer
+        windowStateObserver = WindowStateObserver(captureService: captureService)
+        
+        // Configure window management
+        NSApplication.shared.windowsMenu = NSMenu(title: "Window")
+        let showAllWindowsItem = NSMenuItem(
+            title: "Show All Windows",
+            action: #selector(NSApplication.showAllWindows),
+            keyEquivalent: "0"
+        )
+        showAllWindowsItem.keyEquivalentModifierMask = [.command]
+        NSApplication.shared.windowsMenu?.addItem(showAllWindowsItem)
+        #endif
     }
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            // TODO compact vs macOS/iPadOS CompactContentView vs SplitContentView
+            ContentView(captureService: captureService)
                 .environmentObject(model)
                 .environment(\.blackbirdDatabase, AppDatasource.shared.db)
                 .onChange(of: scenePhase) { oldPhase, newPhase in
@@ -79,16 +165,32 @@ struct RecordThingApp: App {
                         
                     case .background:
                         logger.debug("Application entered background")
+
                         
                     @unknown default:
                         logger.debug("Unknown scene phase")
                     }
                 }
         }
+        #if os(macOS)
+        .defaultSize(width: DesignSystemSetup.light.cameraWidth, height: DesignSystemSetup.light.cameraHeight)
+        .windowResizability(.contentSize)
         .commands {
-            SidebarCommands()
-//            ProductCommands(model: model)
+            CommandGroup(replacing: .newItem) {
+                Button("New Window") {
+                    NSApplication.shared.requestUserAttention(.informationalRequest)
+                }
+                .keyboardShortcut("n", modifiers: .command)
+            }
+            
+            CommandGroup(after: .windowList) {
+                Button("Show All Windows") {
+                    NSApplication.shared.showAllWindows()
+                }
+                .keyboardShortcut("0", modifiers: .command)
+            }
         }
+        #endif
     }
     
     #if os(iOS)

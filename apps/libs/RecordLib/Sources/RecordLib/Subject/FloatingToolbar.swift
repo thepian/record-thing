@@ -37,7 +37,7 @@ public struct FloatingToolbar<Content: View>: View {
         cornerRadius: CGFloat = 10,
         height: CGFloat = 60,
         padding: EdgeInsets = EdgeInsets(top: 0, leading: 20, bottom: 20, trailing: 20),
-        useFullRounding: Bool = true,
+        useFullRounding: Bool = false,
         @ViewBuilder content: () -> Content
     ) {
         self.backgroundColor = backgroundColor
@@ -191,6 +191,7 @@ public struct StandardFloatingToolbar: View {
     private let opacity: Double
     private let cornerRadius: CGFloat
     private let useFullRounding: Bool
+    private let showDataBrowseButton: Bool
     private let spacing: CGFloat
     
     /// Creates a new StandardFloatingToolbar
@@ -209,9 +210,9 @@ public struct StandardFloatingToolbar: View {
         backgroundColor: Color = .black,
         opacity: Double = 0.3,
         cornerRadius: CGFloat = 20,
-        useFullRounding: Bool = true,
+        useFullRounding: Bool = false,
         spacing: CGFloat = 32,
-        showDataBrowseButton: Bool = true,
+        showDataBrowseButton: Bool = false,
         onDataBrowseTapped: (() -> Void)? = nil,
         onStackTapped: @escaping () -> Void,
         onCameraTapped: @escaping () -> Void,
@@ -221,6 +222,7 @@ public struct StandardFloatingToolbar: View {
         self.opacity = opacity
         self.cornerRadius = cornerRadius
         self.useFullRounding = useFullRounding
+        self.showDataBrowseButton = showDataBrowseButton
         self.spacing = spacing
         self.onDataBrowseTapped = showDataBrowseButton ? onDataBrowseTapped : nil
         self.onStackTapped = onStackTapped
@@ -239,7 +241,7 @@ public struct StandardFloatingToolbar: View {
                 // Left side - Data Browse Button or placeholder
                 if let dataBrowseAction = onDataBrowseTapped {
                     DataBrowseButton(action: dataBrowseAction)
-                } else {
+                } else if showDataBrowseButton {
                     Color.clear
                         .frame(width: 22, height: 22) // Same size as the icon
                 }
@@ -295,7 +297,6 @@ struct FloatingToolbar_Previews: PreviewProvider {
                 // The floating toolbar without data browse button
                 StandardFloatingToolbar(
                     useFullRounding: true,
-                    showDataBrowseButton: false,
                     onStackTapped: { print("Stack tapped") },
                     onCameraTapped: { print("Camera tapped") },
                     onAccountTapped: { print("Account tapped") }

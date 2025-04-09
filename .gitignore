@@ -161,3 +161,4 @@ cython_debug/
 
 record-thing-debug.*
 /apps/RecordThing/DerivedData
+/.VSCodeCounter

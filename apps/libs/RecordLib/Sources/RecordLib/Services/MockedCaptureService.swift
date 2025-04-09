@@ -11,7 +11,6 @@ import os
 
 #if DEBUG
 public class MockedCaptureService: CaptureService {
-    private let logger = Logger(subsystem: "com.evidently.recordthing", category: "MockedCaptureService")
     private var status: AVAuthorizationStatus
     private var videoService: VideoFileStreamService?
     private var isStreaming: Bool = false
