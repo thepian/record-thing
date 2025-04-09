@@ -21,6 +21,10 @@ Background Image
 For macOS I want to constrain the App Window size to something resonable. Set good defaults in the CameraViewModel and constrain the frame using those.
 These should be defined in the DesignSystemSetup
 
+Apply alwaysDiscardsLateVideoFrames to AVCaptureVideoDataOutput in CaptureService.
+
+Extend CaptureService with a listener that detects device movement by accelerometer or change in camera input. If there has been no movement for a given amount of seconds pause the capture. When there is movement, resume the capture.
+
 
 ## ClarifyEvidenceControl
 
@@ -99,6 +103,13 @@ When shown on an iPad, the DeveloperSidebar is permanently shown at the top or t
 
 The DeveloperSidebar is also shown in BrowseNavigationView at the tail of the NavigationSplitView Toolbar. 
 
+## CameraSubduedSwitcher (RecordLib/Developer)
+
+The CameraSubduedSwitcher toggles CaptureService.isSubdued. The switcher is shown in the ContentView.withSidebarView sidebar.
+
+A toggle is added to the sidebar for enabling/disabling motion detection driven pausing of the capture session.
+
+
 ### Reset Database & Update Database buttons
 
 The DeveloperSidebar has three buttons.
@@ -139,3 +150,17 @@ The view can be in different states:
 - 
 
 If evidence options are shown, checkbox tasks are silenced.
+
+
+## RecordThingApp
+
+The main view for macOS, iOS and iPadOS.
+
+On macOS the window should be no bigger than the camera stream proportions. It should not have a dead grey area.
+
+While the App is in the background, CaptureService pauses capture.
+As the App closes the CaptureService stops capture.
+
+AVCaptureSession resources must be released while the Application is in the background.
+
+Apply alwaysDiscardsLateVideoFrames to AVCaptureVideoDataOutput in CaptureService.

@@ -124,6 +124,18 @@ public class CameraViewModel: ObservableObject {
         isCameraActive = false
     }
     
+    public func onBackground() {
+        isCameraActive = false
+        pauseCamera()
+        logger.debug("CameraViewModel entered background state")
+    }
+    
+    public func onForeground() {
+        isCameraActive = true
+        resumeCamera()
+        logger.debug("CameraViewModel entered foreground state")
+    }
+    
     /// Sets the capture service reference
     public func setCaptureService(_ service: CaptureService) {
         self.captureService = service
@@ -146,6 +158,12 @@ public class CameraViewModel: ObservableObject {
     public func resumeCamera() {
         guard let captureService = captureService else {
             logger.error("Cannot resume camera: capture service not set")
+            return
+        }
+        
+        // Only resume if we're in the foreground and camera should be active
+        guard isCameraActive else {
+            logger.debug("Not resuming camera - not active")
             return
         }
         

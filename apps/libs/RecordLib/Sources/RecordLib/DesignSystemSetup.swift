@@ -1,4 +1,5 @@
 import SwiftUI
+import AVFoundation
 
 /// Style options for the checkbox
 public enum CheckboxStyle {
@@ -115,21 +116,24 @@ public struct DesignSystemSetup {
     public let windowMaxHeight: CGFloat = 1080
     public let windowDefaultWidth: CGFloat = 1280
     public let windowDefaultHeight: CGFloat = 720
+    
+    // Camera dimensions based on actual camera resolution
+    public var cameraWidth: CGFloat {
+        return CameraResolution.getDefaultResolution().width
+    }
+    
+    public var cameraHeight: CGFloat {
+        return CameraResolution.getDefaultResolution().height
+    }
     #endif
     
     // Get screen dimensions in a cross-platform way
     #if os(macOS)
     public var screenWidth: CGFloat {
-        if let cameraViewModel = cameraViewModel {
-            return min(max(windowDefaultWidth, windowMinWidth), windowMaxWidth)
-        }
-        return 1280
+        return min(max(windowDefaultWidth, windowMinWidth), windowMaxWidth)
     }
     public var screenHeight: CGFloat {
-        if let cameraViewModel = cameraViewModel {
-            return min(max(windowDefaultHeight, windowMinHeight), windowMaxHeight)
-        }
-        return 720
+        return min(max(windowDefaultHeight, windowMinHeight), windowMaxHeight)
     }
     #else
     public var screenWidth: CGFloat {
@@ -185,7 +189,9 @@ public struct DesignSystemSetup {
         showCheckboxBorder: Bool = false,
         checkboxTextAlignment: CheckboxTextAlignment = .left,
         animateCheckboxOnAppear: Bool = true,
-        evidenceReviewFactor: CGFloat = 0.6   // 60% of screen height
+        evidenceReviewFactor: CGFloat = 0.6,   // 60% of screen height
+//        cameraWidth: CGFloat? = nil,           // Optional override for camera width
+//        cameraHeight: CGFloat? = nil           // Optional override for camera height
     ) {
         self.textColor = textColor
         self.dynamicTextColor = dynamicTextColor
@@ -229,6 +235,15 @@ public struct DesignSystemSetup {
         cardPlaceholderColor = placeholderColor
 
         self.evidenceReviewFactor = evidenceReviewFactor
+
+        // Camera dimensions
+//        if let cameraWidth = cameraWidth, let cameraHeight = cameraHeight {
+//            self.cameraWidth = cameraWidth
+//            self.cameraHeight = cameraHeight
+//        } else {
+//            self.cameraWidth = 1280
+//            self.cameraHeight = 720
+//        }
     }
     
     // MARK: - Presets
@@ -286,5 +301,35 @@ open class ViewModelWithDesignSystem: ObservableObject {
     
     public init(designSystem: DesignSystemSetup = .light) {
         self.designSystem = designSystem
+    }
+}
+
+// MARK: - Camera Resolution
+
+struct CameraResolution {
+    static func getDefaultResolution() -> (width: CGFloat, height: CGFloat) {
+        #if os(macOS)
+        // For macOS, we'll use the default camera resolution
+        if let device = AVCaptureDevice.default(for: .video) {
+            let format = device.activeFormat
+            let dimensions = CMVideoFormatDescriptionGetDimensions(format.formatDescription)
+            return (CGFloat(dimensions.width), CGFloat(dimensions.height))
+        }
+        #else
+        // For iOS, we'll use the highest quality format
+        if let device = AVCaptureDevice.default(for: .video) {
+            let formats = device.formats
+            if let format = formats.max(by: { 
+                CMVideoFormatDescriptionGetDimensions($0.formatDescription).width > 
+                CMVideoFormatDescriptionGetDimensions($1.formatDescription).width 
+            }) {
+                let dimensions = CMVideoFormatDescriptionGetDimensions(format.formatDescription)
+                return (CGFloat(dimensions.width), CGFloat(dimensions.height))
+            }
+        }
+        #endif
+        
+        // Fallback to 1280x720 if camera is not available
+        return (1280, 720)
     }
 }

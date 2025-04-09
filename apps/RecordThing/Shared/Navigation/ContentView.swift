@@ -22,10 +22,6 @@ struct AppTabsView: View {
     var body: some View {
         // The floating toolbar
         StandardFloatingToolbar(
-            useFullRounding: false,
-            onDataBrowseTapped: {
-                switchTab(.development)
-            },
             onStackTapped: {
                 switchTab(.assets)
             },
@@ -46,8 +42,11 @@ struct AppTabsView: View {
 struct ContentView: View {
     @EnvironmentObject private var model: Model
     @StateObject public var captureService: CaptureService
-    @StateObject public var cameraViewModel = CameraViewModel()
-    @StateObject private var recordedThingViewModel: RecordedThingViewModel = MockedRecordedThingViewModel.createDefault()
+    @StateObject public var cameraViewModel: CameraViewModel
+    @StateObject private var recordedThingViewModel: RecordedThingViewModel
+    @State private var columnVisibility: NavigationSplitViewVisibility = .automatic
+    var designSystem: DesignSystemSetup
+    @Environment(\.scenePhase) private var scenePhase
 
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -57,8 +56,32 @@ struct ContentView: View {
     
     // MARK: - Initialization
     
-    init(captureService: CaptureService = CaptureService()) {
+    init(captureService: CaptureService, designSystem: DesignSystemSetup = .light) {
+        self.designSystem = designSystem
+
         _captureService = StateObject(wrappedValue: captureService)
+        _cameraViewModel = StateObject(wrappedValue: CameraViewModel(designSystem: designSystem))
+        
+        // TODO pass the designSystem when using RecordedThingViewModel()
+        _recordedThingViewModel = StateObject(wrappedValue: MockedRecordedThingViewModel.createDefault())
+    }
+    
+    // MARK: - App Lifecycle
+    
+    private func handleScenePhaseChange(_ newPhase: ScenePhase) {
+        switch newPhase {
+        case .active:
+            // App became active, ensure camera is running
+            cameraViewModel.onAppear()
+        case .inactive:
+            // App is about to become inactive, prepare for background
+            cameraViewModel.onDisappear()
+        case .background:
+            // App is in background, stop all capture
+            cameraViewModel.onBackground()
+        @unknown default:
+            break
+        }
     }
     
     // MARK: - Navigation Handlers
@@ -70,61 +93,73 @@ struct ContentView: View {
     }
     
     // MARK: - View Components
-    
-    var recordView2: some View {
-//        NavigationStack(path: $path) {
+        
+    var recordView: some View {
+        CameraDrivenView(captureService: captureService) {
             ZStack {
                 VStack(alignment: .center, spacing: 0) {
                     Spacer() // Push everything to the bottom
+                    RecordedStackAndRequirementsView(viewModel: recordedThingViewModel)
+                        .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 32))
+                        .offset(x: 16)
+                    
                     AppTabsView()
+                    
+                    ClarifyEvidenceControl(viewModel: recordedThingViewModel)
                 }
-                #if DEBUG
-                .background(Color.blue.opacity(0.1))
-                #endif
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             }
-//            .background(Color.yellow.opacity(0.1))
-//            #if os(iOS)
-//            .introspect(.navigationStack, on: .iOS(.v16, .v17, .v18)) {
-//                $0.viewControllers.forEach { controller in
-//                    controller.view.backgroundColor = .clear
-//                }
-//            }
-//            #else
-//            .introspect(.navigationStack, on: .macOS(.v13, .v14)) {
-//                $0.view.window?.backgroundColor = .clear
-//            }
-//            #endif
-//        }
+        }
+        .onAppear() {
+            cameraViewModel.onAppear()
+        }
+        .onDisappear() {
+            cameraViewModel.onDisappear()
+        }
+        .environment(\.cameraViewModel, cameraViewModel)
     }
     
-    var recordView: some View {
-        NavigationStack(path: $path) {
-            CameraDrivenView(captureService: captureService) {
-                ZStack {
-                    VStack(alignment: .center, spacing: 0) {
-                        Spacer() // Push everything to the bottom
-                        RecordedStackAndRequirementsView(viewModel: recordedThingViewModel)
-                            .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 32))
-                            .offset(x: 16)
-                        
-                        AppTabsView()
-                        
-                        ClarifyEvidenceControl(viewModel: recordedThingViewModel)
+    var withSidebarView: some View {
+        AppSplitView(
+            columnVisibility: $columnVisibility,
+            path: $path,
+            recordedThingViewModel: recordedThingViewModel,
+            cameraViewModel: cameraViewModel,
+            captureService: captureService,
+            designSystem: designSystem
+        ) {
+            ZStack {
+                switch model.lifecycleView {
+                case .development:
+                    developerTab
+
+                case .record:
+                    NavigationStack(path: $path) {
+                        recordView
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+
+                case .assets:
+                    assetsBrowsingView
+
+                case .actions:
+                    EmptyView()
+                    
+                case .loading:
+                    mountainBike
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: Color.yellow))
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .scaleEffect(3)
                 }
             }
-            .onAppear() {
-                cameraViewModel.onAppear()
-            }
-            .onDisappear() {
-                cameraViewModel.onDisappear()
-            }
-            .environment(\.cameraViewModel, cameraViewModel)
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            handleScenePhaseChange(newPhase)
         }
     }
     
-
+    // MARK: - Supporting Views
+    
     var mountainBike: some View {
         // Background content (would be the camera in the real app)
         GeometryReader { geometry in
@@ -192,18 +227,17 @@ struct ContentView: View {
             }
         )
     }
-    
-    // MARK: - Body
-    
-    var body: some View {
+
+    var withoutSidebarView: some View {
         ZStack {
             switch model.lifecycleView {
-
             case .development:
                 developerTab
 
             case .record:
+            NavigationStack(path: $path) {
                 recordView
+            }
 
             case .assets:
                 assetsBrowsingView
@@ -219,6 +253,23 @@ struct ContentView: View {
                     .scaleEffect(3)
             }
         }
+        .onChange(of: scenePhase) { _, newPhase in
+            handleScenePhaseChange(newPhase)
+        }
+    }
+    
+    // MARK: - Body
+    
+    var body: some View {
+        #if os(iOS)
+            if horizontalSizeClass == .compact {
+                withoutSidebarView
+            } else {
+                withSidebarView
+            }
+        #else
+            withSidebarView
+        #endif
     }
 }
 
@@ -256,7 +307,7 @@ struct ContentView_Previews: PreviewProvider {
                 .previewDisplayName("Redacted")
 
             // Loading view preview
-            ContentView()
+            ContentView(captureService: MockedCaptureService(.notDetermined))
                 .environmentObject(Model())
                 .environment(\.blackbirdDatabase, AppDatasource.shared.db)
                 .onAppear {
