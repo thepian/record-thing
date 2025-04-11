@@ -75,7 +75,12 @@ public class CaptureService: NSObject, ObservableObject {
     var sessionDurationTimer: Timer?
     let defaultSessionDuration: TimeInterval = 30 * 60 // 30 minutes in seconds
     
-
+    // Add orientation tracking
+    #if os(iOS)
+    var currentOrientation: UIDeviceOrientation = .portrait
+    private var orientationObserver: NSObjectProtocol?
+    #endif
+    
     public override init() {
         super.init()
         logger.debug("CaptureService initialized")
@@ -90,11 +95,23 @@ public class CaptureService: NSObject, ObservableObject {
         
         // Setup motion detection
         setupMotionDetection()
+        
+        #if os(iOS)
+        // Setup orientation tracking
+        setupOrientationTracking()
+        #endif
     }
     
     deinit {
         // Remove notification observers
         NotificationCenter.default.removeObserver(self)
+        
+        #if os(iOS)
+        // Remove orientation observer
+        if let observer = orientationObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+        #endif
         
         // Invalidate timers
         permissionCheckTimer?.invalidate()
@@ -755,6 +772,65 @@ public class CaptureService: NSObject, ObservableObject {
             }
         }
     }
+    
+    #if os(iOS)
+    private func setupOrientationTracking() {
+        // Start device orientation monitoring
+        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+        
+        // Observe orientation changes
+        orientationObserver = NotificationCenter.default.addObserver(
+            forName: UIDevice.orientationDidChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.updateOrientation()
+        }
+        
+        // Set initial orientation
+        currentOrientation = UIDevice.current.orientation
+        updateOrientation()
+    }
+    
+    private func updateOrientation() {
+        let newOrientation = UIDevice.current.orientation
+        
+        // Only update if orientation is valid
+        guard newOrientation.isValidInterfaceOrientation else { return }
+        
+        currentOrientation = newOrientation
+        logger.debug("Device orientation changed to: \(newOrientation.rawValue)")
+        
+        // Update video connection orientation
+        sessionQueue.async { [weak self] in
+            guard let self = self else { return }
+            
+            guard let videoOutput = self.session.outputs.first(where: { $0 is AVCaptureVideoDataOutput }) as? AVCaptureVideoDataOutput,
+                  let connection = videoOutput.connection(with: .video) else {
+                return
+            }
+            
+            if connection.isVideoOrientationSupported {
+                let videoOrientation: AVCaptureVideoOrientation
+                switch currentOrientation {
+                case .portrait:
+                    videoOrientation = .portrait
+                case .portraitUpsideDown:
+                    videoOrientation = .portraitUpsideDown
+                case .landscapeLeft:
+                    videoOrientation = .landscapeRight
+                case .landscapeRight:
+                    videoOrientation = .landscapeLeft
+                default:
+                    videoOrientation = .portrait
+                }
+                
+                connection.videoOrientation = videoOrientation
+                logger.debug("Updated video orientation to: \(videoOrientation.rawValue)")
+            }
+        }
+    }
+    #endif
 }
 
 // Core Image sample buffer streaming

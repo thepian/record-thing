@@ -8,11 +8,21 @@
 import SwiftUI
 import os
 
+#if os(iOS)
+import UIKit
+#endif
+
 // https://github.com/daved01/LiveCameraSwiftUI/blob/main/LiveCameraSwiftUI/FrameView.swift
 public struct SimpleCameraView: View {
     let model: CameraViewModel
     var image: CGImage?
     private let label = Text("Live video frame")
+    
+    #if os(iOS)
+    @State private var currentOrientation: Image.Orientation = .up
+    @State private var orientationUpdateTask: Task<Void, Never>?
+    private let orientationDebounceInterval: TimeInterval = 0.2 // 200ms debounce
+    #endif
     
     public init(model: CameraViewModel) {
         self.model = model
@@ -27,11 +37,27 @@ public struct SimpleCameraView: View {
     public var body: some View {
         GeometryReader { geometry in
             if let image = image {
+                #if os(iOS)
+                Image(image, scale: 1.0, orientation: currentOrientation, label: label)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+                    .clipped()
+                    .animation(.linear(duration: 0.2), value: currentOrientation)
+                    .transition(.opacity.combined(with: .scale))
+                    .onAppear {
+                        updateOrientation()
+                    }
+                    .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
+                        updateOrientation()
+                    }
+                #else
                 Image(image, scale: 1.0, orientation: .up, label: label)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(width: geometry.size.width, height: geometry.size.height)
                     .clipped()
+                #endif
             } else {
                 Image(model.bgImageSet, bundle: Bundle.module)
                     .resizable()
@@ -42,6 +68,96 @@ public struct SimpleCameraView: View {
         }
         .edgesIgnoringSafeArea(.all)
     }
+    
+    #if os(iOS)
+    private func updateOrientation() {
+        // Cancel any pending orientation update
+        orientationUpdateTask?.cancel()
+        
+        // Create a new task with debounce
+        orientationUpdateTask = Task {
+            try? await Task.sleep(nanoseconds: UInt64(orientationDebounceInterval * 1_000_000_000))
+            
+            // Check if task was cancelled
+            guard !Task.isCancelled else { return }
+            
+            // Get the new orientation
+            let newOrientation = calculateDeviceSpecificOrientation()
+            
+            // Update on main thread with animation
+            await MainActor.run {
+                withAnimation(.linear(duration: 0.2)) {
+                    currentOrientation = newOrientation
+                }
+            }
+        }
+    }
+    
+    private func calculateDeviceSpecificOrientation() -> Image.Orientation {
+        let device = UIDevice.current
+        let orientation = device.orientation
+        let isIPad = UIDevice.current.userInterfaceIdiom == .pad
+        
+        // Get the interface orientation using the newer API
+        let interfaceOrientation: UIInterfaceOrientation
+        if #available(iOS 15.0, *) {
+            interfaceOrientation = UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .first?
+                .windows
+                .first?
+                .windowScene?
+                .interfaceOrientation ?? .portrait
+        } else {
+            interfaceOrientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation ?? .portrait
+        }
+        
+        // For iPad, primarily use interface orientation
+        if isIPad {
+            switch interfaceOrientation {
+            case .portraitUpsideDown:
+                return .down
+            case .landscapeLeft:
+                return .left
+            case .landscapeRight:
+                return .right
+            case .portrait, .unknown:
+                return .up
+            @unknown default:
+                return .up
+            }
+        } else {
+            // FIXME Transitions for rotation is messy
+            // For iPhone, use device orientation but handle special cases
+            switch orientation {
+            case .portraitUpsideDown:
+                return .down
+            case .landscapeLeft:
+                return .right // Flipped for iPhone camera
+            case .landscapeRight:
+                return .left // Flipped for iPhone camera
+            case .faceUp, .faceDown:
+                // When flat, use interface orientation
+                switch interfaceOrientation {
+                case .landscapeLeft:
+                    return .right
+                case .landscapeRight:
+                    return .left
+                case .portraitUpsideDown:
+                    return .down
+                case .portrait, .unknown:
+                    return .up
+                @unknown default:
+                    return .up
+                }
+            case .portrait, .unknown:
+                return .up
+            @unknown default:
+                return .up
+            }
+        }
+    }
+    #endif
 }
 
 #if DEBUG
