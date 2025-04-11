@@ -1,73 +1,292 @@
 import SwiftUI
 import os
 
-/// A view that displays evidence (image or video) in an overlay with proper scaling and borders
+/// A component that combines CheckboxCarouselView and ImageCardStack side-by-side.
+///
+/// This component is useful for displaying a list of checkable items alongside a stack of images,
+/// which can be used for tasks like selecting options while viewing related images.
+///
+/// Features:
+/// - Displays a CheckboxCarouselView on one side and an ImageCardStack on the other
+/// - Customizable layout direction (horizontal or vertical)
+/// - Configurable spacing between components
+/// - Fully customizable checkbox carousel and image card stack
+/// - Optional title for each section
+/// - Callbacks for checkbox toggling and image stack tapping
+///
+/// Example usage:
+/// ```swift
+/// CheckboxImageCardView(
+///     viewModel: EvidenceViewModel(
+///         checkboxItems: [
+///             CheckboxItem(text: "Take a photo"),
+///             CheckboxItem(text: "Scan barcode", isChecked: true),
+///             CheckboxItem(text: "Add details")
+///         ],
+///         cardImages: [
+///             .system("photo"),
+///             .system("camera"),
+///             .system("doc.text.image")
+///         ]
+///     )
+/// )
+/// ```
 public struct EvidenceReview: View {
-    @Environment(\.cameraViewModel) var cameraViewModel: CameraViewModel?
-    @ObservedObject var viewModel: RecordedThingViewModel
+    // MARK: - Properties
     
-    private let logger = Logger(subsystem: "com.record-thing", category: "ui.evidence-review")
-
-    public let designSystem: DesignSystemSetup
+    // Logger for debugging
+    private let logger = Logger(subsystem: "com.record-thing", category: "ui.checkbox-image-card")
+    
+    // ViewModel
+    @StateObject private var viewModel: EvidenceViewModel
+    
+    // MARK: - Types
+    
+    /// Direction of the layout
+    public enum LayoutDirection {
+        case horizontal  // Checkbox on left, images on right
+        case vertical    // Checkbox on top, images on bottom
+    }
     
     // MARK: - Initialization
     
-    /// Creates a new EvidenceReview view
-    /// - Parameter viewModel: The view model containing the evidence to display
-    public init(viewModel: RecordedThingViewModel) {
-        self.viewModel = viewModel
-        self.designSystem = viewModel.designSystem
-        logger.trace("EvidenceReview initialized")
+    /// Creates a new CheckboxImageCardView
+    /// - Parameter viewModel: The view model that manages the state and business logic
+    public init(viewModel: EvidenceViewModel) {
+        self._viewModel = StateObject(wrappedValue: viewModel)
+        logger.trace("RecordedStackAndRequirementsView initialized with view model")
     }
     
+    // MARK: - Body
+    
     public var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                // Evidence content
-                if let image = viewModel.evidenceReviewImage {
-                    image.asImage
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: designSystem.evidenceReviewWidth, height: designSystem.evidenceReviewHeight)
-                        .background(Color.white)
-                        .cornerRadius(12)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.white, lineWidth: 2)
-                        )
-                        .shadow(radius: 10)
-                } else if let clip = viewModel.evidenceReviewClip {
-                    // TODO: Implement video clip playback
-                    Text("Video clip playback not yet implemented")
-                        .foregroundColor(.white)
-                } else {
-                    Text("No evidence to review")
-                        .foregroundColor(.white)
+        Group {
+            if viewModel.direction == .horizontal {
+                horizontalLayout
+            } else {
+                verticalLayout
+            }
+        }
+        .onAppear {
+            // Add observer for exit reviewing mode notification
+            NotificationCenter.default.addObserver(
+                forName: .exitReviewingMode,
+                object: nil,
+                queue: .main
+            ) { _ in
+                withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                    viewModel.reviewing = false
                 }
             }
         }
-        .frame(width: designSystem.screenWidth, height: designSystem.screenHeight)
-        .onAppear {
-            logger.debug("EvidenceReview appeared with \(viewModel.evidenceReviewImage != nil ? "image" : "no image") and \(viewModel.evidenceReviewClip != nil ? "clip" : "no clip")")
+        .onDisappear {
+            // Remove observer when view disappears
+            NotificationCenter.default.removeObserver(self)
         }
-//        .frame(maxWidth: .infinity, maxHeight: .infinity)
+//        .gesture(
+//            DragGesture(minimumDistance: 20)
+//                .onEnded { value in
+//                    let verticalMovement = value.translation.height
+//                    let threshold: CGFloat = 50 // Minimum swipe distance to trigger
+//                    
+//                    withAnimation(.spring()) {
+//                        if viewModel.reviewing && verticalMovement > threshold {
+//                            // Swipe down to collapse
+//                            viewModel.reviewing = false
+//                        }
+//                    }
+//                }
+//        )
+    }
+    
+    // MARK: - UI Components
+    
+    /// Horizontal layout with checkbox on left, images on right
+    private var horizontalLayout: some View {
+        GeometryReader { geometry in
+            VStack(alignment: .center) {
+                Spacer()
+                if viewModel.reviewing {
+                    Carousel(cards: viewModel.pieces, designSystem: viewModel.designSystem)
+                        .frame(width: viewModel.designSystem.evidenceReviewWidth)
+                    HStack(alignment: .center, spacing: viewModel.spacing) {
+                        Spacer()
+                        
+                        // Image stack section
+                        VStack(alignment: viewModel.alignment) {
+                            imageCardStack
+                                .grayscale(1.0)
+                                .contrast(0.75)
+//                                .brightness(-0.2)
+                        }
+                    }
+                } else {
+                    HStack(alignment: .center, spacing: viewModel.spacing) {
+                        // Checkbox section
+                        VStack(alignment: viewModel.alignment) {
+                            checkboxCarousel
+                        }
+                        
+                        // Image stack section
+                        VStack(alignment: viewModel.alignment) {
+                            imageCardStack
+                        }
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+    
+    /// Vertical layout with checkbox on top, images on bottom
+    private var verticalLayout: some View {
+        GeometryReader { geometry in
+            VStack(alignment: .trailing) {
+                Spacer()
+                if viewModel.reviewing {
+                    Spacer()
+                    Carousel(cards: viewModel.pieces, designSystem: viewModel.designSystem)
+                        .frame(width: viewModel.designSystem.evidenceReviewWidth)
+                    Spacer()
+                } else {
+                    checkboxCarousel
+//                        .padding(.horizontal, 10)
+                    imageCardStack
+//                        .padding(.horizontal, 10)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+    
+    /// Checkbox carousel component
+    private var checkboxCarousel: some View {
+        CheckboxCarouselView(viewModel: viewModel)
+    }
+    
+    /// Image card stack component
+    private var imageCardStack: some View {
+        ImageCardStack(viewModel: viewModel)
+            .onTapGesture {
+                withAnimation(.spring()) {
+                    viewModel.reviewing.toggle()
+                }
+            }
+            .gesture(
+                DragGesture(minimumDistance: 20)
+                    .onEnded { value in
+                        let verticalMovement = value.translation.height
+                        let threshold: CGFloat = 50 // Minimum swipe distance to trigger
+                        
+                        withAnimation(.spring()) {
+                            if !viewModel.reviewing && verticalMovement < -threshold {
+                                // Swipe up to expand
+                                viewModel.reviewing = true
+                            } else if viewModel.reviewing && verticalMovement > threshold {
+                                // Swipe down to collapse
+                                viewModel.reviewing = false
+                            }
+                        }
+                    }
+            )
     }
 }
 
-#if DEBUG
+// MARK: - Preview
+
 struct EvidenceReview_Previews: PreviewProvider {
-    private static let logger = Logger(subsystem: "com.record-thing", category: "EvidenceReview_Previews")
-    
     static var previews: some View {
         Group {
-            // Preview with image
-            EvidenceReview(viewModel: MockedRecordedThingViewModel.createDefault())
-                .previewDisplayName("With Image")
+            // Horizontal layout with titles
+            EvidenceReview(
+                viewModel: .create(
+                    checkboxItems: [
+                        CheckboxItem(text: "Take a photo of the product"),
+                        CheckboxItem(text: "Scan the barcode", isChecked: true),
+                        CheckboxItem(text: "Capture the receipt"),
+                        CheckboxItem(text: "Add product details")
+                    ],
+                    checkboxOrientation: .horizontal,
+                    direction: .horizontal,
+                    designSystem: DesignSystemSetup(
+                        textColor: .primary,
+                        accentColor: .blue,
+                        backgroundColor: .white,
+                        borderColor: .gray.opacity(0.2),
+                        shadowColor: .black.opacity(0.1)
+                    )
+                )
+            )
+            .previewLayout(.sizeThatFits)
+            .previewDisplayName("Horizontal with Titles")
             
-            // Preview without evidence
-            EvidenceReview(viewModel: MockedRecordedThingViewModel.create(evidenceOptions: []))
-                .previewDisplayName("No Evidence")
+            // Horizontal layout with titles
+            EvidenceReview(
+                viewModel: .create(
+                    pieces: [
+                        EvidencePiece(index: 0, title: "mb1", type: .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)), metadata: ["type": "photo"]),
+                        EvidencePiece(index: 1, title: "mb2", type: .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)), metadata: ["type": "photo"]),
+                        EvidencePiece(index: 2, title: "mb3", type: .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)), metadata: ["type": "photo"]),
+                        EvidencePiece(index: 3, title: "mb4", type: .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)), metadata: ["type": "photo"]),
+                        EvidencePiece(index: 4, title: "DSLR", type: .custom(Image("beige_kitchen_table_with_a_professional_DSLR_standing", bundle: Bundle.module)), metadata: ["type": "photo"])
+                    ],
+                    reviewing: true,
+                    designSystem: DesignSystemSetup(
+                        textColor: .primary,
+                        accentColor: .blue,
+                        backgroundColor: .white,
+                        borderColor: .gray.opacity(0.2),
+                        shadowColor: .black.opacity(0.1)
+                    )
+                )
+            )
+            .previewLayout(.sizeThatFits)
+            .previewDisplayName("Reviewing")
+            
+            // Vertical layout with custom styling
+            EvidenceReview(
+                viewModel: .create(
+                    checkboxItems: [
+                        CheckboxItem(text: "First item"),
+                        CheckboxItem(text: "Second item", isChecked: true)
+                    ],
+                    checkboxOrientation: .vertical,
+                    direction: .vertical,
+                    designSystem: DesignSystemSetup(
+                        textColor: .blue,
+                        accentColor: .orange,
+                        backgroundColor: .white,
+                        borderColor: .orange.opacity(0.3),
+                        shadowColor: .orange.opacity(0.2),
+                        cardSize: 50,
+                        cardRotation: 5
+                    )
+                )
+            )
+            .previewLayout(.sizeThatFits)
+            .previewDisplayName("Vertical with Custom Styling")
+            
+            // Dark mode preview
+            EvidenceReview(
+                viewModel: .create(
+                    checkboxItems: [
+                        CheckboxItem(text: "Dark mode item 1"),
+                        CheckboxItem(text: "Dark mode item 2")
+                    ],
+                    checkboxOrientation: .vertical,
+                    direction: .vertical,
+                    designSystem: DesignSystemSetup(
+                        textColor: .white,
+                        accentColor: .white,
+                        backgroundColor: .black,
+                        borderColor: .white.opacity(0.2),
+                        shadowColor: .white.opacity(0.3)
+                    )
+                )
+            )
+            .previewLayout(.sizeThatFits)
+            .background(Color.black)
+            .previewDisplayName("Dark Mode")
         }
     }
 }
-#endif 

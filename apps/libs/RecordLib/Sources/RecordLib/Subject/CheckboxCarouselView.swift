@@ -37,7 +37,7 @@ public struct CheckboxCarouselView: View {
     @State private var newItemAppeared: Bool = false
      
     // ViewModel
-    @ObservedObject private var viewModel: RecordedThingViewModel
+    @ObservedObject private var viewModel: EvidenceViewModel
     let designSystem: DesignSystemSetup
        
     // MARK: - Initialization
@@ -46,7 +46,7 @@ public struct CheckboxCarouselView: View {
     /// - Parameters:
     ///   - viewModel: The view model that manages the state and business logic
     public init(
-        viewModel: RecordedThingViewModel
+        viewModel: EvidenceViewModel
     ) {
         self.viewModel = viewModel
         self.designSystem = viewModel.designSystem
@@ -474,17 +474,18 @@ struct CheckboxCarouselView_Previews: PreviewProvider {
                         .padding(.bottom, 10)
                     
                     CheckboxCarouselView(
-                        viewModel: MockedRecordedThingViewModel.create(
+                        viewModel: .create(
                             checkboxItems: [
                                 CheckboxItem(text: "Take a photo of the product"),
                                 CheckboxItem(text: "Scan the barcode"),
                                 CheckboxItem(text: "Capture the receipt"),
                                 CheckboxItem(text: "Add product details"),
                                 CheckboxItem(text: "Save to your collection")
-                            ]
+                            ],
+                            checkboxOrientation: .vertical
                         )
                     )
-                    .frame(width: 300)
+                    .frame(width: 300, height: 100)
                     .padding()
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(12)
@@ -498,13 +499,14 @@ struct CheckboxCarouselView_Previews: PreviewProvider {
                         .padding(.bottom, 10)
                     
                     CheckboxCarouselView(
-                        viewModel: MockedRecordedThingViewModel.create(
+                        viewModel: .create(
                             checkboxItems: [
                                 CheckboxItem(text: "Take a photo"),
                                 CheckboxItem(text: "Scan barcode", isChecked: true),
                                 CheckboxItem(text: "Add details"),
                                 CheckboxItem(text: "Save item")
                             ],
+                            checkboxOrientation: .horizontal,
                             direction: .horizontal,
                             designSystem: DesignSystemSetup(
                                 checkboxStyle: .simple,
@@ -527,11 +529,12 @@ struct CheckboxCarouselView_Previews: PreviewProvider {
                         .padding(.bottom, 10)
                     
                     CheckboxCarouselView(
-                        viewModel: MockedRecordedThingViewModel.create(
+                        viewModel: .create(
                             checkboxItems: [
                                 CheckboxItem(text: "First simple item", isChecked: true),
                                 CheckboxItem(text: "Second simple item")
                             ],
+                            checkboxOrientation: .horizontal,
                             direction: .horizontal,
                             designSystem: DesignSystemSetup(checkboxStyle: .simple)
                         )
@@ -556,12 +559,13 @@ struct CheckboxCarouselView_Previews: PreviewProvider {
             .edgesIgnoringSafeArea(.all)
             
             CheckboxCarouselView(
-                viewModel: MockedRecordedThingViewModel.create(
+                viewModel: .create(
                     checkboxItems: [
                         CheckboxItem(text: "First custom item"),
                         CheckboxItem(text: "Second custom item", isChecked: true),
                         CheckboxItem(text: "Third custom item")
                     ],
+                    checkboxOrientation: .horizontal,
                     direction: .horizontal,
                     designSystem: DesignSystemSetup(
                         textColor: .yellow,

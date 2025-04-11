@@ -192,8 +192,8 @@ struct CameraDrivenView_Previews: PreviewProvider {
     private static let logger = Logger(subsystem: "com.evidently.recordthing", category: "CameraDrivenView_Previews")
     
     static var previews: some View {
-        @StateObject var viewModel = MockedRecordedThingViewModel.create(evidenceOptions: [])
-        @StateObject var reviewViewModel = MockedRecordedThingViewModel.create(evidenceOptions: [], reviewing: true)
+        @StateObject var viewModel: EvidenceViewModel = .create(evidenceOptions: [])
+        @StateObject var reviewViewModel: EvidenceViewModel = .create(evidenceOptions: [], reviewing: true)
 
         Group {
             
@@ -202,7 +202,7 @@ struct CameraDrivenView_Previews: PreviewProvider {
                     VStack {
                         Spacer()
                         NavigationLink("Evidence", value: ExampleDest.evidence)
-                        RecordedStackAndRequirementsView(viewModel: viewModel)
+                        EvidenceReview(viewModel: viewModel)
                             .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 32))
                         StandardFloatingToolbar(
                             useFullRounding: false,
@@ -228,7 +228,7 @@ struct CameraDrivenView_Previews: PreviewProvider {
                         CameraDrivenView(captureService: MockedCaptureService(.authorized)) {
                             VStack {
                                 Spacer()
-                                RecordedStackAndRequirementsView(viewModel: viewModel)
+                                EvidenceReview(viewModel: viewModel)
                                     .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 32))
                                 StandardFloatingToolbar(                            useFullRounding: false,
                                     onDataBrowseTapped: { },
@@ -250,7 +250,7 @@ struct CameraDrivenView_Previews: PreviewProvider {
             CameraDrivenView(captureService: MockedCaptureService(.authorized)) {
                 VStack {
                     Spacer()
-                    RecordedStackAndRequirementsView(viewModel: reviewViewModel)
+                    EvidenceReview(viewModel: reviewViewModel)
                         .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 32))
                     StandardFloatingToolbar(
                         useFullRounding: false,
@@ -326,7 +326,7 @@ struct CameraDrivenView_Previews: PreviewProvider {
             // Camera Service Preview (if available)
 //            if let cameraService = try? CameraService() {
 //                CameraDrivenView(
-//                    viewModel: RecordedThingViewModel(
+//                    viewModel: EvidenceViewModel(
 //                        captureService: cameraService,
 //                        onOptionConfirmed: { _, _ in }
 //                    )

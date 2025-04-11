@@ -30,7 +30,7 @@ Extend CaptureService with a listener that detects device movement by accelerome
 
 ## ClarifyEvidenceControl
 
-Depending on variables in RecordedThingViewModel a SimpleConfirmDenyStatement will be shown.
+Depending on variables in EvidenceViewModel a SimpleConfirmDenyStatement will be shown.
 If nothing is shown a given height is maintained.
 If evidenceOptions: array is not empty cycle through them at a show pace and show a SimpleConfirmDenyStatement for the option. Show one at a time, and transition through them.
 If an option is denied, do not show it again. If an option is confirmed save it in evidenceDecision, and finish showing options. If evidenceDecision is set, do not show nothing.
@@ -52,10 +52,10 @@ Support a callback onOptionConfirmed set on ClarifyEvidenceControl for the confi
 ## EvidenceCarousel
 
 View that shows an interactive carousel of images, documents and video clips. It lays out pieces horizontally. The current piece is shown in the center. Other pieces are faded. Pieces cut off by the edges are highly faded out. It will be rendered on a darkened background when used, but the darkened background isn't part of the EvidenceCarousel.
-The user can pan through the evidence. A list of evidence is kept in RecordedThingViewModel.
+The user can pan through the evidence. A list of evidence is kept in EvidenceViewModel.
 The current evidence is also determined by the view model.
 
-EvidenceCarousel(viewModel: RecordedThingViewModel)
+EvidenceCarousel(viewModel: EvidenceViewModel)
 
 Multiple previews show a range of configurations, including 4 pieces of evidence
 
@@ -72,10 +72,10 @@ Use library assets for preview sample evidence:
 View that shows an interactive carousel of evidence.
 
 When evidence has been recorded, the evidence is shown as an overlay within CameraDrivenView.
-The overlay doesn't take up the full screen. It uses most of the top two thirds of the screen, showing a scaled recording with a white border. This EvidenceReview is also used to cycle through evidence when the ImageCardStack is pressed. The EvidenceReview is showing the RecordedThingViewModel.evidenceReviewImage or RecordedThingViewModel.evidenceReviewClip.
+The overlay doesn't take up the full screen. It uses most of the top two thirds of the screen, showing a scaled recording with a white border. This EvidenceReview is also used to cycle through evidence when the ImageCardStack is pressed. The EvidenceReview is showing the EvidenceViewModel.evidenceReviewImage or EvidenceViewModel.evidenceReviewClip.
 The width/height of the EvidenceReview is determined by setup in DesignSystemSetup.
 
-EvidenceReview(viewModel: RecordedThingViewModel)
+EvidenceReview(viewModel: EvidenceViewModel)
 
 `focusMode` highlights the current piece of evidence and fades out the other pieces that are partially shown. It disables swiping to other pieces of evidence. `focusMode` is used to force the user to respond to the ConfirmDenyStatements for the piece of evidence.
 
@@ -84,7 +84,7 @@ The EvidenceReview shows a single piece of evidence in focus(horizontally center
 
 ## RecordedStackAndRequirementsView
 
-The Image Stack can be expanded or collapsed by toggling the ImageStack. It is reflected as reviewing state in RecordedThingViewModel. This can be done by tapping or swiping up/down depending on the current reviewing state.
+The Image Stack can be expanded or collapsed by toggling the ImageStack. It is reflected as reviewing state in EvidenceViewModel. This can be done by tapping or swiping up/down depending on the current reviewing state.
 The Carousel shows the expanded state of Evidence Pieces.
 The Image Stack represents the collapsed state.
 

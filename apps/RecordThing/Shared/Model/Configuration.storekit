@@ -23,11 +23,6 @@
           "description" : "Make smoothies at home!",
           "displayName" : "Unlock All Recipes",
           "locale" : "en_US"
-        },
-        {
-          "description" : "Смузи в домашних условиях",
-          "displayName" : "Разблокируйте все рецепты",
-          "locale" : "ru"
         }
       ],
       "productID" : "com.example.apple-samplecode.record.unlock-recipes",
@@ -37,8 +32,8 @@
   ],
   "settings" : {
     "_failTransactionsEnabled" : false,
-    "_locale" : "en_US",
-    "_storefront" : "USA",
+    "_locale" : "en_GB",
+    "_storefront" : "CHE",
     "_storeKitErrors" : [
       {
         "current" : null,

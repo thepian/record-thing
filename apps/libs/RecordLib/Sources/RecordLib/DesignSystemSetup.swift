@@ -146,7 +146,7 @@ public struct DesignSystemSetup {
     
     // Calculate the size for the evidence review using design system
     public var evidenceReviewWidth: CGFloat {
-        screenWidth * evidenceReviewFactor
+        min(screenWidth * evidenceReviewFactor, screenHeight * evidenceReviewFactor * 9.0/16.0)
     }
     
     public var evidenceReviewHeight: CGFloat {

@@ -72,16 +72,33 @@ extension CaptureService {
         setupSessionDurationMonitoring()
     }
     
-    private func setupSessionDurationMonitoring() {
+    func setupSessionDurationMonitoring() {
+        // Stop any existing timer
+        sessionDurationTimer?.invalidate()
+        sessionDurationTimer = nil
+        
+        // Only start monitoring if session is running
+        guard session.isRunning else {
+            logger.debug("Session not running, skipping duration monitoring setup")
+            return
+        }
+        
         // Start monitoring session duration
         sessionStartTime = Date()
         sessionDurationTimer = Timer.scheduledTimer(withTimeInterval: 60.0, repeats: true) { [weak self] _ in
             self?.checkSessionDuration()
         }
+        logger.debug("Session duration monitoring started")
     }
     
     private func checkSessionDuration() {
         guard let startTime = sessionStartTime else { return }
+        
+        // Only check duration if session is running
+        guard session.isRunning else {
+            logger.debug("Session not running, skipping duration check")
+            return
+        }
         
         let sessionDuration = Date().timeIntervalSince(startTime)
         if sessionDuration >= defaultSessionDuration {
@@ -121,6 +138,9 @@ extension CaptureService {
                 if !self.session.isRunning {
                     self.session.startRunning()
                     self.logger.debug("Capture session restarted")
+                    
+                    // Restart session duration monitoring
+                    self.setupSessionDurationMonitoring()
                     
                     DispatchQueue.main.async {
                         self.isPaused = false

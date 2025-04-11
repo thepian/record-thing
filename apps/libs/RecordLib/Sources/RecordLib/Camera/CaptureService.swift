@@ -24,6 +24,10 @@ enum CaptureError: Error {
     case unexpected(code: Int)
 }
 
+/*
+  Capture sessions are limited to 30 minutes to get rid of memory leaks. When the session reaches 30 minutes,
+  it will be restarted. Pausing will reset the timer.
+*/
 public class CaptureService: NSObject, ObservableObject {
     let leaveMostRecentFrameOnSleep: Bool = true
     
@@ -692,6 +696,10 @@ public class CaptureService: NSObject, ObservableObject {
                 self.session.stopRunning()
                 self.logger.debug("Camera stream paused")
                 
+                // Stop session duration monitoring
+                self.sessionDurationTimer?.invalidate()
+                self.sessionDurationTimer = nil
+                
                 DispatchQueue.main.async {
                     self.isPaused = true
                 }
@@ -727,6 +735,9 @@ public class CaptureService: NSObject, ObservableObject {
                 if !self.session.isRunning {
                     self.session.startRunning()
                     self.logger.debug("Camera stream resumed")
+                    
+                    // Restart session duration monitoring
+                    self.setupSessionDurationMonitoring()
                     
                     DispatchQueue.main.async {
                         self.isPaused = false

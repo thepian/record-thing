@@ -114,6 +114,8 @@ public struct SimpleCameraView: View {
         
         // For iPad, primarily use interface orientation
         if isIPad {
+            return .up
+            /*
             switch interfaceOrientation {
             case .portraitUpsideDown:
                 return .down
@@ -126,6 +128,7 @@ public struct SimpleCameraView: View {
             @unknown default:
                 return .up
             }
+            */
         } else {
             // FIXME Transitions for rotation is messy
             // For iPhone, use device orientation but handle special cases

@@ -43,8 +43,8 @@ struct ContentView: View {
     @EnvironmentObject private var model: Model
     @StateObject public var captureService: CaptureService
     @StateObject public var cameraViewModel: CameraViewModel
-    @StateObject private var recordedThingViewModel: RecordedThingViewModel
-    @State private var columnVisibility: NavigationSplitViewVisibility = .automatic
+    @StateObject private var evidenceViewModel: EvidenceViewModel
+    @State private var columnVisibility: NavigationSplitViewVisibility = .detailOnly
     var designSystem: DesignSystemSetup
     @Environment(\.scenePhase) private var scenePhase
 
@@ -62,8 +62,8 @@ struct ContentView: View {
         _captureService = StateObject(wrappedValue: captureService)
         _cameraViewModel = StateObject(wrappedValue: CameraViewModel(designSystem: designSystem))
         
-        // TODO pass the designSystem when using RecordedThingViewModel()
-        _recordedThingViewModel = StateObject(wrappedValue: MockedRecordedThingViewModel.createDefault())
+        // TODO pass the designSystem when using EvidenceViewModel()
+        _evidenceViewModel = StateObject(wrappedValue: EvidenceViewModel.createDefault())
     }
     
     // MARK: - App Lifecycle
@@ -99,13 +99,13 @@ struct ContentView: View {
             ZStack {
                 VStack(alignment: .center, spacing: 0) {
                     Spacer() // Push everything to the bottom
-                    RecordedStackAndRequirementsView(viewModel: recordedThingViewModel)
+                    EvidenceReview(viewModel: evidenceViewModel)
                         .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 32))
                         .offset(x: 16)
                     
                     AppTabsView()
                     
-                    ClarifyEvidenceControl(viewModel: recordedThingViewModel)
+                    ClarifyEvidenceControl(viewModel: evidenceViewModel)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             }
@@ -123,7 +123,7 @@ struct ContentView: View {
         AppSplitView(
             columnVisibility: $columnVisibility,
             path: $path,
-            recordedThingViewModel: recordedThingViewModel,
+            evidenceViewModel: evidenceViewModel,
             cameraViewModel: cameraViewModel,
             captureService: captureService,
             designSystem: designSystem
@@ -180,38 +180,18 @@ struct ContentView: View {
             onRecordTapped: {
                 model.lifecycleView = .record
                 path.removeLast(path.count)
-                // path.append(NavigationDestination.record)
             },
             thingsContent: {
                 ThingsMenu()
             },
             typesContent: {
                 EvidenceTypeMenu()
-//                TypesView()
             },
             feedContent: {
-//                FeedView()
             },
             favoritesContent: {
-//                FavoritesView()
             }
         )
-        
-        /*
-#if os(iOS)
-        NavigationStack(path: $path) {
-            sampleNavBars
-
-        // This clears the stack background as it isn't otherwise supported
-        .introspect(.navigationStack, on: .iOS(.v16, .v17, .v18)) {
-            $0.viewControllers.forEach { controller in
-                controller.view.backgroundColor = .clear
-            }
-        }
-#else
-        AppSidebarNavigation()
-#endif
-         */
     }
     
     // Assets browsing view

@@ -18,7 +18,7 @@ import os
 /// Example usage:
 /// ```swift
 /// ImageCardStack(
-///     viewModel: RecordedThingViewModel(
+///     viewModel: EvidenceViewModel(
 ///         cardImages: [
 ///             .system("photo"),
 ///             .system("camera"),
@@ -37,7 +37,7 @@ public struct ImageCardStack: View {
     private let logger = Logger(subsystem: "com.record-thing", category: "ui.image-card-stack")
     
     // ViewModel
-    @ObservedObject private var viewModel: RecordedThingViewModel
+    @ObservedObject private var viewModel: EvidenceViewModel
     
     // Animation state
     @State private var isAnimatingReplacement: Bool = false
@@ -57,7 +57,7 @@ public struct ImageCardStack: View {
     ///   - onTap: Action to perform when the stack is tapped
     /// - Parameter viewModel: The view model that manages the state and business logic
     public init(
-        viewModel: RecordedThingViewModel,
+        viewModel: EvidenceViewModel,
         replacementAnimationDuration: Double = 0.5
     ) {
         self.viewModel = viewModel
@@ -236,7 +236,7 @@ public struct ImageCardStack: View {
 #if DEBUG
 struct ImageCardStack_Previews: PreviewProvider {
     struct AnimatedCardStackDemo: View {
-        @StateObject private var viewModel = RecordedThingViewModel(
+        @StateObject private var viewModel = EvidenceViewModel(
             checkboxItems: [
                 CheckboxItem(text: "Take product photo", isChecked: false),
                 CheckboxItem(text: "Scan barcode", isChecked: false),
@@ -313,7 +313,7 @@ struct ImageCardStack_Previews: PreviewProvider {
                     .font(.headline)
                 
                 ImageCardStack(
-                    viewModel: RecordedThingViewModel(
+                    viewModel: EvidenceViewModel(
                         checkboxItems: [
                             CheckboxItem(text: "First item"),
                             CheckboxItem(text: "Second item", isChecked: true),
@@ -341,7 +341,7 @@ struct ImageCardStack_Previews: PreviewProvider {
                     .font(.headline)
                 
                 ImageCardStack(
-                    viewModel: RecordedThingViewModel(
+                    viewModel: EvidenceViewModel(
                         checkboxItems: [
                             CheckboxItem(text: "First item"),
                             CheckboxItem(text: "Second item", isChecked: true),
@@ -369,7 +369,7 @@ struct ImageCardStack_Previews: PreviewProvider {
                     .font(.headline)
                 
                 ImageCardStack(
-                    viewModel: RecordedThingViewModel(
+                    viewModel: EvidenceViewModel(
                         checkboxItems: [
                             CheckboxItem(text: "First item"),
                             CheckboxItem(text: "Second item", isChecked: true),
@@ -398,7 +398,7 @@ struct ImageCardStack_Previews: PreviewProvider {
                     .font(.headline)
                 
                 ImageCardStack(
-                    viewModel: RecordedThingViewModel(
+                    viewModel: EvidenceViewModel(
                         checkboxItems: [
                             CheckboxItem(text: "First item"),
                             CheckboxItem(text: "Second item", isChecked: true),

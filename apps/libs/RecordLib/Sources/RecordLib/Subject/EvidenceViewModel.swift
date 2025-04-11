@@ -1,5 +1,14 @@
 import SwiftUI
 import os
+import CoreGraphics
+import CoreImage
+import AVFoundation
+
+#if os(iOS)
+import UIKit
+#elseif os(macOS)
+import AppKit
+#endif
 
 /// Used by Carousel for cards
 public protocol CardViewData: Equatable, Identifiable {
@@ -8,6 +17,8 @@ public protocol CardViewData: Equatable, Identifiable {
     var title: String { get }
     var image: Image? { get }
     var color: Color { get }
+    var imageWidth: CGFloat? { get }
+    var imageHeight: CGFloat? { get }
 }
 
 /// The type of evidence piece
@@ -27,6 +38,14 @@ public struct EvidencePiece: CardViewData {
     public let timestamp: Date
     public let metadata: [String: String]
     
+    // Add image dimensions
+    public var imageWidth: CGFloat?
+    public var imageHeight: CGFloat?
+    private var hasLoadedDimensions: Bool = false
+    
+    // Logger for debugging
+    private static let logger = Logger(subsystem: "com.record-thing", category: "EvidencePiece")
+    
     /// Creates a new piece of evidence
     /// - Parameters:
     ///   - type: The type of evidence (system image, custom image, or video)
@@ -38,7 +57,9 @@ public struct EvidencePiece: CardViewData {
         type: EvidenceType,
         metadata: [String: String] = [:],
         timestamp: Date = Date(),
-        color: Color = .red
+        color: Color = .red,
+        imageWidth: CGFloat? = nil,
+        imageHeight: CGFloat? = nil
     ) {
         self.id = UUID()
         self.title = title
@@ -47,6 +68,8 @@ public struct EvidencePiece: CardViewData {
         self.timestamp = timestamp
         self._index = index
         self.color = color
+        self.imageWidth = imageWidth
+        self.imageHeight = imageHeight
     }
     
     /// Creates a copy of an existing evidence piece with optional updates
@@ -62,7 +85,9 @@ public struct EvidencePiece: CardViewData {
         type: EvidenceType? = nil,
         metadata: [String: String]? = nil,
         timestamp: Date? = nil,
-        color: Color = .red
+        color: Color = .red,
+        imageWidth: CGFloat? = nil,
+        imageHeight: CGFloat? = nil
     ) {
         self.id = original.id  // Preserve the original ID
         self._index = index ?? original._index
@@ -71,6 +96,8 @@ public struct EvidencePiece: CardViewData {
         self.metadata = metadata ?? original.metadata
         self.timestamp = timestamp ?? original.timestamp
         self.color = color
+        self.imageWidth = imageWidth ?? original.imageWidth
+        self.imageHeight = imageHeight ?? original.imageHeight
     }
     
     public static func == (lhs: EvidencePiece, rhs: EvidencePiece) -> Bool {
@@ -137,7 +164,136 @@ public struct EvidencePiece: CardViewData {
         EvidencePiece(title: "photo", type: .system("photo.fill"), metadata: ["type": "photo"])
     ]
     #endif
+    
+    /// Loads and measures the image dimensions
+    /// - Returns: True if dimensions were successfully loaded
+    public mutating func loadImageDimensions() async -> Bool {
+        guard !hasLoadedDimensions else { return true }
+        
+        switch type {
+        case .system(let name):
+            // For system images, use a default size
+            imageWidth = 1.0
+            imageHeight = 1.0
+            hasLoadedDimensions = true
+            return true
+            
+        case .custom(let image):
+            #if os(iOS)
+            // On iOS, convert SwiftUI Image to UIImage
+            if let uiImage = image.asUIImage() {
+                imageWidth = uiImage.size.width
+                imageHeight = uiImage.size.height
+                hasLoadedDimensions = true
+                return true
+            }
+            #elseif os(macOS)
+            // On macOS, convert SwiftUI Image to NSImage
+            if let nsImage = image.asNSImage() {
+                imageWidth = nsImage.size.width
+                imageHeight = nsImage.size.height
+                hasLoadedDimensions = true
+                return true
+            }
+            #endif
+            
+        case .video(let url):
+            // For videos, try to get dimensions from the video file
+            do {
+                let asset = AVAsset(url: url)
+                let tracks = try await asset.loadTracks(withMediaType: .video)
+                if let track = tracks.first {
+                    let size = try await track.load(.naturalSize)
+                    imageWidth = size.width
+                    imageHeight = size.height
+                    hasLoadedDimensions = true
+                    return true
+                }
+            } catch {
+                Self.logger.error("Failed to load video dimensions: \(error.localizedDescription)")
+            }
+        }
+        
+        return false
+    }
+    
+    /// Calculates the width for a view displaying this evidence piece
+    /// - Parameters:
+    ///   - targetHeight: The desired height of the view
+    ///   - maxWidth: Optional maximum width constraint
+    /// - Returns: The calculated width that maintains the image's aspect ratio
+    public func calculateViewWidth(targetHeight: CGFloat, maxWidth: CGFloat? = nil) -> CGFloat {
+        // If we have stored dimensions, use them
+        if let width = imageWidth, let height = imageHeight {
+            let aspectRatio = width / height
+            let calculatedWidth = targetHeight * aspectRatio
+            return maxWidth.map { min(calculatedWidth, $0) } ?? calculatedWidth
+        }
+        
+        // Fallback to type-specific default aspect ratios
+        switch type {
+        case .system:
+            return targetHeight // Square aspect ratio for system images
+        case .video:
+            return targetHeight * (16.0/9.0) // 16:9 for videos
+        case .custom:
+            return targetHeight * (4.0/3.0) // 4:3 for custom images
+        }
+    }
+    
+    /// Updates the stored image dimensions
+    /// - Parameters:
+    ///   - width: The width of the image
+    ///   - height: The height of the image
+    public mutating func updateImageDimensions(width: CGFloat, height: CGFloat) {
+        self.imageWidth = width
+        self.imageHeight = height
+    }
 }
+
+#if os(iOS)
+extension Image {
+    func asUIImage() -> UIImage? {
+        let controller = UIHostingController(rootView: self)
+        let view = controller.view
+        
+        let targetSize = controller.view.intrinsicContentSize
+        view?.bounds = CGRect(origin: .zero, size: targetSize)
+        view?.backgroundColor = .clear
+        
+        let renderer = UIGraphicsImageRenderer(size: targetSize)
+        
+        return renderer.image { _ in
+            view?.drawHierarchy(in: controller.view.bounds, afterScreenUpdates: true)
+        }
+    }
+}
+#elseif os(macOS)
+extension Image {
+    func asNSImage() -> NSImage? {
+        let controller = NSHostingController(rootView: self)
+        let view = controller.view
+        
+        let targetSize = controller.view.intrinsicContentSize
+        view.frame = CGRect(origin: .zero, size: targetSize)
+        view.wantsLayer = true
+        view.layer?.backgroundColor = .clear
+        
+        guard let bitmapRep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else {
+            return nil
+        }
+        
+        view.cacheDisplay(in: view.bounds, to: bitmapRep)
+        
+        let image = NSImage(size: targetSize)
+        image.addRepresentation(bitmapRep)
+        return image
+    }
+}
+#endif
+
+// Logger for debugging
+private let logger: Logger = Logger(subsystem: "com.record-thing", category: "ui.checkbox-image-card")
 
 /// ViewModel for managing the state and business logic of RecordedStackAndRequirementsView
 /*
@@ -149,13 +305,10 @@ public struct EvidencePiece: CardViewData {
     
 */
 @MainActor
-public class RecordedThingViewModel: ObservableObject {
+public class EvidenceViewModel: ObservableObject {
     // MARK: - Types
     
     // MARK: - Properties
-    
-    // Logger for debugging
-    private let logger: Logger = Logger(subsystem: "com.record-thing", category: "ui.checkbox-image-card")
     
     // Published state
     @Published public var checkboxItems: [CheckboxItem]
@@ -223,7 +376,7 @@ public class RecordedThingViewModel: ObservableObject {
     @Published public var evidenceReviewClip: URL?
     
     // Configuration
-    public var direction: RecordedStackAndRequirementsView.LayoutDirection
+    public var direction: EvidenceReview.LayoutDirection
     public let spacing: CGFloat
     public let alignment: HorizontalAlignment
     
@@ -240,7 +393,7 @@ public class RecordedThingViewModel: ObservableObject {
     
     // MARK: - Initialization
     
-    /// Creates a new RecordedThingViewModel
+    /// Creates a new EvidenceViewModel
     /// - Parameters:
     ///   - checkboxItems: Array of checkbox items to display
     ///   - pieces: Array of evidence pieces to display in the stack
@@ -256,7 +409,7 @@ public class RecordedThingViewModel: ObservableObject {
         checkboxItems: [CheckboxItem],
         pieces: [EvidencePiece],
         currentPiece: EvidencePiece? = nil,
-        direction: RecordedStackAndRequirementsView.LayoutDirection = .horizontal,
+        direction: EvidenceReview.LayoutDirection = .horizontal,
         spacing: CGFloat = 2,
         alignment: HorizontalAlignment = .leading,
         maxCheckboxItems: Int = 1,
@@ -283,7 +436,7 @@ public class RecordedThingViewModel: ObservableObject {
         // Checkbox configuration
         self.checkboxOrientation = checkboxOrientation
         
-        logger.debug("RecordedThingViewModel initialized with \(checkboxItems.count) checkbox items, \(pieces.count) evidence pieces")
+        logger.debug("EvidenceViewModel initialized with \(checkboxItems.count) checkbox items, \(pieces.count) evidence pieces")
     }
     
     // MARK: - Public Methods
@@ -563,4 +716,89 @@ public class RecordedThingViewModel: ObservableObject {
             }
         }
     }
-} 
+    
+    #if DEBUG
+    /// Creates a default instance of EvidenceViewModel with sample data
+    @MainActor public static func createDefault() -> EvidenceViewModel {
+        logger.debug("Creating default mocked EvidenceViewModel")
+        return EvidenceViewModel(
+            checkboxItems: [
+                CheckboxItem(text: "Take product photo"),
+                CheckboxItem(text: "Scan barcode", isChecked: true),
+                CheckboxItem(text: "Capture Sales Receipt")
+            ],
+            pieces: [
+                EvidencePiece(index: 0, title: "mb1", type: .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)), metadata: ["type": "photo"]),
+                EvidencePiece(index: 1, title: "mb2", type: .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)), metadata: ["type": "photo"]),
+                EvidencePiece(index: 2, title: "mb3", type: .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)), metadata: ["type": "photo"]),
+                EvidencePiece(index: 3, title: "mb4", type: .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)), metadata: ["type": "photo"]),
+                EvidencePiece(index: 4, title: "DSLR", type: .custom(Image("beige_kitchen_table_with_a_professional_DSLR_standing", bundle: Bundle.module)), metadata: ["type": "photo"])
+            ],
+            direction: .horizontal,
+            maxCheckboxItems: 1,
+            designSystem: .cameraOverlay
+        )
+    }
+    
+    /// Creates a EvidenceViewModel with custom evidence options
+    @MainActor public static func create(evidenceOptions options: [String], evidenceTitle: String = "", evidenceDecision: String? = nil, reviewing: Bool = false) -> EvidenceViewModel {
+        logger.debug("Creating mocked EvidenceViewModel with \(options.count) evidence options")
+        return EvidenceViewModel(
+            checkboxItems: [
+                CheckboxItem(text: "Take product photo"),
+                CheckboxItem(text: "Scan barcode", isChecked: true),
+                CheckboxItem(text: "Capture Sales Receipt")
+            ],
+            pieces: [
+                EvidencePiece(index: 0, title: "mb1", type: .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)), metadata: ["type": "photo"]),
+                EvidencePiece(index: 1, title: "mb2", type: .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)), metadata: ["type": "photo"]),
+                EvidencePiece(index: 2, title: "mb3", type: .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)), metadata: ["type": "photo"]),
+                EvidencePiece(index: 3, title: "mb4", type: .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)), metadata: ["type": "photo"]),
+                EvidencePiece(index: 4, title: "DSLR", type: .custom(Image("beige_kitchen_table_with_a_professional_DSLR_standing", bundle: Bundle.module)), metadata: ["type": "photo"])
+            ],
+            direction: .horizontal,
+            maxCheckboxItems: 1,
+            designSystem: .cameraOverlay,
+            reviewing: true
+        )
+    }
+    
+    /// Creates a EvidenceViewModel with custom checkbox items
+    @MainActor public static func create(checkboxItems items: [CheckboxItem], checkboxOrientation: CarouselOrientation, direction: EvidenceReview.LayoutDirection = .horizontal, designSystem: DesignSystemSetup = .light) -> EvidenceViewModel {
+        logger.debug("Creating mocked EvidenceViewModel with \(items.count) checkbox items")
+        return EvidenceViewModel(
+            checkboxItems: items,
+            pieces: [
+                EvidencePiece(index: 0, title: "mb1", type: .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)), metadata: ["type": "photo"]),
+                EvidencePiece(index: 1, title: "mb2", type: .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)), metadata: ["type": "photo"]),
+                EvidencePiece(index: 2, title: "mb3", type: .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)), metadata: ["type": "photo"]),
+                EvidencePiece(index: 3, title: "mb4", type: .custom(Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)), metadata: ["type": "photo"]),
+                EvidencePiece(index: 4, title: "DSLR", type: .custom(Image("beige_kitchen_table_with_a_professional_DSLR_standing", bundle: Bundle.module)), metadata: ["type": "photo"])
+            ],
+            direction: direction,
+            maxCheckboxItems: 1,
+            checkboxOrientation: checkboxOrientation,
+            designSystem: .cameraOverlay
+        )
+    }
+    
+    /// Creates a EvidenceViewModel with custom evidence pieces
+    @MainActor public static func create(pieces: [EvidencePiece], reviewing: Bool = false, designSystem: DesignSystemSetup = .light) -> EvidenceViewModel {
+        logger.debug("Creating mocked EvidenceViewModel with \(pieces.count) evidence pieces")
+        return EvidenceViewModel(
+            checkboxItems: [
+                CheckboxItem(text: "Take product photo"),
+                CheckboxItem(text: "Scan barcode", isChecked: true),
+                CheckboxItem(text: "Capture Sales Receipt")
+            ],
+            pieces: pieces,
+            currentPiece: pieces[0],
+            direction: .horizontal,
+            maxCheckboxItems: 1,
+            designSystem: .cameraOverlay,
+            reviewing: reviewing
+        )
+    }
+
+    #endif
+}
