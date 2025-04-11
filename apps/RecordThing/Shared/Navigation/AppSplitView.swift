@@ -1,5 +1,6 @@
 import SwiftUI
 import RecordLib
+import SwiftUIIntrospect
 
 struct EvidenceListItem: View {
     let evidence: EvidencePiece
@@ -20,7 +21,7 @@ struct EvidenceListItem: View {
     }
 }
 
-struct AppSplitView<DetailContent: View>: View {
+struct AppSplitView<DetailContent : View>: View {
     @Binding var columnVisibility: NavigationSplitViewVisibility
     @Binding var path: NavigationPath
     @ObservedObject var recordedThingViewModel: RecordedThingViewModel
@@ -50,28 +51,52 @@ struct AppSplitView<DetailContent: View>: View {
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             // Sidebar
-            List {
-                Section("Recent Evidence") {
-                    ForEach(recordedThingViewModel.pieces) { evidence in
-                        EvidenceListItem(evidence: evidence)
-                    }
-                }
+            ZStack {
+                // Gradient background
+//                LinearGradient(
+//                    gradient: Gradient(colors: [
+//                        Color.white.opacity(0.7),
+//                        Color.white.opacity(0.4)
+//                    ]),
+//                    startPoint: .topLeading,
+//                    endPoint: .bottomTrailing
+//                )
+//                .overlay(
+//                    // Subtle texture
+//                    Image(systemName: "circle.grid.3x3.fill")
+//                        .foregroundColor(.white.opacity(0.1))
+//                        .scaleEffect(2)
+//                )
                 
-                Section("Actions") {
-                    Button(action: {
-                        recordedThingViewModel.reviewing.toggle()
-                    }) {
-                        Label("Review Evidence", systemImage: "photo.stack")
-                    }
-                }
+                // Blur effect
+//                VisualEffectView()
                 
-                Section("Capture") {
-                    CameraSwitcher(captureService: captureService, designSystem: designSystem)
+                List {
+                    Section("Recent Evidence") {
+                        ForEach(recordedThingViewModel.pieces) { evidence in
+                            EvidenceListItem(evidence: evidence)
+                        }
+                    }
                     
-                    CameraSubduedSwitcher(captureService: captureService, designSystem: designSystem)
+                    Section("Actions") {
+                        Button(action: {
+                            recordedThingViewModel.reviewing.toggle()
+                        }) {
+                            Label("Review Evidence", systemImage: "photo.stack")
+                        }
+                    }
+                    
+                    Section("Capture") {
+                        CameraSwitcher(captureService: captureService, designSystem: designSystem)
+                        
+                        CameraSubduedSwitcher(captureService: captureService, designSystem: designSystem)
+                        
+                        CaptureServiceInfo(captureService: captureService)
+                    }
                 }
+                .listStyle(.sidebar)
+//                .scrollContentBackground(.hidden) // Hide default background
             }
-            .listStyle(.sidebar)
             .navigationTitle("Record Thing")
             .toolbar {
                 #if os(macOS)
@@ -95,8 +120,61 @@ struct AppSplitView<DetailContent: View>: View {
         } detail: {
             detailContent
         }
+        #if os(iOS)
+        // https://github.com/davdroman/NavigationSplitViewRemoveBackgrounds/blob/main/NavigationSplitViewRemoveBackgrounds.swiftpm/MyApp.swift
+        .introspect(.navigationSplitView, on: .iOS(.v16, .v17, .v18)) { split in
+            let removeBackgrounds = {
+                split.viewControllers.forEach { controller in
+                    controller.parent?.view.backgroundColor = .clear
+                    controller.view.clearBackgrounds()
+                }
+            }
+            /* We need to restrain the bits being made transparent
+             
+            removeBackgrounds() // run now...
+            DispatchQueue.main.async(execute: removeBackgrounds) // ... and on the next run loop pass
+             */
+        }
+        #endif
     }
 }
+
+extension UIView {
+    fileprivate func clearBackgrounds() {
+        backgroundColor = .clear
+        for subview in subviews {
+            subview.clearBackgrounds()
+        }
+    }
+}
+
+
+// VisualEffectView for macOS
+#if os(macOS)
+struct VisualEffectView: NSViewRepresentable {
+    func makeNSView(context: Context) -> NSVisualEffectView {
+        let view = NSVisualEffectView()
+        view.material = .sidebar
+        view.blendingMode = .behindWindow
+        view.state = .active
+        return view
+    }
+    
+    func updateNSView(_ nsView: NSVisualEffectView, context: Context) {
+        // No updates needed
+    }
+}
+#else
+struct VisualEffectView: UIViewRepresentable {
+    func makeUIView(context: Context) -> UIVisualEffectView {
+        return UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
+    }
+    
+    func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
+        // No updates needed
+    }
+}
+#endif
 
 #if DEBUG
 struct AppSplitView_Previews: PreviewProvider {

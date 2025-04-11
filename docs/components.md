@@ -6,6 +6,8 @@ Components use common design system properties. The components have a local vari
 ## SimpleCameraView
 
 The SimpleCameraView shows a preview of the camera feed if frames are or have been captured by CaptureService. The latest `frame` is held by the CaptureService.
+The frame is oriented to reflect the rotation of the device when running on iOS. When showing a Front facing camera it is mirrored to seem natural to the user.
+
 If no frame is present a background image is shown based on loading asset named by `cameraViewModel?.bgImageSet` in the RecordLib module Assets.
 
 Background Image
