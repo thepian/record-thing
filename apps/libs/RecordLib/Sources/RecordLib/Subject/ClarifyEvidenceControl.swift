@@ -9,7 +9,7 @@ public struct ClarifyEvidenceControl: View {
     private let logger = Logger(subsystem: "com.record-thing", category: "ui.clarify-evidence")
     
     // ViewModel
-    @ObservedObject private var viewModel: RecordedThingViewModel
+    @ObservedObject private var viewModel: EvidenceViewModel
     private let designSystem: DesignSystemSetup
     let useGlowEffect: Bool = true
     
@@ -28,7 +28,7 @@ public struct ClarifyEvidenceControl: View {
     ///   - viewModel: The view model that manages the state
     ///   - onOptionConfirmed: Callback when an evidence option is confirmed
     public init(
-        viewModel: RecordedThingViewModel,
+        viewModel: EvidenceViewModel,
         onOptionConfirmed: ((String) -> Void)? = nil
     ) {
         self.viewModel = viewModel
@@ -164,7 +164,7 @@ struct ClarifyEvidenceControl_Previews: PreviewProvider {
         VStack {
             // Preview with title
             ClarifyEvidenceControl(
-                viewModel: MockedRecordedThingViewModel.create(
+                viewModel: .create(
                     evidenceOptions: [],
                     evidenceTitle: "Electric Mountain Bike"
                 )
@@ -175,7 +175,7 @@ struct ClarifyEvidenceControl_Previews: PreviewProvider {
         VStack {
             // Preview with options
             ClarifyEvidenceControl(
-                viewModel: MockedRecordedThingViewModel.create(
+                viewModel: .create(
                     evidenceOptions: [
                         "Electric Mountain Bike",
                         "Mountain Bike",
@@ -189,7 +189,7 @@ struct ClarifyEvidenceControl_Previews: PreviewProvider {
         VStack {
             // Preview with decision
             ClarifyEvidenceControl(
-                viewModel: MockedRecordedThingViewModel.create(
+                viewModel: .create(
                     evidenceOptions: [
                         "Electric Mountain Bike",
                         "Mountain Bike",
@@ -204,7 +204,7 @@ struct ClarifyEvidenceControl_Previews: PreviewProvider {
         VStack {
             // Preview with no options
             ClarifyEvidenceControl(
-                viewModel: MockedRecordedThingViewModel.create(
+                viewModel: .create(
                     evidenceOptions: []
                 )
             )

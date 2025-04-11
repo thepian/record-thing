@@ -245,7 +245,7 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
                     )
                 }
                 ToolbarItem {
-                    DeveloperSidebar(
+                    DeveloperToolbar(
                         captureService: CaptureService(),
                         cameraViewModel: CameraViewModel(),
                         isCompact: true
@@ -259,7 +259,7 @@ public struct BrowseNavigationView<ThingsContent: View, TypesContent: View, Feed
                     )
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    DeveloperSidebar(
+                    DeveloperToolbar(
                         captureService: CaptureService(),
                         cameraViewModel: CameraViewModel(),
                         isCompact: true
@@ -979,6 +979,7 @@ struct BrowseNavigationView_Previews: PreviewProvider {
                                     .foregroundColor(.accentColor)
                                     .frame(width: 30, height: 30)
                                 
+                                Text(thing.name)
                                 Text(thing.name)
                                     .font(.headline)
                             }

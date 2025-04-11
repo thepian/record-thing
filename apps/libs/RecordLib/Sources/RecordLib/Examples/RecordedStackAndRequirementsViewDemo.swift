@@ -9,7 +9,7 @@ public struct RecordedStackAndRequirementsViewDemo: View {
     @State private var selectedTheme: ThemeOption = .light
     
     // ViewModel for state management
-    @StateObject private var viewModel: RecordedThingViewModel
+    @StateObject private var viewModel: EvidenceViewModel
     
     // MARK: - Types
     
@@ -39,14 +39,15 @@ public struct RecordedStackAndRequirementsViewDemo: View {
     // MARK: - Initialization
     
     public init() {
-        // Initialize the ViewModel with default values using MockedRecordedThingViewModel
-        _viewModel = StateObject(wrappedValue: MockedRecordedThingViewModel.create(
+        // Initialize the ViewModel with default values using EvidenceViewModel
+        _viewModel = StateObject(wrappedValue: EvidenceViewModel.create(
             checkboxItems: [
                 CheckboxItem(text: "Take a photo of the product"),
                 CheckboxItem(text: "Scan the barcode"),
                 CheckboxItem(text: "Capture the receipt"),
                 CheckboxItem(text: "Add product details")
             ],
+            checkboxOrientation: .horizontal,
             direction: .horizontal,
             designSystem: .light
         ))
@@ -147,7 +148,7 @@ public struct RecordedStackAndRequirementsViewDemo: View {
     
     /// Component preview based on selected options
     private var componentPreview: some View {
-        RecordedStackAndRequirementsView(viewModel: viewModel)
+        EvidenceReview(viewModel: viewModel)
     }
     
     /// Description of the component
@@ -183,7 +184,7 @@ public struct RecordedStackAndRequirementsViewDemo: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 Text("""
                 RecordedStackAndRequirementsView(
-                    viewModel: MockedRecordedThingViewModel.create(
+                    viewModel: .create(
                         checkboxItems: [
                             CheckboxItem(text: "Take a photo"),
                             CheckboxItem(text: "Scan barcode", isChecked: true),

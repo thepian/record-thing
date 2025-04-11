@@ -13,7 +13,7 @@ import UIKit
 private let logger = Logger(subsystem: "com.recordthing.developer", category: "DeveloperSidebar")
 
 // MARK: - DeveloperSidebar
-public struct DeveloperSidebar: View {
+public struct DeveloperToolbar: View {
     @Environment(\.appDatasource) private var datasource
     @ObservedObject private var captureService: CaptureService
     @ObservedObject private var cameraViewModel: CameraViewModel
@@ -149,7 +149,7 @@ public class MockAppDatasource: AppDatasourceAPI {
 struct DeveloperSidebar_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            DeveloperSidebar(
+            DeveloperToolbar(
                 captureService: CaptureService(),
                 cameraViewModel: CameraViewModel(),
                 isCompact: false
@@ -157,7 +157,7 @@ struct DeveloperSidebar_Previews: PreviewProvider {
             .environment(\.appDatasource, MockAppDatasource())
         }
         
-        DeveloperSidebar(
+        DeveloperToolbar(
             captureService: CaptureService(),
             cameraViewModel: CameraViewModel(),
             isCompact: true

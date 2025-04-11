@@ -29,16 +29,27 @@ public class VideoFileStreamService: VideoStreamService, ObservableObject {
     private var videoOutput: AVAssetReaderTrackOutput?
     private var lastFrameTime: CMTime = .zero
     private var frameRate: Double = 30.0
+    private var cropToDevice: Bool = false
+    private var videoDimensions: CMVideoDimensions?
     
     #if os(iOS)
     private var displayLink: CADisplayLink?
+    private var deviceAspectRatio: CGFloat {
+        let screen = UIScreen.main
+        return screen.bounds.width / screen.bounds.height
+    }
     #elseif os(macOS)
     private var displayLink: CVDisplayLink?
+    private var deviceAspectRatio: CGFloat {
+        guard let screen = NSScreen.main else { return 16.0/9.0 }
+        return screen.frame.width / screen.frame.height
+    }
     #endif
     
-    public init(videoURL: URL, frameRate: Double = 30.0) {
+    public init(videoURL: URL, frameRate: Double = 30.0, cropToDevice: Bool = false) {
         self.asset = AVAsset(url: videoURL)
         self.frameRate = frameRate
+        self.cropToDevice = cropToDevice
         
         // Setup asset reader in a task
         Task {
@@ -59,11 +70,18 @@ public class VideoFileStreamService: VideoStreamService, ObservableObject {
                 return
             }
             
-            // Configure output settings
+            // Get video dimensions
+            let dimensions = try await videoTrack.load(.naturalSize)
+            videoDimensions = CMVideoDimensions(
+                width: Int32(dimensions.width),
+                height: Int32(dimensions.height)
+            )
+            
+            // Configure output settings to maintain original dimensions
             let outputSettings: [String: Any] = [
                 kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
-                kCVPixelBufferWidthKey as String: 1920,
-                kCVPixelBufferHeightKey as String: 1080
+                kCVPixelBufferWidthKey as String: videoDimensions?.width ?? 1920,
+                kCVPixelBufferHeightKey as String: videoDimensions?.height ?? 1080
             ]
             
             // Create video output
@@ -74,7 +92,7 @@ public class VideoFileStreamService: VideoStreamService, ObservableObject {
             
             if let videoOutput = videoOutput {
                 assetReader?.add(videoOutput)
-                logger.debug("Successfully setup video output")
+                logger.debug("Successfully setup video output with dimensions: \(self.videoDimensions?.width ?? 0)x\(self.videoDimensions?.height ?? 0)")
             }
         } catch {
             logger.error("Failed to setup asset reader: \(error.localizedDescription)")
@@ -139,8 +157,40 @@ public class VideoFileStreamService: VideoStreamService, ObservableObject {
         // Convert pixel buffer to CGImage
         let ciImage = CIImage(cvPixelBuffer: imageBuffer)
         let context = CIContext()
+        
         if let cgImage = context.createCGImage(ciImage, from: ciImage.extent) {
-            currentFrame = cgImage
+            if cropToDevice {
+                currentFrame = cropImageToDeviceAspectRatio(cgImage)
+            } else {
+                currentFrame = cgImage
+            }
         }
+    }
+    
+    private func cropImageToDeviceAspectRatio(_ image: CGImage) -> CGImage? {
+        let imageWidth = CGFloat(image.width)
+        let imageHeight = CGFloat(image.height)
+        let imageAspectRatio = imageWidth / imageHeight
+        
+        // Calculate crop rectangle
+        var cropRect: CGRect
+        
+        if imageAspectRatio > deviceAspectRatio {
+            // Image is wider than device, crop sides
+            let newWidth = imageHeight * deviceAspectRatio
+            let xOffset = (imageWidth - newWidth) / 2
+            cropRect = CGRect(x: xOffset, y: 0, width: newWidth, height: imageHeight)
+        } else {
+            // Image is taller than device, crop top and bottom
+            let newHeight = imageWidth / deviceAspectRatio
+            let yOffset = (imageHeight - newHeight) / 2
+            cropRect = CGRect(x: 0, y: yOffset, width: imageWidth, height: newHeight)
+        }
+        
+        // Convert to integer coordinates
+        cropRect = cropRect.integral
+        
+        // Create cropped image
+        return image.cropping(to: cropRect)
     }
 } 

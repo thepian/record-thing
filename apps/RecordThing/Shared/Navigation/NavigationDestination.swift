@@ -13,17 +13,15 @@ typealias UUID = String
 // Navigation Path Segments
 enum NavigationDestination: Hashable {
     // Record Tab
-    case record
-    case recordCapture
-    case recordReview(evidenceId: UUID)
+    case record(evidenceId: UUID?)
     
     // Internal Tab Paths
-    case internalData
-    case internalThings
-    case internalTypes
-    case internalFeed
-    case internalFavorites
-    case internalDataBrowse(title: String, path: String)
+//    case internalData
+//    case internalThings
+//    case internalTypes
+//    case internalFeed
+//    case internalFavorites
+//    case internalDataBrowse(title: String, path: String)
     
     // Assets Tab Paths
     case assets
@@ -42,10 +40,10 @@ enum NavigationDestination: Hashable {
     // Helper computed property for tab identification
     var tab: BrowseNavigationTab {
         switch self {
-        case .record, .recordCapture, .recordReview:
+        case .record:
             return .record
-        case .internalData, .internalThings, .internalTypes, .internalFeed, .internalFavorites, .internalDataBrowse:
-            return .internalData
+//        case .internalData, .internalThings, .internalTypes, .internalFeed, .internalFavorites, .internalDataBrowse:
+//            return .internalData
         case .assets, .assetsGroup, .assetsDetail, .assetsThingDetail, .assetsEvidenceList, .assetsEvidenceDetail:
             return .assets
         case .actions, .actionsAccount, .actionsSettings, .actionsHelp:
