@@ -1,5 +1,5 @@
 //
-//  Things+SwiftUI.swift
+//  EvidenceType+SwiftUI.swift
 //  RecordThing
 //
 //  Created by Henrik Vendelbo on 21.09.2024.
@@ -9,9 +9,9 @@
 import SwiftUI
 
 // MARK: - SwiftUI.Image
-extension Things {
-    var image: Image {
-        Image("product/Room", label: Text(title ?? "<title>"))
+extension EvidenceType {
+    public var image: Image {
+        Image("product/Room", label: Text(name))
             .renderingMode(.original)
 
 //        Image("product/\(rootName)", label: Text(name))

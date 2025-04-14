@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import RecordLib
 
 struct RequestsRow: View {
     var request: Requests

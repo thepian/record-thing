@@ -1,5 +1,6 @@
 import SwiftUI
 import Blackbird
+import RecordLib
 
 struct SimpleEvidenceTypeList: View {
     @BlackbirdLiveModels({ try await EvidenceType.read(from: $0, orderBy: .ascending(\.$name)) }) var types

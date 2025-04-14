@@ -6,6 +6,11 @@ Exploration of DINO v2
 
 Using VSCode extension for Jupyter notebooks. The iPython kernel must be installed and point to a conda python install.
 
+## Setup
+
+To set up the demo database for the App, open `docs/record-thing.ipynb`.
+
+
 ## Technologies
 
 [MLX](https://github.com/ml-explore/mlx) is a model training and serving framework for Apple silicon made by Apple Machine Learning Research.

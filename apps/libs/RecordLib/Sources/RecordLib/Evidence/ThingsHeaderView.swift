@@ -8,14 +8,18 @@
 import SwiftUI
 import RecordLib
 
-struct ThingsHeaderView: View {
-    var thing: Things
+public struct ThingsHeaderView: View {
+    public var thing: Things
     
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     #endif
     
-    var horizontallyConstrained: Bool {
+    public init(thing: Things) {
+        self.thing = thing
+    }
+    
+    public var horizontallyConstrained: Bool {
         #if os(iOS)
         return horizontalSizeClass == .compact
         #else
@@ -23,7 +27,7 @@ struct ThingsHeaderView: View {
         #endif
     }
 
-    var body: some View {
+    public var body: some View {
         Group {
             if horizontallyConstrained {
                 fullBleedContent
@@ -34,7 +38,7 @@ struct ThingsHeaderView: View {
         .accessibilityElement(children: .combine)
     }
     
-    var fullBleedContent: some View {
+    public var fullBleedContent: some View {
         VStack(spacing: 0) {
             thing.image
                 .resizable()
@@ -59,8 +63,8 @@ struct ThingsHeaderView: View {
         }
     }
     
-    var wideClipShape = RoundedRectangle(cornerRadius: 20, style: .continuous)
-    var wideContent: some View {
+    public var wideClipShape = RoundedRectangle(cornerRadius: 20, style: .continuous)
+    public var wideContent: some View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
                 VStack(alignment: .leading, spacing: 4) {

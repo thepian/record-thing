@@ -40,6 +40,8 @@ CREATE TABLE IF NOT EXISTS things (
     description TEXT NULL DEFAULT NULL, -- Description of the thing
     -- created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     -- updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at FLOAT NULL DEFAULT NULL,
+    updated_at FLOAT NULL DEFAULT NULL,
     PRIMARY KEY (account_id, id)
     -- , FOREIGN KEY (account_id) REFERENCES accounts(account_id)
 );
@@ -56,6 +58,8 @@ CREATE TABLE IF NOT EXISTS requests (
     status TEXT NOT NULL,  -- e.g., 'pending', 'completed'
     -- created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     -- completed_at TIMESTAMP,
+    created_at FLOAT NULL DEFAULT NULL,
+    completed_at FLOAT NULL DEFAULT NULL,
     delivery_method TEXT, -- 'email' or 'http_post'
     delivery_target TEXT -- email address or URL
     -- , FOREIGN KEY (universe_id) REFERENCES universe(id)
@@ -69,6 +73,9 @@ CREATE TABLE IF NOT EXISTS evidence (
     thing_id TEXT,
     request_id INTEGER,
     -- created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    -- updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at FLOAT NULL DEFAULT NULL,
+    updated_at FLOAT NULL DEFAULT NULL,
     evidence_type INTEGER,
     data TEXT, -- JSON object containing evidence data
     local_file TEXT -- Path to local file (.jpg or .png), starts with '/images/

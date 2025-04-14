@@ -1,5 +1,5 @@
 /*
-See LICENSE folder for this sample’s licensing information.
+See LICENSE folder for this sample's licensing information.
 
 Abstract:
 A card that presents an EvidenceGraphic and allows it to flip over to reveal its nutritional information
@@ -7,16 +7,23 @@ A card that presents an EvidenceGraphic and allows it to flip over to reveal its
 
 import SwiftUI
 
+
 // MARK: - Ingredient View
 
-struct EvidenceCard: View {
-    var evidence: Evidence
-    var presenting: Bool
-    var closeAction: () -> Void = {}
+public struct EvidenceCard: View {
+    public var evidence: Evidence
+    public var presenting: Bool
+    public var closeAction: () -> Void = {}
     
     @State private var visibleSide = FlipViewSide.front
     
-    var body: some View {
+    public init(evidence: Evidence, presenting: Bool, closeAction: @escaping () -> Void = {}) {
+        self.evidence = evidence
+        self.presenting = presenting
+        self.closeAction = closeAction
+    }
+    
+    public var body: some View {
         FlipView(visibleSide: visibleSide) {
             EvidenceGraphic(evidence: evidence, title: Evidence.CardTitle(), style: presenting ? .cardFront : .thumbnail, closeAction: closeAction, flipAction: flipCard)
         } back: {
@@ -26,7 +33,7 @@ struct EvidenceCard: View {
         .animation(.flipCard, value: visibleSide)
     }
     
-    func flipCard() {
+    public func flipCard() {
         visibleSide.toggle()
     }
 }

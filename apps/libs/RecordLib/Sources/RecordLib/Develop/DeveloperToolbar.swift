@@ -82,8 +82,11 @@ public struct DeveloperToolbar: View {
             #endif
             
             Button("Reset Database") {
-                logger.debug("Resetting database")
-                datasource?.resetDatabase()
+                if let datasource = datasource {
+                    datasource.resetDatabase()
+                } else {
+                    logger.error("Datasource missing, cannot reset.")
+                }
             }
             #if os(macOS)
             .buttonStyle(.plain)

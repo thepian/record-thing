@@ -149,6 +149,7 @@ struct RecordThingApp: App {
             ContentView(captureService: captureService)
                 .environmentObject(model)
                 .environment(\.blackbirdDatabase, AppDatasource.shared.db)
+                .environment(\.appDatasource, AppDatasource.shared)
                 .onChange(of: scenePhase) { oldPhase, newPhase in
                     switch(newPhase) {
                     case .active: // On application startup or resume

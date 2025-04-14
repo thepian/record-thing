@@ -1,21 +1,25 @@
 //
-//  EvidenceTypeHeaderView.swift
+//  DocumentTypeHeaderView.swift
 //  RecordThing
 //
-//  Created by Henrik Vendelbo on 21.09.2024.
+//  Created by Henrik Vendelbo on 23.09.2024.
 //  Copyright © 2025 Thepia. All rights reserved.
 //
 
 import SwiftUI
 
-struct EvidenceTypeHeaderView: View {
-    var type: EvidenceType
+public struct RequestsHeaderView: View {
+    public var request: Requests
     
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     #endif
     
-    var horizontallyConstrained: Bool {
+    public init(request: Requests) {
+        self.request = request
+    }
+    
+    public var horizontallyConstrained: Bool {
         #if os(iOS)
         return horizontalSizeClass == .compact
         #else
@@ -23,7 +27,7 @@ struct EvidenceTypeHeaderView: View {
         #endif
     }
 
-    var body: some View {
+    public var body: some View {
         Group {
             if horizontallyConstrained {
                 fullBleedContent
@@ -34,15 +38,15 @@ struct EvidenceTypeHeaderView: View {
         .accessibilityElement(children: .combine)
     }
     
-    var fullBleedContent: some View {
+    public var fullBleedContent: some View {
         VStack(spacing: 0) {
-            type.image
+            request.image
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .accessibility(hidden: true)
             
             VStack(alignment: .leading) {
-                Text(type.description)
+                Text(request.title)
             }
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -50,22 +54,22 @@ struct EvidenceTypeHeaderView: View {
         }
     }
     
-    var wideClipShape = RoundedRectangle(cornerRadius: 20, style: .continuous)
-    var wideContent: some View {
+    public var wideClipShape = RoundedRectangle(cornerRadius: 20, style: .continuous)
+    public var wideContent: some View {
         HStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 4) {
                 #if os(macOS)
-                Text(type.description)
+                Text(request.title)
                     .font(Font.largeTitle.bold())
                 #endif
-                Text(type.description)
+                Text(request.title)
                     .font(.title2)
             }
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .background()
             
-            type.image
+            request.image
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .frame(width: 220, height: 250)
@@ -82,5 +86,5 @@ struct EvidenceTypeHeaderView: View {
 }
 
 #Preview {
-    EvidenceTypeHeaderView(type: .Electronics)
+    RequestsHeaderView(request: .Electronics)
 }

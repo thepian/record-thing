@@ -7,12 +7,12 @@ A view that can flip between a front and back side.
 
 import SwiftUI
 
-struct FlipView<Front: View, Back: View>: View {
-    var visibleSide: FlipViewSide
-    @ViewBuilder var front: Front
-    @ViewBuilder var back: Back
+public struct FlipView<Front: View, Back: View>: View {
+    public var visibleSide: FlipViewSide
+    @ViewBuilder public var front: Front
+    @ViewBuilder public var back: Back
 
-    var body: some View {
+    public var body: some View {
         ZStack {
             front
                 .modifier(FlipModifier(side: .front, visibleSide: visibleSide))
@@ -22,20 +22,20 @@ struct FlipView<Front: View, Back: View>: View {
     }
 }
 
-enum FlipViewSide {
+public enum FlipViewSide {
     case front
     case back
 
-    mutating func toggle() {
+    mutating public func toggle() {
         self = self == .front ? .back : .front
     }
 }
 
-struct FlipModifier: AnimatableModifier {
-    var side: FlipViewSide
-    var flipProgress: Double
+public struct FlipModifier: AnimatableModifier {
+    public var side: FlipViewSide
+    public var flipProgress: Double
     
-    init(side: FlipViewSide, visibleSide: FlipViewSide) {
+    public init(side: FlipViewSide, visibleSide: FlipViewSide) {
         self.side = side
         self.flipProgress = visibleSide == .front ? 0 : 1
     }
@@ -45,7 +45,7 @@ struct FlipModifier: AnimatableModifier {
         set { flipProgress = newValue }
     }
     
-    var visible: Bool {
+    public var visible: Bool {
         switch side {
         case .front:
             return flipProgress <= 0.5
@@ -64,7 +64,7 @@ struct FlipModifier: AnimatableModifier {
         .rotation3DEffect(.degrees(flipProgress * -180), axis: (x: 0.0, y: 1.0, z: 0.0), perspective: 0.5)
     }
 
-    var scale: CGFloat {
+    public var scale: CGFloat {
         switch side {
         case .front:
             return 1.0
@@ -74,6 +74,7 @@ struct FlipModifier: AnimatableModifier {
     }
 }
 
+#if DEBUG
 struct FlipView_Previews: PreviewProvider {
     static var previews: some View {
         FlipView(visibleSide: .front) {
@@ -83,3 +84,4 @@ struct FlipView_Previews: PreviewProvider {
         }
     }
 }
+#endif

@@ -1,35 +1,54 @@
 /*
-See LICENSE folder for this sample’s licensing information.
+See LICENSE folder for this sample's licensing information.
 
 Abstract:
 A graphic that displays an Evidence as a thumbnail, a card highlighting its image, or the back of a card highlighting its nutrition facts.
 */
 
 import SwiftUI
+import RecordLib
 
-struct EvidenceGraphic: View {
-    var evidence: Evidence
-    var title: Evidence.CardTitle
-    var style: Style
-    var closeAction: () -> Void = {}
-    var flipAction: () -> Void = {}
+public struct EvidenceGraphic: View {
+    public var evidence: Evidence
+    public var title: Evidence.CardTitle
+    public var style: Style
+    public var closeAction: () -> Void = {}
+    public var flipAction: () -> Void = {}
     
-    var thumbnailCrop = Evidence.Crop()
-    var cardCrop = Evidence.Crop()
+    public var thumbnailCrop = Evidence.Crop()
+    public var cardCrop = Evidence.Crop()
     
-    enum Style {
+    public enum Style {
         case cardFront
         case cardBack
         case thumbnail
     }
     
-    var displayingAsCard: Bool {
+    public init(
+        evidence: Evidence,
+        title: Evidence.CardTitle = Evidence.CardTitle(),
+        style: Style,
+        closeAction: @escaping () -> Void = {},
+        flipAction: @escaping () -> Void = {},
+        thumbnailCrop: Evidence.Crop = Evidence.Crop(),
+        cardCrop: Evidence.Crop = Evidence.Crop()
+    ) {
+        self.evidence = evidence
+        self.title = title
+        self.style = style
+        self.closeAction = closeAction
+        self.flipAction = flipAction
+        self.thumbnailCrop = thumbnailCrop
+        self.cardCrop = cardCrop
+    }
+    
+    public var displayingAsCard: Bool {
         style == .cardFront || style == .cardBack
     }
     
-    var shape = RoundedRectangle(cornerRadius: 16, style: .continuous)
+    public var shape = RoundedRectangle(cornerRadius: 16, style: .continuous)
     
-    var body: some View {
+    public var body: some View {
         ZStack {
             imageView
             if style != .cardBack {
@@ -66,7 +85,7 @@ struct EvidenceGraphic: View {
         .accessibilityElement(children: .contain)
     }
     
-    var imageView: some View {
+    public var imageView: some View {
         GeometryReader { geo in
             evidence.image
                 .resizable()
@@ -80,8 +99,9 @@ struct EvidenceGraphic: View {
         .accessibility(hidden: true)
     }
     
-    var titleView: some View {
+    public var titleView: some View {
         Text(evidence.name.uppercased())
+        /*
             .padding(.horizontal, 8)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .lineLimit(2)
@@ -90,12 +110,13 @@ struct EvidenceGraphic: View {
             .rotationEffect(displayingAsCard ? title.rotation: .degrees(0))
             .opacity(title.opacity)
             .blendMode(title.blendMode)
-            .animatableFont(size: displayingAsCard ? title.fontSize : 40, weight: .bold)
-            .minimumScaleFactor(0.25)
-            .offset(displayingAsCard ? title.offset : .zero)
+//            .animatableFont(size: displayingAsCard ? title.fontSize : 40, weight: .bold)
+//            .minimumScaleFactor(0.25)
+//            .offset(displayingAsCard ? title.offset : .zero)
+         */
     }
     
-    func cardControls(for side: FlipViewSide) -> some View {
+    public func cardControls(for side: FlipViewSide) -> some View {
         VStack {
             if side == .front {
                 CardActionButton(label: "Close", systemImage: "xmark.circle.fill", action: closeAction)

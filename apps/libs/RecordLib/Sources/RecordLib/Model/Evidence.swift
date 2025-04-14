@@ -9,60 +9,60 @@
 import Foundation
 import Blackbird
 
-struct Evidence: BlackbirdModel, Identifiable {
-    static func == (lhs: Evidence, rhs: Evidence) -> Bool {
+public struct Evidence: BlackbirdModel, Identifiable {
+    static public func == (lhs: Evidence, rhs: Evidence) -> Bool {
         lhs.id == rhs.id && lhs.thing_account_id == rhs.thing_account_id
     }
     
-    static var tableName: String = "evidence"
+    static public var tableName: String = "evidence"
 
     // Primary key fields
-    @BlackbirdColumn var id: String  // KSUID
-    @BlackbirdColumn var thing_account_id: String
-    @BlackbirdColumn var thing_id: String?
-    @BlackbirdColumn var request_id: String?
+    @BlackbirdColumn public var id: String  // KSUID
+    @BlackbirdColumn public var thing_account_id: String
+    @BlackbirdColumn public var thing_id: String?
+    @BlackbirdColumn public var request_id: String?
     
 //    -- created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     // Type references
-    @BlackbirdColumn var evidence_type: Int?
+    @BlackbirdColumn public var evidence_type: Int?
 
     // Product identifiers
-//    @BlackbirdColumn var upc: String?  // Universal Product Code
-//    @BlackbirdColumn var asin: String?  // Amazon Standard Identification Number
-//    @BlackbirdColumn var elid: String?  // Electronic Product Identifier
+//    @BlackbirdColumn public var upc: String?  // Universal Product Code
+//    @BlackbirdColumn public var asin: String?  // Amazon Standard Identification Number
+//    @BlackbirdColumn public var elid: String?  // Electronic Product Identifier
     
     // Product details
-    @BlackbirdColumn var data: String?
-    @BlackbirdColumn var local_file: String?
+    @BlackbirdColumn public var data: String?
+    @BlackbirdColumn public var local_file: String?
     
-//    var title: CardTitle = {
+//    public var title: CardTitle = {
 //        get {
 //            return CardTitle()
 //        }
 //    }
     
-//    var thumbnailCrop = Crop()
-//    var cardCrop = Crop()
+//    public var thumbnailCrop = Crop()
+//    public var cardCrop = Crop()
 
 //    enum CodingKeys: String, CodingKey {
 //        case id
 //        case name
 //    }
 
-    var name: String = {
+    public var name: String = {
         "Sample name"
     }()
     
     // Timestamps
-//    @BlackbirdColumn var created_at: Date
-//    @BlackbirdColumn var updated_at: Date
+//    @BlackbirdColumn public var created_at: Date
+//    @BlackbirdColumn public var updated_at: Date
 }
 
 // MARK: - All Evidence types
 
 extension Evidence {
-    static let all: [Evidence] = [
+    static public let all: [Evidence] = [
         .avocado,
         .almondMilk,
         .banana,
@@ -83,7 +83,7 @@ extension Evidence {
         .watermelon
     ]
     
-    init?(for id: Evidence.ID) {
+    public init?(for id: Evidence.ID) {
         guard let result = Evidence.all.first(where: { $0.id == id }) else {
             return nil
         }
