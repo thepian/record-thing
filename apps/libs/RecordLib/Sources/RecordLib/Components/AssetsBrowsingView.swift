@@ -536,6 +536,7 @@ struct AssetsBrowsingView_Previews: PreviewProvider {
                     print("Record tapped")
                 }
             )
+            .previewDevice("iPhone Dynamic Island")
             .previewDisplayName("iPhone")
             
             // iPad preview

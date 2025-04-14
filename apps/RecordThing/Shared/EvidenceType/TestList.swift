@@ -9,11 +9,12 @@
 import SwiftUI
 import Blackbird
 
-struct TestList: View {
-    @BlackbirdLiveModels({ try await TestCustomDecoder.read(from: $0, orderBy: .ascending(\.$name)) }) var types
+/*
+public struct TestList: View {
+    @BlackbirdLiveModels({ try await TestCustomDecoder.read(from: $0, orderBy: .ascending(\.$name)) }) public var types
     @EnvironmentObject private var model: Model
     
-    var body: some View {
+    public var body: some View {
         if types.didLoad {
             ScrollViewReader { proxy in
                 List {
@@ -36,6 +37,7 @@ struct TestList: View {
     }
 }
 
+#if DEBUG
 #Preview {
     @Previewable @StateObject var datasource = AppDatasource.shared
     @Previewable @StateObject var model = Model(loadedLangConst: "en")
@@ -46,3 +48,5 @@ struct TestList: View {
     .environment(\.blackbirdDatabase, datasource.db)
     .environmentObject(model)
 }
+#endif
+*/

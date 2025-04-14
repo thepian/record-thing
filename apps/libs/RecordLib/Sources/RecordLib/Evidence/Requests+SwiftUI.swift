@@ -12,7 +12,7 @@ import SwiftUI
 extension Requests {
     
     /// Defines how the `Evidence`'s title should be displayed in card mode
-    struct CardTitle {
+    public struct CardTitle {
         var color = Color.black
         var rotation = Angle.degrees(0)
         var offset = CGSize.zero
@@ -33,7 +33,7 @@ extension Requests {
     }
     
     /// The `Evidence`'s image, useful for backgrounds or thumbnails
-    var image: Image {
+    public var image: Image {
         Image("product/Room", label: Text("<title>"))
             .renderingMode(.original)
 

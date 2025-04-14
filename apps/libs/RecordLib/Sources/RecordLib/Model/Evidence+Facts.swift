@@ -5,8 +5,7 @@
 //  Created by Henrik Vendelbo on 11.02.2025.
 //  Copyright © 2025 Apple. All rights reserved.
 //
-
-struct EvidenceFact {
+public struct EvidenceFact {
     
 }
 

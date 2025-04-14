@@ -22,7 +22,8 @@ public protocol CardViewData: Equatable, Identifiable {
 }
 
 /// The type of evidence piece
-public enum EvidenceType: Equatable {
+/// TODO naming
+public enum EvidencePieceType: Equatable {
     case system(String)      // System SF Symbol name
     case custom(Image)       // Custom image
     case video(URL)         // Video URL
@@ -34,7 +35,7 @@ public struct EvidencePiece: CardViewData {
     public let _index: Int
     public let title: String
     public var color: Color
-    public let type: EvidenceType
+    public let type: EvidencePieceType
     public let timestamp: Date
     public let metadata: [String: String]
     
@@ -54,7 +55,7 @@ public struct EvidencePiece: CardViewData {
     public init(
         index: Int = -1,
         title: String,
-        type: EvidenceType,
+        type: EvidencePieceType,
         metadata: [String: String] = [:],
         timestamp: Date = Date(),
         color: Color = .red,
@@ -82,7 +83,7 @@ public struct EvidencePiece: CardViewData {
         _ original: EvidencePiece,
         index: Int? = nil,
         title: String? = nil,
-        type: EvidenceType? = nil,
+        type: EvidencePieceType? = nil,
         metadata: [String: String]? = nil,
         timestamp: Date? = nil,
         color: Color = .red,

@@ -8,6 +8,7 @@
 
 import SwiftUI
 import Blackbird
+import RecordLib
 
 struct ThingsList: View {
     

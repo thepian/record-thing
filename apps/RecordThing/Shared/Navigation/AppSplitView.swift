@@ -22,6 +22,7 @@ struct EvidenceListItem: View {
 }
 
 struct AppSplitView<DetailContent : View>: View {
+    @State private var preferredColumn = NavigationSplitViewColumn.detail
     @Binding var columnVisibility: NavigationSplitViewVisibility
     @Binding var path: NavigationPath
     @ObservedObject var evidenceViewModel: EvidenceViewModel
@@ -49,50 +50,67 @@ struct AppSplitView<DetailContent : View>: View {
     }
     
     var body: some View {
-        NavigationSplitView(columnVisibility: $columnVisibility) {
+        NavigationSplitView(columnVisibility: $columnVisibility, preferredCompactColumn: $preferredColumn) {
             // Sidebar
             ZStack {
                 // Gradient background
-//                LinearGradient(
-//                    gradient: Gradient(colors: [
-//                        Color.white.opacity(0.7),
-//                        Color.white.opacity(0.4)
-//                    ]),
-//                    startPoint: .topLeading,
-//                    endPoint: .bottomTrailing
-//                )
-//                .overlay(
-//                    // Subtle texture
-//                    Image(systemName: "circle.grid.3x3.fill")
-//                        .foregroundColor(.white.opacity(0.1))
-//                        .scaleEffect(2)
-//                )
+                //                LinearGradient(
+                //                    gradient: Gradient(colors: [
+                //                        Color.white.opacity(0.7),
+                //                        Color.white.opacity(0.4)
+                //                    ]),
+                //                    startPoint: .topLeading,
+                //                    endPoint: .bottomTrailing
+                //                )
+                //                .overlay(
+                //                    // Subtle texture
+                //                    Image(systemName: "circle.grid.3x3.fill")
+                //                        .foregroundColor(.white.opacity(0.1))
+                //                        .scaleEffect(2)
+                //                )
                 
                 // Blur effect
-//                VisualEffectView()
-                
-                // Sidebar with tab options
-                /*
-                List(BrowseNavigationTab.allCases.filter { $0 != .record && $0 != .assets && $0 != .actions }, id: \.self) { tab in
-                    Button {
-                        selectedTab = tab
-                    } label: {
-                        Label(tab.title, systemImage: tab.icon)
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundColor(selectedTab == tab ? .accentColor : .primary)
-                }
-                */
+                //                VisualEffectView()
                 List {
-                    NavigationLink("Assets", value: NavigationDestination.assets)
-                    NavigationLink("Actions", value: NavigationDestination.actions)
-//                    NavigationLink("Types", value: NavigationDestination.internalTypes)
                     
-                    Section("Recent Evidence") {
-                        ForEach(evidenceViewModel.pieces) { evidence in
-                            EvidenceListItem(evidence: evidence)
-                        }
+                    // This updates content
+                    NavigationLink {
+                        ThingsMenu()
+                    } label: {
+                        Label("Assets", systemImage: "square.3.layers.3d")
                     }
+
+                    NavigationLink {
+                        Text("iuoptyuptyoiu")
+                    } label: {
+                        Label("Actions", systemImage: "signature")
+                    }
+
+                    NavigationLink {
+                        Text("sdfsdfsafd (detail)")
+                    } label: {
+                        Label("Settings", systemImage: "gear")
+                    }
+                    
+                    NavigationLink {
+                        ThingsMenu()
+                    } label: {
+                        Label("Things", systemImage: "square.3.layers.3d")
+                    }
+                    
+                    NavigationLink {
+                        EvidenceTypeMenu()
+                    } label: {
+                        Label("Evidence Type", systemImage: "square.3.layers.3d")
+                    }
+
+
+
+//                    Section("Recent Evidence") {
+//                        ForEach(evidenceViewModel.pieces) { evidence in
+//                            EvidenceListItem(evidence: evidence)
+//                        }
+//                    }
                     
                     Section("Actions") {
                         Button(action: {
@@ -102,7 +120,7 @@ struct AppSplitView<DetailContent : View>: View {
                         }
                     }
                     
-                    Section("Capture") {
+                    Section("Develop") {
                         CameraSwitcher(captureService: captureService, designSystem: designSystem)
                         
                         CameraSubduedSwitcher(captureService: captureService, designSystem: designSystem)
@@ -111,34 +129,63 @@ struct AppSplitView<DetailContent : View>: View {
                     }
                 }
                 .listStyle(.sidebar)
-//                .scrollContentBackground(.hidden) // Hide default background
             }
             .navigationTitle("Record Thing")
             .toolbar {
-                #if os(macOS)
+#if os(macOS)
                 ToolbarItem {
-                    DeveloperSidebar(
+                    DeveloperToolbar(
                         captureService: captureService,
                         cameraViewModel: cameraViewModel,
                         isCompact: true
                     )
                 }
-                #else
+#else
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    DeveloperSidebar(
+                    DeveloperToolbar(
                         captureService: captureService,
                         cameraViewModel: cameraViewModel,
                         isCompact: true
                     )
                 }
-                #endif
+#endif
             }
 //        } content: {
-//            Text("Content")
-        } detail: {
-            detailContent
+//            // blank content
+//            Button("Detail Only") {
+//                columnVisibility = .detailOnly
+//            }
+//            Button("Double Column") {
+//                columnVisibility = .doubleColumn
+//            }
+//            NavigationLink {
+//                Text("sdfsdfsafd (detail)")
+//            } label: {
+//                Label("123 (D)", systemImage: "gear")
+//            }
+//
+        }
+        detail: {
+            NavigationStack {
+                VStack {
+                    NavigationLink {
+                        Text("sdfsdfsafd (detail)")
+                    } label: {
+                        Label("123 (D)", systemImage: "gear")
+                    }
+                    detailContent
+                }
+                .navigationDestination(for: NavigationDestination.self) { dest in
+                    AppSplitDetailView(destination: dest)
+                }
+            }
         }
         .navigationSplitViewStyle(.balanced)
+        #if os(macOS)
+        .toolbar(.visible, for: .windowToolbar)
+        #else
+        .toolbar(.visible, for: .navigationBar, .tabBar)
+        #endif
         #if os(iOS)
         // https://github.com/davdroman/NavigationSplitViewRemoveBackgrounds/blob/main/NavigationSplitViewRemoveBackgrounds.swiftpm/MyApp.swift
         .introspect(.navigationSplitView, on: .iOS(.v16, .v17, .v18)) { split in
@@ -155,9 +202,6 @@ struct AppSplitView<DetailContent : View>: View {
              */
         }
         #endif
-        .navigationDestination(for: NavigationDestination.self) { dest in
-            AppSplitDetailView(destination: dest)
-        }
     }
 }
 
@@ -278,7 +322,7 @@ struct VisualEffectView: UIViewRepresentable {
 struct AppSplitView_Previews: PreviewProvider {
     static var previews: some View {
         AppSplitView(
-            columnVisibility: .constant(.automatic),
+            columnVisibility: .constant(.detailOnly),
             path: .constant(NavigationPath()),
             evidenceViewModel: .createDefault(),
             cameraViewModel: CameraViewModel(),
@@ -287,6 +331,7 @@ struct AppSplitView_Previews: PreviewProvider {
         ) {
             Text("Detail Content")
         }
+        .previewDisplayName("Detail Only")
     }
 }
 #endif 

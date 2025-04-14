@@ -116,6 +116,12 @@ DocumentTypes are categories of documents identified by various naming conventio
 I would like to extend the translations in a SwiftUI application by loading them from a SQLite table. The database(record-thing.sqlite) is stored in the App Documents folder. If no database is found a default image is copied from the App Resources. How do I do it so the application loads fast and translations are applied to all translated texts in the application. I want to use the text localisation built into SwiftUI labels. Use Blackbird to access the SQLite Database.
 
 
+## Image Asset
+
+`libs/record_thing/db/assets.sql` contains the image assets for the application. Small versions of the images are stored in a SQLite database. The images are stored in a table with a unique path and a binary iconic_png blob. The images are loaded from the database and displayed in the application. The original image is saved in the Apps documents directory and in the associated remote Bucket.
+`alt_url` and `original_url` are used to manage where to download originals missing from the local cache, and where to find the original locally. Columns sha1/md5 save hashes for the original.
+
+
 # Collecting brands
 
 The brands are collected from Wikidata. The script is in `libs/record_thing/db/collect_brands.py`.

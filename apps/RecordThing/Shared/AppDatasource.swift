@@ -232,21 +232,24 @@ class AppDatasource: ObservableObject, AppDatasourceAPI {
     }
     
     func resetDatabase() {
-        logger.debug("Resetting database")
-        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("record-thing.sqlite")
-        
-        // Remove existing database
-        try? FileManager.default.removeItem(atPath: documentsPath.path)
-        
-        // Copy default database
-        if let bundleDbPath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite") {
-            try? FileManager.default.copyItem(atPath: bundleDbPath, toPath: documentsPath.path)
-            logger.debug("Copied default DB to: \(documentsPath.path)")
+        Task {
+            await db?.close()
+            logger.debug("Resetting database")
+            let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+                .appendingPathComponent("record-thing.sqlite")
+            
+            // Remove existing database
+            try? FileManager.default.removeItem(atPath: documentsPath.path)
+            
+            // Copy default database
+            if let bundleDbPath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite") {
+                try? FileManager.default.copyItem(atPath: bundleDbPath, toPath: documentsPath.path)
+                logger.debug("Copied default DB to: \(documentsPath.path)")
+            }
+            
+            // Reload database
+            reloadDatabase()
         }
-        
-        // Reload database
-        reloadDatabase()
     }
     
     func updateDatabase() async {

@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import RecordLib
 
 struct EvidenceTypeRow: View {
     var type: EvidenceType

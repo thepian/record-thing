@@ -52,8 +52,26 @@ def test_connection(dbp: Path = DBP) -> None:
         # Attach the SQLite database
         con.execute(f"CALL sqlite_attach('{dbp}');")
 
-        # Example: List SQLite databases
-        con.sql("SELECT * FROM sqlite_master").show()
+        # Get list of tables
+        tables = con.sql("""
+            SELECT name, type, sql
+            FROM sqlite_master 
+            WHERE type='view' 
+            AND name NOT LIKE 'sqlite_%'
+            ORDER BY name
+        """).df()
+
+        # Add row counts
+        row_counts = []
+        for table_name in tables['name']:
+            count = con.sql(f"SELECT COUNT(*) FROM main.{table_name}").fetchone()[0]
+            row_counts.append(count)
+        
+        tables['row_count'] = row_counts
+
+        # Display the table information
+        print("\nDatabase Tables:")
+        print(tables[['name', 'type', 'row_count']].to_string(index=False))
 
     finally:
         if con:
@@ -75,6 +93,11 @@ def generate_evidence_for_things(cursor, things: list, scenario: dict) -> None:
         for _ in range(random.randint(1, scenario["evidence_per_thing"])):
             evidence_type, doc_types = random.choice(THING_EVIDENCE_TYPES)
             
+            # Generate timestamps
+            now = datetime.now(timezone.utc)
+            created_at = now - timedelta(days=random.randint(0, 30))
+            updated_at = created_at + timedelta(days=random.randint(0, 7))
+            
             evidence_data.append((
                 create_uid(),  # id
                 thing_account_id,
@@ -92,14 +115,16 @@ def generate_evidence_for_things(cursor, things: list, scenario: dict) -> None:
                         "size": random.randint(100000, 5000000)
                     }
                 }),
-                f"/images/{create_uid()}.jpg"  # local_file
+                f"/images/{create_uid()}.jpg",  # local_file
+                created_at.timestamp(),  # created_at
+                updated_at.timestamp()   # updated_at
             ))
 
     cursor.executemany("""
     INSERT OR IGNORE INTO evidence (
         id, thing_account_id, thing_id, request_id,
-        evidence_type, data, local_file
-    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+        evidence_type, data, local_file, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, evidence_data)
 
 def generate_evidence_for_requests(cursor, request_ids: list) -> None:
@@ -208,6 +233,9 @@ def generate_requests(cursor, scenario: dict, universe_count: int) -> list:
         
         # Generate a unique URL for the request
         request_url = f"https://example.com/requests/{new_id}"
+
+        created_at = datetime.now(timezone.utc) - timedelta(days=random.randint(0, 30))
+        completed_at = created_at + timedelta(days=random.randint(1, 30)) if random.choice([True, False]) else None
         
         # Select random delivery method from enum
         delivery_method = random.choice(list(DeliveryMethod))
@@ -227,6 +255,8 @@ def generate_requests(cursor, scenario: dict, universe_count: int) -> list:
                 "notes": f"Request for {request_type}"
             }),  # data
             random.choice(list(Status)).value,  # status
+            created_at,
+            completed_at,
             delivery_method.value,  # delivery_method
             delivery_target  # delivery_target
         ))
@@ -235,14 +265,15 @@ def generate_requests(cursor, scenario: dict, universe_count: int) -> list:
         cursor.executemany("""
         INSERT OR IGNORE INTO requests (
             id, account_id, url, universe_id, type, data, status,
+            created_at, completed_at,
             delivery_method, delivery_target
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, requests_data)
 
     # Return request IDs for evidence generation
     return [r[0] for r in requests_data]
 
-def generate_things(cursor, scenario: dict, product_type_count: int, document_type_count: int) -> list:
+def generate_things(cursor, scenario: dict, evidence_type_count: int, document_type_count: int) -> list:
     """Generate and insert thing records up to planned quantity."""
     # Check existing things count
     cursor.execute("SELECT COUNT(*) FROM things")
@@ -264,6 +295,11 @@ def generate_things(cursor, scenario: dict, product_type_count: int, document_ty
                     # Generate a unique identifier based on brand and model
                     serial = f"{brand_name[:3]}{random.randint(100000, 999999)}"
                     
+                    # Generate timestamps
+                    now = datetime.now(timezone.utc)
+                    created_at = now - timedelta(days=random.randint(0, 365))
+                    updated_at = created_at + timedelta(days=random.randint(0, 30))
+                    
                     things_data.append((
                         create_uid(),  # id
                         commons['owner_id'],  # account_id
@@ -276,14 +312,20 @@ def generate_things(cursor, scenario: dict, product_type_count: int, document_ty
                         else random.choice(["Natural", "Classic", "Limited Edition"]),
                         json.dumps([category.lower(), brand_name.lower(), model.lower()]),  # tags
                         category,  # category
-                        random.randint(1, product_type_count),
-                        random.randint(1, document_type_count),
+                        random.randint(1, evidence_type_count),  # evidence_type
                         f"{brand_name} {model}",  # title
-                        f"Authentic {brand_name} {model} - {category}"  # description
+                        f"Authentic {brand_name} {model} - {category}",  # description
+                        created_at.timestamp(),  # created_at
+                        updated_at.timestamp()   # updated_at
                     ))
 
         # Fill remaining with regular items if needed
         while len(things_data) < remaining_count:
+            # Generate timestamps
+            now = datetime.now(timezone.utc)
+            created_at = now - timedelta(days=random.randint(0, 365))
+            updated_at = created_at + timedelta(days=random.randint(0, 30))
+            
             things_data.append((
                 create_uid(),
                 commons['owner_id'],
@@ -295,33 +337,36 @@ def generate_things(cursor, scenario: dict, product_type_count: int, document_ty
                 random.choice(["Black", "White", "Silver", "Gold"]),
                 json.dumps([f"tag{j}" for j in range(3)]),
                 random.choice(sum([data["things"] for data in USE_CASES.values()], [])),
-                random.randint(1, product_type_count),
-                random.randint(1, document_type_count),
+                random.randint(1, evidence_type_count),  # evidence_type
                 f"Sample Thing {existing_count + len(things_data)}",
-                f"Description for sample thing {existing_count + len(things_data)}"
+                f"Description for sample thing {existing_count + len(things_data)}",
+                created_at.timestamp(),  # created_at
+                updated_at.timestamp()   # updated_at
             ))
 
         cursor.executemany("""
         INSERT OR IGNORE INTO things (
             id, account_id, upc, asin, elid, brand, model, color,
-            tags, category, product_type, document_type, title, description
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            tags, category, evidence_type, title, description,
+            created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, things_data)
     
     # Return all things for evidence generation
     cursor.execute("SELECT account_id, id FROM things")
     return cursor.fetchall()
 
-def insert_evidence_types(evidences: Generator[EvidenceType, None, None], cursor) -> None:
-    """Insert evidence type records."""
-    # for e in list(evidences):
-    #     print(e)
-
+def insert_evidence_types(evidences: Generator[EvidenceType, None, None], cursor) -> int:
+    """Insert evidence type records and return the count of inserted records."""
+    evidence_list = list(evidences)
     cursor.executemany("""
     INSERT OR IGNORE INTO evidence_type (
         lang, rootName, name, url, gpcRoot, gpcName, gpcCode, unspscID
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """, list(evidences))
+    """, evidence_list)
+    
+    # Return the count of evidence types
+    return len(evidence_list)
 
 def generate_testdata_records(con, cursor, dbp = DBP) -> None:
     """

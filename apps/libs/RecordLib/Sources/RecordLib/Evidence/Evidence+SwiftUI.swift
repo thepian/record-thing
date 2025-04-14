@@ -1,28 +1,46 @@
 /*
-See LICENSE folder for this sample’s licensing information.
+See LICENSE folder for this sample's licensing information.
 
 Abstract:
 Definition of how the ingredients should appear in their thumbnail and card appearances.
 */
 
 import SwiftUI
+import RecordLib
+
 
 // MARK: - SwiftUI
 
 extension Evidence {
     
     /// Defines how the `Evidence`'s title should be displayed in card mode
-    struct CardTitle {
+    public struct CardTitle {
         var color = Color.black
         var rotation = Angle.degrees(0)
         var offset = CGSize.zero
         var blendMode = BlendMode.normal
         var opacity: Double = 1
         var fontSize: Double = 1
+        
+        public init(
+            color: Color = .black,
+            rotation: Angle = .degrees(0),
+            offset: CGSize = .zero,
+            blendMode: BlendMode = .normal,
+            opacity: Double = 1,
+            fontSize: Double = 1
+        ) {
+            self.color = color
+            self.rotation = rotation
+            self.offset = offset
+            self.blendMode = blendMode
+            self.opacity = opacity
+            self.fontSize = fontSize
+        }
     }
     
     /// Defines a state for the `Evidence` to transition from when changing between card and thumbnail
-    struct Crop {
+    public struct Crop {
         var xOffset: Double = 0
         var yOffset: Double = 0
         var scale: Double = 1
@@ -30,10 +48,20 @@ extension Evidence {
         var offset: CGSize {
             CGSize(width: xOffset, height: yOffset)
         }
+        
+        public init(
+            xOffset: Double = 0,
+            yOffset: Double = 0,
+            scale: Double = 1
+        ) {
+            self.xOffset = xOffset
+            self.yOffset = yOffset
+            self.scale = scale
+        }
     }
     
     /// The `Evidence`'s image, useful for backgrounds or thumbnails
-    var image: Image {
+    public var image: Image {
         Image("product/Room", label: Text("<title>"))
             .renderingMode(.original)
 

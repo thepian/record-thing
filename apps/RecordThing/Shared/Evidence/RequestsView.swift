@@ -8,6 +8,8 @@
 
 import SwiftUI
 import Blackbird
+import RecordLib
+
 
 struct RequestsView: View {
     @Environment(\.blackbirdDatabase) private var database
