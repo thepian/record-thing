@@ -28,6 +28,7 @@ struct AppSplitView<DetailContent : View>: View {
     @ObservedObject var evidenceViewModel: EvidenceViewModel
     @ObservedObject var captureService: CaptureService
     @ObservedObject var cameraViewModel: CameraViewModel
+    @Environment(\.assetsViewModel) var assetsViewModel
     let designSystem: DesignSystemSetup
     let detailContent: DetailContent
     
@@ -75,7 +76,13 @@ struct AppSplitView<DetailContent : View>: View {
                     
                     // This updates content
                     NavigationLink {
-                        ThingsMenu()
+                        if let assetsViewModel = assetsViewModel {
+                            ThingsGridView(viewModel: assetsViewModel, columns: 2) { thing in
+                                print("Selected thing: \(thing.title ?? "Untitled")")
+                            }
+                        } else {
+                            Text("Missing Assets")
+                        }
                     } label: {
                         Label("Assets", systemImage: "square.3.layers.3d")
                     }
@@ -321,6 +328,7 @@ struct VisualEffectView: UIViewRepresentable {
 #if DEBUG
 struct AppSplitView_Previews: PreviewProvider {
     static var previews: some View {
+        @StateObject var assetsViewModel = AssetsViewModel()
         AppSplitView(
             columnVisibility: .constant(.detailOnly),
             path: .constant(NavigationPath()),
@@ -331,6 +339,7 @@ struct AppSplitView_Previews: PreviewProvider {
         ) {
             Text("Detail Content")
         }
+        .environment(\.assetsViewModel, assetsViewModel)
         .previewDisplayName("Detail Only")
     }
 }

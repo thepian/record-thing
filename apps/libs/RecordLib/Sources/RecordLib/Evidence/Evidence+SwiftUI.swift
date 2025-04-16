@@ -78,265 +78,152 @@ extension Evidence {
     static let avocado = Evidence(
         id: "avocado",
         thing_account_id: "acc",
-        thing_id: "id123"
-//        name: String(localized: "Avocado", table: "Evidence", comment: "Evidence name"),
-//        title: CardTitle(
-//            color: .brown,
-//            offset: CGSize(width: 0, height: 20),
-//            blendMode: .plusDarker,
-//            opacity: 0.4,
-//            fontSize: 60
-//        )
+        thing_id: "id123",
+        created_at: Date.now,
+        updated_at: Date.now
     )
     
     static let almondMilk = Evidence(
         id: "almond-milk",
         thing_account_id: "acc",
-        thing_id: "id1231"
-//        name: String(localized: "Almond Milk", table: "Evidence", comment: "Evidence name"),
-//        title: CardTitle(
-//            offset: CGSize(width: 0, height: -140),
-//            blendMode: .overlay,
-//            fontSize: 40
-//        ),
-//        thumbnailCrop: Crop(yOffset: 0, scale: 1)
+        thing_id: "id1231",
+        created_at: Date.now,
+        updated_at: Date.now
     )
     
     static let banana = Evidence(
         id: "banana",
         thing_account_id: "acc",
-        thing_id: "id1232"
-//        name: String(localized: "Banana", table: "Evidence", comment: "Evidence name"),
-//        title: CardTitle(
-//            rotation: Angle.degrees(-30),
-//            offset: CGSize(width: 0, height: 0),
-//            blendMode: .overlay,
-//            fontSize: 70
-//        ),
-//        thumbnailCrop: Crop(yOffset: 0, scale: 1)
+        thing_id: "id1232",
+        created_at: Date.now,
+        updated_at: Date.now
     )
     
     static let blueberry = Evidence(
         id: "blueberry",
         thing_account_id: "acc",
-        thing_id: "id1233"
-//        name: String(localized: "Blueberry", table: "Evidence", comment: "Evidence name"),
-//        title: CardTitle(
-//            color: .white,
-//            offset: CGSize(width: 0, height: 100),
-//            opacity: 0.5,
-//            fontSize: 45
-//        ),
-//        thumbnailCrop: Crop(yOffset: 0, scale: 2)
+        thing_id: "id1233",
+        created_at: Date.now,
+        updated_at: Date.now
     )
     
     static let carrot = Evidence(
         id: "carrot",
         thing_account_id: "acc",
-        thing_id: "id1234"
-//        name: String(localized: "Carrot", table: "Evidence", comment: "Evidence name"),
-//        title: CardTitle(
-//            rotation: Angle.degrees(-90),
-//            offset: CGSize(width: -120, height: 100),
-//            blendMode: .plusDarker,
-//            opacity: 0.3,
-//            fontSize: 70
-//        ),
-//        thumbnailCrop: Crop(yOffset: 0, scale: 1.2)
+        thing_id: "id1234",
+        created_at: Date.now,
+        updated_at: Date.now
     )
     
     static let chocolate = Evidence(
         id: "chocolate",
         thing_account_id: "acc",
-        thing_id: "id1235"
-//        name: String(localized: "Chocolate", table: "Evidence", comment: "Evidence name"),
-//        title: CardTitle(
-//            color: .brown,
-//            rotation: Angle.degrees(-11),
-//            offset: CGSize(width: 0, height: 10),
-//            blendMode: .plusDarker,
-//            opacity: 0.8,
-//            fontSize: 45
-//        ),
-//        thumbnailCrop: Crop(yOffset: 0, scale: 1)
+        thing_id: "id1235",
+        created_at: Date.now,
+        updated_at: Date.now
     )
     
     static let coconut = Evidence(
         id: "coconut",
         thing_account_id: "acc",
-        thing_id: "id1231"
-//        name: String(localized: "Coconut", table: "Evidence", comment: "Evidence name"),
-//        title: CardTitle(
-//            color: .brown,
-//            offset: CGSize(width: 40, height: 110),
-//            blendMode: .plusDarker,
-//            opacity: 0.8,
-//            fontSize: 36
-//        ),
-//        thumbnailCrop: Crop(scale: 1.5)
+        thing_id: "id1231",
+        created_at: Date.now,
+        updated_at: Date.now
     )
     
     static let kiwi = Evidence(
         id: "kiwi",
         thing_account_id: "acc",
-        thing_id: "id1232"
-//        name: String(localized: "Kiwi", table: "Evidence", comment: "Evidence name"),
-//        title: CardTitle(
-//            offset: CGSize(width: 0, height: 0),
-//            blendMode: .overlay,
-//            fontSize: 140
-//        ),
-//        thumbnailCrop: Crop(scale: 1.1)
+        thing_id: "id1232",
+        created_at: Date.now,
+        updated_at: Date.now
     )
     
     static let lemon = Evidence(
         id: "lemon",
         thing_account_id: "acc",
-        thing_id: "id1233"
-//        name: String(localized: "Lemon", table: "Evidence", comment: "Evidence name"),
-//        title: CardTitle(
-//            rotation: Angle.degrees(-9),
-//            offset: CGSize(width: 15, height: 90),
-//            blendMode: .overlay,
-//            fontSize: 80
-//        ),
-//        thumbnailCrop: Crop(scale: 1.1)
+        thing_id: "id1233",
+        created_at: Date.now,
+        updated_at: Date.now
     )
     
     static let mango = Evidence(
         id: "mango",
         thing_account_id: "acc",
-        thing_id: "id1234"
-//        name: String(localized: "Mango", table: "Evidence", comment: "Evidence name"),
-//        title: CardTitle(
-//            color: .orange,
-//            offset: CGSize(width: 0, height: 20),
-//            blendMode: .plusLighter,
-//            fontSize: 70
-//        )
+        thing_id: "id1234",
+        created_at: Date.now,
+        updated_at: Date.now
     )
     
     static let orange = Evidence(
         id: "orange",
         thing_account_id: "acc",
-        thing_id: "id1235"
-//        name: String(localized: "Orange", table: "Evidence", comment: "Evidence name"),
-//        title: CardTitle(
-//            rotation: Angle.degrees(-90),
-//            offset: CGSize(width: -130, height: -60),
-//            blendMode: .overlay,
-//            fontSize: 80
-//        ),
-//        thumbnailCrop: Crop(yOffset: -15, scale: 2)
+        thing_id: "id1235",
+        created_at: Date.now,
+        updated_at: Date.now
     )
     
     static let papaya = Evidence(
         id: "papaya",
         thing_account_id: "acc",
-        thing_id: "id1231"
-//        name: String(localized: "Papaya", table: "Evidence", comment: "Evidence name"),
-//        title: CardTitle(
-//            offset: CGSize(width: -20, height: 20),
-//            blendMode: .overlay,
-//            fontSize: 70
-//        ),
-//        thumbnailCrop: Crop(scale: 1)
+        thing_id: "id1231",
+        created_at: Date.now,
+        updated_at: Date.now
     )
     
     static let peanutButter = Evidence(
         id: "peanut-butter",
         thing_account_id: "acc",
-        thing_id: "id1232"
-//        name: String(localized: "Peanut Butter", table: "Evidence", comment: "Evidence name"),
-//        title: CardTitle(
-//            offset: CGSize(width: 0, height: 190),
-//            blendMode: .overlay,
-//            fontSize: 35
-//        ),
-//        thumbnailCrop: Crop(yOffset: -20, scale: 1.2)
+        thing_id: "id1232",
+        created_at: Date.now,
+        updated_at: Date.now
     )
     
     static let pineapple = Evidence(
         id: "pineapple",
         thing_account_id: "acc",
-        thing_id: "id1233"
-//        name: String(localized: "Pineapple", table: "Evidence", comment: "Evidence name"),
-//        title: CardTitle(
-//            color: .yellow,
-//            offset: CGSize(width: 0, height: 90),
-//            blendMode: .plusLighter,
-//            opacity: 0.5,
-//            fontSize: 55
-//        )
+        thing_id: "id1233",
+        created_at: Date.now,
+        updated_at: Date.now
     )
     
     static let raspberry = Evidence(
         id: "raspberry",
         thing_account_id: "acc",
-        thing_id: "id1234"
-//        name: String(localized: "Raspberry", table: "Evidence", comment: "Evidence name"),
-//        title: CardTitle(
-//            color: .pink,
-//            blendMode: .plusLighter,
-//            fontSize: 50
-//        ),
-//        thumbnailCrop: Crop(yOffset: 0, scale: 1.5)
+        thing_id: "id1234",
+        created_at: Date.now,
+        updated_at: Date.now
     )
     
     static let spinach = Evidence(
         id: "spinach",
         thing_account_id: "acc",
-        thing_id: "id1235"
-//        name: String(localized: "Spinach", table: "Evidence", comment: "Evidence name"),
-//        title: CardTitle(
-//            offset: CGSize(width: 0, height: -150),
-//            blendMode: .overlay,
-//            fontSize: 70
-//        ),
-//        thumbnailCrop: Crop(yOffset: 0, scale: 1)
+        thing_id: "id1235",
+        created_at: Date.now,
+        updated_at: Date.now
     )
     
     static let strawberry = Evidence(
         id: "strawberry",
         thing_account_id: "acc",
-        thing_id: "id1231"
-//        name: String(localized: "Strawberry", table: "Evidence", comment: "Evidence name"),
-//        title: CardTitle(
-//            color: .white,
-//            offset: CGSize(width: 35, height: -5),
-//            blendMode: .softLight,
-//            opacity: 0.7,
-//            fontSize: 30
-//        ),
-//        thumbnailCrop: Crop(scale: 2.5),
-//        cardCrop: Crop(xOffset: -110, scale: 1.35)
+        thing_id: "id1231",
+        created_at: Date.now,
+        updated_at: Date.now
     )
 
     static let water = Evidence(
         id: "water",
         thing_account_id: "acc",
-        thing_id: "id1231"
-//        name: String(localized: "Water", table: "Evidence", comment: "Evidence name"),
-//        title: CardTitle(
-//            color: .blue,
-//            offset: CGSize(width: 0, height: 150),
-//            opacity: 0.2,
-//            fontSize: 50
-//        ),
-//        thumbnailCrop: Crop(yOffset: -10, scale: 1.2)
+        thing_id: "id1231",
+        created_at: Date.now,
+        updated_at: Date.now
     )
     
     static let watermelon = Evidence(
         id: "watermelon",
         thing_account_id: "acc",
-        thing_id: "id1232"
-//        name: String(localized: "Watermelon", table: "Evidence", comment: "Evidence name"),
-//        title: CardTitle(
-//            rotation: Angle.degrees(-50),
-//            offset: CGSize(width: -80, height: -50),
-//            blendMode: .overlay,
-//            fontSize: 25
-//        ),
-//        thumbnailCrop: Crop(yOffset: -10, scale: 1.2)
+        thing_id: "id1232",
+        created_at: Date.now,
+        updated_at: Date.now
     )
 }

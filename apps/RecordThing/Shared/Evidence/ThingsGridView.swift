@@ -3,21 +3,95 @@ import Blackbird
 import os
 import RecordLib
 
-/// A view that displays a grid of Things cards grouped by month
-public struct ThingsGridView: View {
-    // MARK: - Properties
+public struct ThingsGridCard: View {
+    @State var thing: Things
+    
+    let df: DateFormatter
+    
+    public init(thing: Things) {
+        _thing = State(wrappedValue: thing)
+        
+        df = DateFormatter()
+        df.dateFormat = "yyyy-MM-dd hh:mm:ss"
+    }
+
+    public var body: some View {
+        RoundedRectangle(cornerRadius: 32)
+            .foregroundColor(Color.white)
+            .border(Color.gray)
+            .frame(width: 120, height: 80)
+            .overlay {
+                VStack {
+                    Text(thing.title ?? "<title>")
+                    Text(df.string(from: thing.created_at ?? Date()))
+                }
+            }
+    }
+}
+
+public struct ThingsDates: View {
+    @Environment(\.blackbirdDatabase) var db
+
+    var df: DateFormatter {
+        let df = DateFormatter()
+        df.dateFormat = "yyyy-MM-dd hh:mm:ss"
+        return df
+    }
+    
+//    @StateObject var assetGroups: [AssetGroup] = []
+        
+    public var body: some View {
+        VStack {
+            Button(action: {
+                Task {
+                    if let db = db {
+                        let dates = try await Things.query(in: db, columns: [\.$created_at], matching: \.$created_at != nil)
+                        print("Dates: \(dates.count)")
+                        for d in dates {
+                            if let created_at = d[\.$created_at] {
+                                print(df.string(from: created_at))
+                            }
+                        }
+                    }
+                }
+            }) {
+                Text("Calc")
+            }
+//            if let rows = dates.result {
+//                List {
+//                    ForEach(rows) { row in
+//                        if let created_at = row[\.$created_at] {
+//                            Text(df.string(from: created_at))
+//                        } else {
+//                            Text("nil")
+//                        }
+//                    }
+//                }
+//                .animation(.default, value: rows)
+//            } else {
+//                ProgressView()
+//            }
+        }
+//        .onAppear {
+//            dates.bind(to: db)
+//        }
+
+    }
+}
+
+public struct ThingsSubgridView: View {
+    @StateObject private var viewModel: AssetsViewModel
+    @State private var things: [Things] = []
+    @State private var columns: Int
     
     // Logger for debugging
     private let logger = Logger(subsystem: "com.record-thing", category: "ui.things-grid")
     
-    // State
-    @State private var things: [Things] = []
-    @State private var groupedThings: [String: [Things]] = [:]
-    @State private var isLoading = true
-    @State private var error: Error?
-    
     // Design system
     let designSystem: DesignSystemSetup
+    
+    // Data
+    let group: AssetGroup
     
     // Callbacks
     let onThingSelected: (Things) -> Void
@@ -25,68 +99,58 @@ public struct ThingsGridView: View {
     // MARK: - Initialization
     
     public init(
+        viewModel: AssetsViewModel,
+        group: AssetGroup,
         designSystem: DesignSystemSetup = .light,
+        columns: Int = 1,
         onThingSelected: @escaping (Things) -> Void
     ) {
+        self._viewModel = StateObject(wrappedValue: viewModel)
+        self.group = group
         self.designSystem = designSystem
+        self.columns = columns
         self.onThingSelected = onThingSelected
     }
     
-    // MARK: - Body
-    
     public var body: some View {
-        Group {
-            if isLoading {
-                ProgressView()
-                    .progressViewStyle(.circular)
-            } else if let error = error {
-                VStack {
-                    Image(systemName: "exclamationmark.triangle")
-                        .font(.largeTitle)
-                        .foregroundColor(.red)
-                    Text("Error loading things")
-                        .font(.headline)
-                    Text(error.localizedDescription)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-            } else {
-                ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 24) {
-                        ForEach(groupedThings.keys.sorted(by: >), id: \.self) { month in
-                            if let things = groupedThings[month] {
-                                monthSection(month: month, things: things)
-                            }
-                        }
-                    }
-                    .padding()
-                }
+        LazyVGrid(columns: gridColumns(), spacing: 16) {
+            ForEach(things) { thing in
+                thingCard(thing)
             }
         }
-        .task {
-            await loadThings()
+        .onAppear {
+            loadThings()
         }
     }
     
-    // MARK: - UI Components
+    private func gridColumns() -> [GridItem] {
+        switch columns {
+        case 2: return [GridItem(.flexible()), GridItem(.flexible())]
+        case 3: return [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
+        default: return [GridItem(.flexible())]
+        }
+    }
     
-    /// Section for a group of things by month
-    private func monthSection(month: String, things: [Things]) -> some View {
-        VStack(alignment: .leading, spacing: 16) {
-            // Month header
-            Text(month)
-                .font(.system(size: 24, weight: .bold))
-                .foregroundColor(.primary)
-                .padding(.leading, 4)
-            
-            // Grid of things, 2 per row
-            LazyVGrid(columns: [
-                GridItem(.flexible()),
-                GridItem(.flexible())
-            ], spacing: 16) {
-                ForEach(things) { thing in
-                    thingCard(thing)
+    private func loadThings() {
+        guard let db = viewModel.db else {
+            logger.error("Database not available")
+            return
+        }
+        
+        Task {
+            do {
+                // Query things within the date range
+                let results = try await Things.read(
+                    from: db,
+                    matching: \.$created_at >= group.from && \.$created_at < group.to
+                )
+                
+                await MainActor.run {
+                    things = results
+                    logger.debug("Loaded \(things.count) things for group \(group.title)")
                 }
+            } catch {
+                logger.error("Failed to load things: \(error)")
             }
         }
     }
@@ -108,60 +172,142 @@ public struct ThingsGridView: View {
                             .fill(Color.secondary.opacity(0.2))
                             .aspectRatio(1, contentMode: .fit)
                     }
+
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Spacer()
+                            // Thing category
+                            if let category = thing.category {
+                                Text(category)
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.secondary)
+                                    .shadow(color: designSystem.shadowColor, radius: designSystem.shadowRadius)
+                                    .lineLimit(1)
+                                    .padding(designSystem.cardSpacing)
+                            }
+                        }
+                    }
                 }
-                .frame(height: 120)
+                .frame(minWidth: designSystem.assetsCardWidth)
                 .cornerRadius(designSystem.cornerRadius)
                 
                 // Thing title
-                Text(thing.title ?? "Untitled")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.primary)
-                    .lineLimit(1)
-                
-                // Thing category
-                if let category = thing.category {
-                    Text(category)
-                        .font(.system(size: 14))
-                        .foregroundColor(.secondary)
+                HStack {
+                    Text(thing.title ?? "Untitled")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.primary)
                         .lineLimit(1)
+                        .frame(maxWidth: designSystem.assetsCardWidth)
+                    Spacer()
                 }
+                .frame(minWidth: designSystem.assetsCardWidth)
+                
             }
         }
         .buttonStyle(PlainButtonStyle())
     }
+}
+
+/// A view that displays a grid of Things cards grouped by time periods
+public struct ThingsGridView: View {
+    @StateObject private var viewModel: AssetsViewModel
     
-    // MARK: - Helper Methods
+    // Logger for debugging
+    private let logger = Logger(subsystem: "com.record-thing", category: "ui.things-grid")
     
-    /// Load things from the database and group them by month
-    private func loadThings() async {
-        do {
-            guard let db = AppDatasource.shared.db else {
-                throw NSError(domain: "ThingsGridView", code: 1, userInfo: [NSLocalizedDescriptionKey: "Database not available"])
+    // Design system
+    let designSystem: DesignSystemSetup
+    
+    // Callbacks
+    let onThingSelected: (Things) -> Void
+    
+    @State private var columns: Int
+
+    // Size class
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    #endif
+    
+    // MARK: - Initialization
+    
+    public init(
+        viewModel: AssetsViewModel,
+        designSystem: DesignSystemSetup = .light,
+        columns: Int = 1,
+        onThingSelected: @escaping (Things) -> Void
+    ) {
+        self._viewModel = StateObject(wrappedValue: viewModel)
+        self.designSystem = designSystem
+        self.columns = columns
+        self.onThingSelected = onThingSelected
+    }
+    
+    // MARK: - Body
+    
+    public var body: some View {
+        Group {
+            if viewModel.isLoading {
+                ProgressView()
+                    .progressViewStyle(.circular)
+            } else if let error = viewModel.error {
+                VStack {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.largeTitle)
+                        .foregroundColor(.red)
+                    Text("Error loading things")
+                        .font(.headline)
+                    Text(error.localizedDescription)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+            } else {
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 24) {
+                        ForEach(viewModel.assetGroups) { group in
+                            timeSection(group: group)
+                            ThingsSubgridView(
+                                viewModel: viewModel,
+                                group: group,
+                                designSystem: designSystem,
+                                columns: columns,
+                                onThingSelected: onThingSelected
+                            )
+                        }
+                    }
+                    .padding()
+                }
             }
-            
-            let rows: [Dictionary] = try await db.query("""
-                SELECT * FROM things
-                ORDER BY created_at DESC
-            """)
-            
-            things = rows.compactMap { row in
-                try? Things(from: row as! Decoder)
-            }
-            
-            // Group things by month
-            groupedThings = Dictionary(grouping: things) { thing in
-                guard let date = thing.created_at else { return "Unknown" }
+        }
+        .onAppear {
+            logger.debug("loading dates")
+            viewModel.loadDates()
+        }
+    }
+    
+    // MARK: - UI Components
+    
+    /// Section for a group of things by time period
+    private func timeSection(group: AssetGroup) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Time period header
+            VStack(alignment: .leading, spacing: 4) {
+                Text(group.title)
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(.primary)
+                
+                // Date range subtitle
+                /*
                 let formatter = DateFormatter()
-                formatter.dateFormat = "MMMM yyyy"
-                return formatter.string(from: date)
+//                formatter.dateStyle = .medium
+//                formatter.timeStyle = .none
+                
+                Text("\(formatter.string(from: group.from)) - \(formatter.string(from: group.to))")
+                    .font(.system(size: 14))
+                    .foregroundColor(.secondary)
+                 */
             }
-            
-            isLoading = false
-            logger.debug("Loaded \(things.count) things")
-        } catch {
-            self.error = error
-            isLoading = false
-            logger.error("Error loading things: \(error)")
+            .padding(.leading, 4)
         }
     }
 }
@@ -170,10 +316,21 @@ public struct ThingsGridView: View {
 #if DEBUG
 struct ThingsGridView_Previews: PreviewProvider {
     static var previews: some View {
-        ThingsGridView { thing in
+        @Previewable @StateObject var datasource = AppDatasource.shared
+        @Previewable @StateObject var model = Model(loadedLangConst: "en")
+        @Previewable @StateObject var viewModel = AssetsViewModel(db: AppDatasource.shared.db)
+
+        ThingsGridView(viewModel: viewModel, columns: 2) { thing in
             print("Selected thing: \(thing.title ?? "Untitled")")
         }
+        .environment(\.blackbirdDatabase, datasource.db)
+        .environmentObject(model)
         .previewDisplayName("Things Grid")
+        
+        ThingsDates()
+            .environment(\.blackbirdDatabase, datasource.db)
+            .environmentObject(model)
+            .previewDisplayName("Things Dates")
     }
 }
 #endif 

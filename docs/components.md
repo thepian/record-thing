@@ -166,3 +166,20 @@ As the App closes the CaptureService stops capture.
 AVCaptureSession resources must be released while the Application is in the background.
 
 Apply alwaysDiscardsLateVideoFrames to AVCaptureVideoDataOutput in CaptureService.
+
+
+## Things Assets View
+
+Make loadDates() create a list of assetGroups. Take in a list of dates retrieved from created_at of things. Group them with the most recent first. Each group should have a `from` and `to` Date value, the values can be used to filter things fitting in the time range of the asset group. Leave the assets array empty.
+
+Create groups as follows:
+
+- Today (midnight to midnight)
+- Yesterday
+- This week (excluding yesterday & today)
+- This month (excluding this week)
+- Each previous month (past 6 months or this year excluding this month)
+- Each previous year
+
+Groups must not have overlapping time ranges(to/from).
+Exclude groups for which there are no things found.

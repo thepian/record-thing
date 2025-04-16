@@ -152,6 +152,10 @@ public struct DesignSystemSetup {
     public var evidenceReviewHeight: CGFloat {
         screenHeight * evidenceReviewFactor
     }
+    
+    public var assetsCardWidth: CGFloat {
+        210
+    }
 
     
 

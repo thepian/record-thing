@@ -374,22 +374,6 @@ public enum AssetTab: String, CaseIterable {
     }
 }
 
-/// Group of assets by month
-public struct AssetGroup: Identifiable {
-    public let id = UUID()
-    public let monthYear: String
-    public let month: Int
-    public let year: Int
-    public let assets: [Asset]
-    
-    public init(monthYear: String, month: Int, year: Int, assets: [Asset]) {
-        self.monthYear = monthYear
-        self.month = month
-        self.year = year
-        self.assets = assets
-    }
-}
-
 /// Model representing a luxury asset
 public struct Asset: Identifiable, Hashable {
     public let id: String

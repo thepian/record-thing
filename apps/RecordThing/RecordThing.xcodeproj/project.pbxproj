@@ -57,6 +57,10 @@
 		3E8853672DAD6C1600F97843 /* default-record-thing.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 3E8853652DAD6C1600F97843 /* default-record-thing.sqlite */; };
 		3E8853682DAD6C1600F97843 /* default-record-thing.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 3E8853652DAD6C1600F97843 /* default-record-thing.sqlite */; };
 		3E8853692DAD6C1600F97843 /* default-record-thing.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 3E8853652DAD6C1600F97843 /* default-record-thing.sqlite */; };
+		3E88536B2DAE917900F97843 /* ThingsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E88536A2DAE917900F97843 /* ThingsGridView.swift */; };
+		3E88536C2DAE917900F97843 /* ThingsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E88536A2DAE917900F97843 /* ThingsGridView.swift */; };
+		3E88536D2DAE917900F97843 /* ThingsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E88536A2DAE917900F97843 /* ThingsGridView.swift */; };
+		3E88536E2DAE917900F97843 /* ThingsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E88536A2DAE917900F97843 /* ThingsGridView.swift */; };
 		3ECA68482D96B08E0003CB58 /* NavigationDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECA68472D96B0860003CB58 /* NavigationDestination.swift */; };
 		3ECA68492D96B08E0003CB58 /* NavigationDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECA68472D96B0860003CB58 /* NavigationDestination.swift */; };
 		3ECA684A2D96B08F0003CB58 /* NavigationDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECA68472D96B0860003CB58 /* NavigationDestination.swift */; };
@@ -269,6 +273,7 @@
 		3E5373A02D7F295E0082BF62 /* BrowseTabNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowseTabNavigation.swift; sourceTree = "<group>"; };
 		3E78498D2DA7D0270030C91D /* AppSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSplitView.swift; sourceTree = "<group>"; };
 		3E8853652DAD6C1600F97843 /* default-record-thing.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = "default-record-thing.sqlite"; sourceTree = "<group>"; };
+		3E88536A2DAE917900F97843 /* ThingsGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThingsGridView.swift; sourceTree = "<group>"; };
 		3ECA68472D96B0860003CB58 /* NavigationDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationDestination.swift; sourceTree = "<group>"; };
 		3ECD50AD2C96E3E000755E83 /* RecordLib */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = RecordLib; path = ../libs/RecordLib; sourceTree = "<group>"; };
 		3ECD50D22C9759EF00755E83 /* MLModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MLModel.swift; sourceTree = "<group>"; };
@@ -392,6 +397,7 @@
 		3EE0BDB72D560BE800AD1085 /* Evidence */ = {
 			isa = PBXGroup;
 			children = (
+				3E88536A2DAE917900F97843 /* ThingsGridView.swift */,
 				3ED6C48B2D593E9E00FF632C /* RequestsRow.swift */,
 				3ED6C4902D59545700FF632C /* RequestsView.swift */,
 				3ED6C4952D59553F00FF632C /* RequestsMenu.swift */,
@@ -753,6 +759,7 @@
 				610F54EA26158DDB001D3AA0 /* BubbleView.swift in Sources */,
 				3E5373A22D7F295E0082BF62 /* BrowseTabNavigation.swift in Sources */,
 				610F54EC26158DDB001D3AA0 /* BubbleBackground.swift in Sources */,
+				3E88536D2DAE917900F97843 /* ThingsGridView.swift in Sources */,
 				3EE0BDC02D560E6800AD1085 /* ThingsList.swift in Sources */,
 				3ED6C48D2D593E9E00FF632C /* RequestsRow.swift in Sources */,
 				61A8CB8A26166F2A002845E4 /* Model.swift in Sources */,
@@ -791,6 +798,7 @@
 				610F551C26158DE2001D3AA0 /* StepperView.swift in Sources */,
 				3ED6C49E2D59558300FF632C /* RequestsList.swift in Sources */,
 				3EE0BDCA2D5611D300AD1085 /* ThingsView.swift in Sources */,
+				3E88536B2DAE917900F97843 /* ThingsGridView.swift in Sources */,
 				3EE0BDDA2D56599E00AD1085 /* Account.swift in Sources */,
 				3EE0BDCB2D5611D300AD1085 /* ThingsRow.swift in Sources */,
 				3ECD50D72C9759EF00755E83 /* MLModel.swift in Sources */,
@@ -826,6 +834,7 @@
 				E0DC7FBF27B72FDC00A6417B /* BubbleView.swift in Sources */,
 				3E5373A12D7F295E0082BF62 /* BrowseTabNavigation.swift in Sources */,
 				E0DC7FC127B72FDC00A6417B /* BubbleBackground.swift in Sources */,
+				3E88536E2DAE917900F97843 /* ThingsGridView.swift in Sources */,
 				3EE0BDC12D560E6800AD1085 /* ThingsList.swift in Sources */,
 				3ED6C48C2D593E9E00FF632C /* RequestsRow.swift in Sources */,
 				E0DC7FC227B72FDC00A6417B /* Model.swift in Sources */,
@@ -864,6 +873,7 @@
 				E0DC7FF827B7307600A6417B /* StepperView.swift in Sources */,
 				3ED6C49D2D59558300FF632C /* RequestsList.swift in Sources */,
 				3EE0BDC62D5611D300AD1085 /* ThingsView.swift in Sources */,
+				3E88536C2DAE917900F97843 /* ThingsGridView.swift in Sources */,
 				3EE0BDDB2D56599E00AD1085 /* Account.swift in Sources */,
 				3EE0BDC72D5611D300AD1085 /* ThingsRow.swift in Sources */,
 				3ECD50D62C9759EF00755E83 /* MLModel.swift in Sources */,
