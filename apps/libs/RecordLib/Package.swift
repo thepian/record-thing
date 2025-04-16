@@ -38,6 +38,13 @@ let package = Package(
                 .product(name: "Blackbird", package: "Blackbird"),
                 .product(name: "SwiftUIIntrospect", package: "swiftui-introspect"),
                 "RecordLib"
+            ],
+            path: "Tests/RecordLibTests",
+            exclude: [
+                "Info.plist"
+            ],
+            sources: [
+                "Assets/AssetsViewModelTests.swift"
             ]),
     ],
     swiftLanguageVersions: [.v5]

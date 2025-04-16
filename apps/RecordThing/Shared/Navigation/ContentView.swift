@@ -47,6 +47,7 @@ struct ContentView: View {
     @State private var columnVisibility: NavigationSplitViewVisibility = .detailOnly
     var designSystem: DesignSystemSetup
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.assetsViewModel) private var assetsViewModel
 
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -258,12 +259,15 @@ import AVFoundation
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
+        @Previewable @StateObject var assetsViewModel = AssetsViewModel(db: AppDatasource.shared.db)
+        
         Group {
             // Regular view preview with video stream
             if let (_, mockService) = VideoPreviewHelper.createVideoPreview() {
                 ContentView(captureService: mockService)
                     .environmentObject(Model(loadedLangConst: "en"))
                     .environment(\.blackbirdDatabase, AppDatasource.shared.db)
+                    .environment(\.assetsViewModel, assetsViewModel)
                     .previewDisplayName("Loaded & Authorized (Video Stream)")
             }
             
@@ -271,18 +275,21 @@ struct ContentView_Previews: PreviewProvider {
             ContentView(captureService: CaptureService()) // MockedCaptureService(.authorized))
                 .environmentObject(Model(loadedLangConst: "en"))
                 .environment(\.blackbirdDatabase, AppDatasource.shared.db)
+                .environment(\.assetsViewModel, assetsViewModel)
                 .previewDisplayName("Loaded & Authorized (Camera)")
             
             // Permission not determined
             ContentView(captureService: MockedCaptureService(.notDetermined))
                 .environmentObject(Model(loadedLangConst: "en"))
                 .environment(\.blackbirdDatabase, AppDatasource.shared.db)
+                .environment(\.assetsViewModel, assetsViewModel)
                 .previewDisplayName("Not Determined")
 
             // Redacted view preview
             ContentView(captureService: MockedCaptureService(.notDetermined))
                 .environmentObject(Model(loadedLangConst: "en"))
                 .environment(\.blackbirdDatabase, AppDatasource.shared.db)
+                .environment(\.assetsViewModel, assetsViewModel)
                 .redacted(reason: .placeholder)
                 .previewDisplayName("Redacted")
 
@@ -290,6 +297,7 @@ struct ContentView_Previews: PreviewProvider {
             ContentView(captureService: MockedCaptureService(.notDetermined))
                 .environmentObject(Model())
                 .environment(\.blackbirdDatabase, AppDatasource.shared.db)
+                .environment(\.assetsViewModel, assetsViewModel)
                 .onAppear {
                     AppDatasource.shared.forceLocalizeReload()
                 }

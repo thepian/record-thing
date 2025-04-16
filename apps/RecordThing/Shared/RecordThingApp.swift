@@ -117,6 +117,7 @@ struct RecordThingApp: App {
     @StateObject var datasource = AppDatasource.shared // Important for triggering updates after translation loaded.
     @StateObject private var model = Model(loadedLang: AppDatasource.shared.$loadedLang)
     @StateObject private var captureService = CaptureService()
+    @StateObject private var assetsViewModel = AssetsViewModel(db: AppDatasource.shared.db)
     
     #if os(macOS)
     @State private var windowStateObserver: WindowStateObserver?
@@ -150,6 +151,7 @@ struct RecordThingApp: App {
                 .environmentObject(model)
                 .environment(\.blackbirdDatabase, AppDatasource.shared.db)
                 .environment(\.appDatasource, AppDatasource.shared)
+                .environment(\.assetsViewModel, assetsViewModel)
                 .onChange(of: scenePhase) { oldPhase, newPhase in
                     switch(newPhase) {
                     case .active: // On application startup or resume

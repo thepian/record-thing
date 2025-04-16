@@ -55,8 +55,8 @@ public struct Evidence: BlackbirdModel, Identifiable {
     }()
     
     // Timestamps
-//    @BlackbirdColumn public var created_at: Date
-//    @BlackbirdColumn public var updated_at: Date
+    @BlackbirdColumn public var created_at: Date
+    @BlackbirdColumn public var updated_at: Date
 }
 
 // MARK: - All Evidence types
