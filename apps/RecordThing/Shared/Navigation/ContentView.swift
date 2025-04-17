@@ -10,35 +10,6 @@ import SwiftUIIntrospect
 import Blackbird
 import RecordLib
 
-struct AppTabsView: View {
-    @EnvironmentObject private var model: Model
-
-    private func switchTab(_ tab: LifecycleView) {
-        model.lifecycleView = tab
-        // Clear or preserve path based on tab
-        // path.removeLast(path.count)
-    }
-
-    var body: some View {
-        // The floating toolbar
-        StandardFloatingToolbar(
-            onStackTapped: {
-                switchTab(.assets)
-            },
-            onCameraTapped: {
-                switchTab(.record)
-            },
-            onAccountTapped: {
-                switchTab(.actions)
-            }
-        )
-        .frame(height: 100)
-//        #if DEBUG
-//        .background(Color.red.opacity(0.3))
-//        #endif
-    }
-}
-
 struct ContentView: View {
     @EnvironmentObject private var model: Model
     @StateObject public var captureService: CaptureService
@@ -104,8 +75,47 @@ struct ContentView: View {
                         .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 32))
                         .offset(x: 16)
                     
-                    AppTabsView()
-                    
+                    FloatingToolbar(
+                        backgroundColor: .black,
+                        opacity: 0.3,
+                        cornerRadius: designSystem.cornerRadius,
+                        useFullRounding: false
+                    ) {
+                        HStack(spacing: designSystem.standardSpacing) {
+                            StackButton(action: {
+                                model.lifecycleView = .assets
+                            })
+                            CameraButton {
+                                print("Camera Tapped")
+                            }
+                            AccountButton(action: {
+                                model.lifecycleView = .actions
+                            })
+                            // Left side - Stack NavigationLink
+                            /*
+                            NavigationLink {
+                                assetsBrowsingView
+                            } label: {
+                                StackButton(action: {})
+                            }
+                            
+                            // Center - Camera button
+                            CameraButton {
+                                print("Camera Tapped")
+                            }
+                            
+                            // Right side - Account NavigationLink
+                            NavigationLink {
+                                accountView
+                            } label: {
+                                AccountButton(action: {})
+                            }
+                             */
+                        }
+                        .padding(.horizontal, 16)
+                    }
+                    .frame(height: 100)
+
                     ClarifyEvidenceControl(viewModel: evidenceViewModel)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
@@ -123,6 +133,7 @@ struct ContentView: View {
     var withSidebarView: some View {
         AppSplitView(
             columnVisibility: $columnVisibility,
+            lifecycleView: $model.lifecycleView,
             path: $path,
             evidenceViewModel: evidenceViewModel,
             cameraViewModel: cameraViewModel,
@@ -132,7 +143,7 @@ struct ContentView: View {
             ZStack {
                 switch model.lifecycleView {
                 case .development:
-                    developerTab
+                    EmptyView()
 
                 case .record:
                     NavigationStack(path: $path) {
@@ -143,7 +154,7 @@ struct ContentView: View {
                     assetsBrowsingView
 
                 case .actions:
-                    EmptyView()
+                    accountView
                     
                 case .loading:
                     mountainBike
@@ -173,47 +184,50 @@ struct ContentView: View {
         .ignoresSafeArea()
     }
     
-    var developerTab: some View {
-        // TODO pass the path to keep it persisted
-        BrowseNavigationView(
-            navigationPath: $path,
-            useSlideTransition: true,
-            onRecordTapped: {
-                model.lifecycleView = .record
-                path.removeLast(path.count)
-            },
-            thingsContent: {
-                ThingsMenu()
-            },
-            typesContent: {
-                EvidenceTypeMenu()
-            },
-            feedContent: {
-            },
-            favoritesContent: {
-            }
-        )
-    }
-    
+
     // Assets browsing view
     var assetsBrowsingView: some View {
-        AssetsBrowsingView(
-            assetGroups: model.assetGroups,
-            onAssetSelected: { asset in
-                model.selectedAsset = asset
-                print("Selected asset: \(asset.name)")
-            },
-            onRecordTapped: {
-                switchTab(.record)
+        Group {
+            if let assetsViewModel = assetsViewModel {
+                ThingsGridView(viewModel: assetsViewModel, columns: 2) { thing in
+                    print("Selected thing: \(thing.title ?? "Untitled")")
+                }
+            } else {
+                Text("Missing Assets")
             }
-        )
+        }
+        .toolbar {
+            #if os(macOS)
+            ToolbarItem {
+                RecordButtonToolbarItem(
+                    showToolbar: true,
+                    onRecordTapped: {
+                        model.lifecycleView = .record
+                    }
+                )
+            }
+            #else
+            ToolbarItem(placement: .navigationBarTrailing) {
+                RecordButtonToolbarItem(
+                    showToolbar: true,
+                    onRecordTapped: {
+                        model.lifecycleView = .record
+                    }
+                )
+            }
+            #endif
+        }
+    }
+    
+    var accountView: some View {
+        EmptyView()
     }
 
     var withoutSidebarView: some View {
         ZStack {
             switch model.lifecycleView {
             case .development:
-                developerTab
+                EmptyView()
 
             case .record:
             NavigationStack(path: $path) {
@@ -224,7 +238,7 @@ struct ContentView: View {
                 assetsBrowsingView
 
             case .actions:
-                EmptyView()
+                accountView
                 
             case .loading:
                 mountainBike

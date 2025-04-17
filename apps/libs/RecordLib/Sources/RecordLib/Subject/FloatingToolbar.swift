@@ -266,6 +266,78 @@ public struct StandardFloatingToolbar: View {
     }
 }
 
+/// A standard floating toolbar with NavigationLink for Stack and Account buttons
+public struct NavigatingFloatingToolbar<StackContent: View, AccountContent: View>: View {
+    private let onCameraTapped: () -> Void
+    private let backgroundColor: Color
+    private let opacity: Double
+    private let cornerRadius: CGFloat
+    private let useFullRounding: Bool
+    private let spacing: CGFloat
+    @ViewBuilder private let stackContent: () -> StackContent
+    @ViewBuilder private let accountContent: () -> AccountContent
+    
+    /// Creates a new NavigatingFloatingToolbar
+    /// - Parameters:
+    ///   - backgroundColor: Background color of the toolbar
+    ///   - opacity: Opacity of the toolbar background
+    ///   - cornerRadius: Corner radius of the toolbar (used when useFullRounding is false)
+    ///   - useFullRounding: If true, uses a pill shape, otherwise uses the specified cornerRadius
+    ///   - spacing: Spacing between toolbar items
+    ///   - onCameraTapped: Action to perform when the camera button is tapped
+    ///   - stackContent: Content to display when stack button is tapped
+    ///   - accountContent: Content to display when account button is tapped
+    public init(
+        backgroundColor: Color = .black,
+        opacity: Double = 0.3,
+        cornerRadius: CGFloat = 20,
+        useFullRounding: Bool = false,
+        spacing: CGFloat = 32,
+        onCameraTapped: @escaping () -> Void,
+        @ViewBuilder stackContent: @escaping () -> StackContent,
+        @ViewBuilder accountContent: @escaping () -> AccountContent
+    ) {
+        self.backgroundColor = backgroundColor
+        self.opacity = opacity
+        self.cornerRadius = cornerRadius
+        self.useFullRounding = useFullRounding
+        self.spacing = spacing
+        self.onCameraTapped = onCameraTapped
+        self.stackContent = stackContent
+        self.accountContent = accountContent
+    }
+    
+    public var body: some View {
+        FloatingToolbar(
+            backgroundColor: backgroundColor,
+            opacity: opacity,
+            cornerRadius: cornerRadius,
+            useFullRounding: useFullRounding
+        ) {
+            HStack(spacing: spacing) {
+                // Left side - Stack NavigationLink
+                NavigationLink {
+                    Text("test - test")
+//                    stackContent()
+                } label: {
+                    StackButton(action: {})
+                }
+                
+                // Center - Camera button
+                CameraButton(action: onCameraTapped)
+                
+                // Right side - Account NavigationLink
+                NavigationLink {
+                    accountContent()
+                } label: {
+                    AccountButton(action: {})
+                }
+            }
+            .padding(.horizontal, 16)
+        }
+    }
+}
+
 // Simple logger for debugging
 fileprivate struct Logger {
     let subsystem: String
@@ -282,6 +354,64 @@ fileprivate struct Logger {
 #if DEBUG
 struct FloatingToolbar_Previews: PreviewProvider {
     static var previews: some View {
+        NavigationStack {
+            ZStack {
+                // Background content (would be the camera in the real app)
+                GeometryReader { geometry in
+                    Image("thepia_a_high-end_electric_mountain_bike_1", bundle: Bundle.module)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                        .clipped()
+                }
+                .ignoresSafeArea()
+                
+                VStack {
+                    ZStack {
+                        Color.red
+                        HStack {
+                            NavigationLink {
+                                Text("Test")
+                            } label: {
+                                Text("Test")
+                            }
+                        }
+                    }
+                    
+                    // The navigating floating toolbar
+                    NavigatingFloatingToolbar(
+                        useFullRounding: true,
+                        onCameraTapped: { print("Camera tapped") }
+                    ) {
+                        VStack {
+                            Text("Stack View")
+                                .font(.title)
+                            Spacer()
+                        }
+                        .navigationTitle("Stack")
+                        .navigationBarTitleDisplayMode(.inline)
+                    } accountContent: {
+                        VStack {
+                            Text("Account View")
+                                .font(.title)
+                            Spacer()
+                        }
+                        .navigationTitle("Account")
+                        .navigationBarTitleDisplayMode(.inline)
+                    }
+                    .padding(.top, 20)
+                    
+                    SimpleConfirmDenyStatement(
+                        objectName: "Electric Mountain Bike",
+                        onConfirm: { print("Confirmed electric mountain bike") },
+                        onDeny: { print("Denied electric mountain bike") }
+                    )
+                    .padding()
+                }
+            }
+        }
+        .previewDisplayName("Navigating Toolbar")
+        
         ZStack {
             // Background content (would be the camera in the real app)
             GeometryReader { geometry in

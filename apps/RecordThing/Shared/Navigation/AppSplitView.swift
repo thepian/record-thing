@@ -25,6 +25,7 @@ struct AppSplitView<DetailContent : View>: View {
     @State private var preferredColumn = NavigationSplitViewColumn.detail
     @Binding var columnVisibility: NavigationSplitViewVisibility
     @Binding var path: NavigationPath
+    @Binding var lifecycleView: LifecycleView
     @ObservedObject var evidenceViewModel: EvidenceViewModel
     @ObservedObject var captureService: CaptureService
     @ObservedObject var cameraViewModel: CameraViewModel
@@ -34,6 +35,7 @@ struct AppSplitView<DetailContent : View>: View {
     
     init(
         columnVisibility: Binding<NavigationSplitViewVisibility>,
+        lifecycleView: Binding<LifecycleView>,
         path: Binding<NavigationPath>,
         evidenceViewModel: EvidenceViewModel,
         cameraViewModel: CameraViewModel,
@@ -43,6 +45,7 @@ struct AppSplitView<DetailContent : View>: View {
     ) {
         self._columnVisibility = columnVisibility
         self._path = path
+        self._lifecycleView = lifecycleView
         self.evidenceViewModel = evidenceViewModel
         self.cameraViewModel = cameraViewModel
         self.captureService = captureService
@@ -139,6 +142,15 @@ struct AppSplitView<DetailContent : View>: View {
             }
             .navigationTitle("Record Thing")
             .toolbar {
+                ToolbarItem {
+                    NavigationLink {
+                        detailContent.onAppear {
+                            lifecycleView = .record
+                        }
+                    } label: {
+                        Label("Record", systemImage: "camera")
+                    }
+                }
 #if os(macOS)
                 ToolbarItem {
                     DeveloperToolbar(
@@ -175,11 +187,11 @@ struct AppSplitView<DetailContent : View>: View {
         detail: {
             NavigationStack {
                 VStack {
-                    NavigationLink {
-                        Text("sdfsdfsafd (detail)")
-                    } label: {
-                        Label("123 (D)", systemImage: "gear")
-                    }
+//                    NavigationLink {
+//                        Text("sdfsdfsafd (detail)")
+//                    } label: {
+//                        Label("123 (D)", systemImage: "gear")
+//                    }
                     detailContent
                 }
                 .navigationDestination(for: NavigationDestination.self) { dest in
@@ -331,6 +343,7 @@ struct AppSplitView_Previews: PreviewProvider {
         @StateObject var assetsViewModel = AssetsViewModel()
         AppSplitView(
             columnVisibility: .constant(.detailOnly),
+            lifecycleView: .constant(.record),
             path: .constant(NavigationPath()),
             evidenceViewModel: .createDefault(),
             cameraViewModel: CameraViewModel(),

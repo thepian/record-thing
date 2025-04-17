@@ -38,8 +38,6 @@ public struct ThingsDates: View {
         return df
     }
     
-//    @StateObject var assetGroups: [AssetGroup] = []
-        
     public var body: some View {
         VStack {
             Button(action: {
@@ -96,6 +94,11 @@ public struct ThingsSubgridView: View {
     // Callbacks
     let onThingSelected: (Things) -> Void
     
+    // Orientation
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    #endif
+    
     // MARK: - Initialization
     
     public init(
@@ -108,7 +111,7 @@ public struct ThingsSubgridView: View {
         self._viewModel = StateObject(wrappedValue: viewModel)
         self.group = group
         self.designSystem = designSystem
-        self.columns = columns
+        self._columns = State(initialValue: columns)
         self.onThingSelected = onThingSelected
     }
     
@@ -124,11 +127,15 @@ public struct ThingsSubgridView: View {
     }
     
     private func gridColumns() -> [GridItem] {
-        switch columns {
-        case 2: return [GridItem(.flexible()), GridItem(.flexible())]
-        case 3: return [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
-        default: return [GridItem(.flexible())]
+        var baseColumns = viewModel.isLandscape ? Int(Double(columns) * 1.5) : columns
+        // consider size class .regular landscape to have columns * 2
+        #if os(iOS)
+        if horizontalSizeClass == .regular {
+            baseColumns = Int(Double(baseColumns) * 1.5)
         }
+        #endif
+        
+        return Array(repeating: GridItem(.flexible()), count: max(1, baseColumns))
     }
     
     private func loadThings() {
@@ -172,7 +179,7 @@ public struct ThingsSubgridView: View {
                             .fill(Color.secondary.opacity(0.2))
                             .aspectRatio(1, contentMode: .fit)
                     }
-
+                    
                     VStack {
                         Spacer()
                         HStack {
@@ -202,7 +209,6 @@ public struct ThingsSubgridView: View {
                     Spacer()
                 }
                 .frame(minWidth: designSystem.assetsCardWidth)
-                
             }
         }
         .buttonStyle(PlainButtonStyle())
