@@ -4,6 +4,10 @@ import SwiftUI
 import os
 import Blackbird
 
+#if os(iOS)
+import UIKit
+#endif
+
 /// Group of assets by month
 public struct AssetGroup: Identifiable {
     public let id = UUID()
@@ -53,7 +57,13 @@ public class AssetsViewModel: ObservableObject, Observable {
     @Published public private(set) var selectedAsset: Asset?
     @Published public private(set) var isLoading: Bool = true
     @Published public private(set) var error: Error?
-
+    
+    // Orientation tracking
+    #if os(iOS)
+    @Published public var isLandscape = false
+    private var orientationObserver: NSObjectProtocol?
+    #endif
+    
     var df: DateFormatter {
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd hh:mm:ss"
@@ -65,6 +75,18 @@ public class AssetsViewModel: ObservableObject, Observable {
     public init(db: Blackbird.Database? = nil) {
         self.db = db
         self.loadDates()
+        
+        #if os(iOS)
+        setupOrientationTracking()
+        #endif
+    }
+    
+    deinit {
+        #if os(iOS)
+        if let observer = orientationObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+        #endif
     }
     
     // MARK: - Public Methods
@@ -301,6 +323,37 @@ public class AssetsViewModel: ObservableObject, Observable {
         }
     }
      */
+    
+    // MARK: - Orientation Tracking
+    
+    #if os(iOS)
+    private func setupOrientationTracking() {
+        // Start device orientation monitoring
+        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+        
+        // Observe orientation changes
+        orientationObserver = NotificationCenter.default.addObserver(
+            forName: UIDevice.orientationDidChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.updateOrientation()
+        }
+        
+        // Set initial orientation
+        updateOrientation()
+    }
+    
+    private func updateOrientation() {
+        let orientation = UIDevice.current.orientation
+        let newIsLandscape = orientation == .landscapeLeft || orientation == .landscapeRight
+        
+        if isLandscape != newIsLandscape {
+            isLandscape = newIsLandscape
+            logger.debug("Orientation changed to \(newIsLandscape ? "landscape" : "portrait")")
+        }
+    }
+    #endif
 }
 
 public struct AssetsViewModelKey: EnvironmentKey {

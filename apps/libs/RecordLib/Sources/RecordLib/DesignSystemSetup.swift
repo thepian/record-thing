@@ -154,7 +154,7 @@ public struct DesignSystemSetup {
     }
     
     public var assetsCardWidth: CGFloat {
-        210
+        150
     }
 
     
