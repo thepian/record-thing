@@ -45,6 +45,10 @@
 		3E5373A32D7F295E0082BF62 /* BrowseTabNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5373A02D7F295E0082BF62 /* BrowseTabNavigation.swift */; };
 		3E5373A42D7F295E0082BF62 /* BrowseTabNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5373A02D7F295E0082BF62 /* BrowseTabNavigation.swift */; };
 		3E5373AD2D8605C10082BF62 /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3E5373AC2D8605C10082BF62 /* RecordLib */; };
+		3E58BB202DB54E4B003B1592 /* ThingDetailPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E58BB1F2DB54E4B003B1592 /* ThingDetailPanel.swift */; };
+		3E58BB212DB54E4B003B1592 /* ThingDetailPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E58BB1F2DB54E4B003B1592 /* ThingDetailPanel.swift */; };
+		3E58BB222DB54E4B003B1592 /* ThingDetailPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E58BB1F2DB54E4B003B1592 /* ThingDetailPanel.swift */; };
+		3E58BB232DB54E4B003B1592 /* ThingDetailPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E58BB1F2DB54E4B003B1592 /* ThingDetailPanel.swift */; };
 		3E5A35BF2D75F04900069A95 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3E5A35BE2D75F04900069A95 /* Blackbird */; };
 		3E5A35C12D75F05200069A95 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3E5A35C02D75F05200069A95 /* Blackbird */; };
 		3E5A35C32D75F05A00069A95 /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3E5A35C22D75F05A00069A95 /* Blackbird */; };
@@ -271,6 +275,7 @@
 		3E5373682D7E2A740082BF62 /* SimpleEvidenceTypeList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleEvidenceTypeList.swift; sourceTree = "<group>"; };
 		3E5373692D7E2A740082BF62 /* TestList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestList.swift; sourceTree = "<group>"; };
 		3E5373A02D7F295E0082BF62 /* BrowseTabNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowseTabNavigation.swift; sourceTree = "<group>"; };
+		3E58BB1F2DB54E4B003B1592 /* ThingDetailPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThingDetailPanel.swift; sourceTree = "<group>"; };
 		3E78498D2DA7D0270030C91D /* AppSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSplitView.swift; sourceTree = "<group>"; };
 		3E8853652DAD6C1600F97843 /* default-record-thing.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = "default-record-thing.sqlite"; sourceTree = "<group>"; };
 		3E88536A2DAE917900F97843 /* ThingsGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThingsGridView.swift; sourceTree = "<group>"; };
@@ -397,6 +402,7 @@
 		3EE0BDB72D560BE800AD1085 /* Evidence */ = {
 			isa = PBXGroup;
 			children = (
+				3E58BB1F2DB54E4B003B1592 /* ThingDetailPanel.swift */,
 				3E88536A2DAE917900F97843 /* ThingsGridView.swift */,
 				3ED6C48B2D593E9E00FF632C /* RequestsRow.swift */,
 				3ED6C4902D59545700FF632C /* RequestsView.swift */,
@@ -757,6 +763,7 @@
 				3EE0BDDD2D56599E00AD1085 /* Account.swift in Sources */,
 				3ED6C4922D59545700FF632C /* RequestsView.swift in Sources */,
 				610F54EA26158DDB001D3AA0 /* BubbleView.swift in Sources */,
+				3E58BB232DB54E4B003B1592 /* ThingDetailPanel.swift in Sources */,
 				3E5373A22D7F295E0082BF62 /* BrowseTabNavigation.swift in Sources */,
 				610F54EC26158DDB001D3AA0 /* BubbleBackground.swift in Sources */,
 				3E88536D2DAE917900F97843 /* ThingsGridView.swift in Sources */,
@@ -801,6 +808,7 @@
 				3E88536B2DAE917900F97843 /* ThingsGridView.swift in Sources */,
 				3EE0BDDA2D56599E00AD1085 /* Account.swift in Sources */,
 				3EE0BDCB2D5611D300AD1085 /* ThingsRow.swift in Sources */,
+				3E58BB212DB54E4B003B1592 /* ThingDetailPanel.swift in Sources */,
 				3ECD50D72C9759EF00755E83 /* MLModel.swift in Sources */,
 				3E5373A42D7F295E0082BF62 /* BrowseTabNavigation.swift in Sources */,
 				3ED6C4942D59545700FF632C /* RequestsView.swift in Sources */,
@@ -832,6 +840,7 @@
 				3EE0BDDC2D56599E00AD1085 /* Account.swift in Sources */,
 				3ED6C4912D59545700FF632C /* RequestsView.swift in Sources */,
 				E0DC7FBF27B72FDC00A6417B /* BubbleView.swift in Sources */,
+				3E58BB222DB54E4B003B1592 /* ThingDetailPanel.swift in Sources */,
 				3E5373A12D7F295E0082BF62 /* BrowseTabNavigation.swift in Sources */,
 				E0DC7FC127B72FDC00A6417B /* BubbleBackground.swift in Sources */,
 				3E88536E2DAE917900F97843 /* ThingsGridView.swift in Sources */,
@@ -876,6 +885,7 @@
 				3E88536C2DAE917900F97843 /* ThingsGridView.swift in Sources */,
 				3EE0BDDB2D56599E00AD1085 /* Account.swift in Sources */,
 				3EE0BDC72D5611D300AD1085 /* ThingsRow.swift in Sources */,
+				3E58BB202DB54E4B003B1592 /* ThingDetailPanel.swift in Sources */,
 				3ECD50D62C9759EF00755E83 /* MLModel.swift in Sources */,
 				3E5373A32D7F295E0082BF62 /* BrowseTabNavigation.swift in Sources */,
 				3ED6C4932D59545700FF632C /* RequestsView.swift in Sources */,

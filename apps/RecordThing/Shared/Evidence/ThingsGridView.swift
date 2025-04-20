@@ -29,56 +29,9 @@ public struct ThingsGridCard: View {
     }
 }
 
-public struct ThingsDates: View {
-    @Environment(\.blackbirdDatabase) var db
-
-    var df: DateFormatter {
-        let df = DateFormatter()
-        df.dateFormat = "yyyy-MM-dd hh:mm:ss"
-        return df
-    }
-    
-    public var body: some View {
-        VStack {
-            Button(action: {
-                Task {
-                    if let db = db {
-                        let dates = try await Things.query(in: db, columns: [\.$created_at], matching: \.$created_at != nil)
-                        print("Dates: \(dates.count)")
-                        for d in dates {
-                            if let created_at = d[\.$created_at] {
-                                print(df.string(from: created_at))
-                            }
-                        }
-                    }
-                }
-            }) {
-                Text("Calc")
-            }
-//            if let rows = dates.result {
-//                List {
-//                    ForEach(rows) { row in
-//                        if let created_at = row[\.$created_at] {
-//                            Text(df.string(from: created_at))
-//                        } else {
-//                            Text("nil")
-//                        }
-//                    }
-//                }
-//                .animation(.default, value: rows)
-//            } else {
-//                ProgressView()
-//            }
-        }
-//        .onAppear {
-//            dates.bind(to: db)
-//        }
-
-    }
-}
-
 public struct ThingsSubgridView: View {
     @StateObject private var viewModel: AssetsViewModel
+    @StateObject private var evidenceViewModel: EvidenceViewModel
     @State private var things: [Things] = []
     @State private var columns: Int
     
@@ -94,6 +47,9 @@ public struct ThingsSubgridView: View {
     // Callbacks
     let onThingSelected: (Things) -> Void
     
+    // Selected thing
+    @Binding var selectedThing: Things?
+    
     // Orientation
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -103,15 +59,19 @@ public struct ThingsSubgridView: View {
     
     public init(
         viewModel: AssetsViewModel,
+        evidenceViewModel: EvidenceViewModel,
         group: AssetGroup,
         designSystem: DesignSystemSetup = .light,
         columns: Int = 1,
+        selectedThing: Binding<Things?>,
         onThingSelected: @escaping (Things) -> Void
     ) {
         self._viewModel = StateObject(wrappedValue: viewModel)
+        self._evidenceViewModel = StateObject(wrappedValue: evidenceViewModel)
         self.group = group
         self.designSystem = designSystem
         self._columns = State(initialValue: columns)
+        self._selectedThing = selectedThing
         self.onThingSelected = onThingSelected
     }
     
@@ -170,14 +130,20 @@ public struct ThingsSubgridView: View {
             VStack(alignment: .leading, spacing: 8) {
                 // Thing image or placeholder
                 ZStack {
-                    if let imageName = thing.evidence_type_name {
-                        Image(systemName: imageName)
-                            .font(.system(size: 30))
-                            .foregroundColor(.accentColor)
-                    } else {
-                        Rectangle()
-                            .fill(Color.secondary.opacity(0.2))
-                            .aspectRatio(1, contentMode: .fit)
+                    Group {
+                        if let imageName = thing.evidence_type_name {
+                            Image(systemName: imageName)
+                                .font(.system(size: 30))
+                                .foregroundColor(.accentColor)
+                        } else {
+                            Rectangle()
+                                .fill(Color.secondary.opacity(0.2))
+                                .aspectRatio(1, contentMode: .fit)
+                        }
+                    }
+                    .onTapGesture {
+                        selectedThing = thing
+                        evidenceViewModel.setThing(thing)
                     }
                     
                     VStack {
@@ -194,6 +160,21 @@ public struct ThingsSubgridView: View {
                                     .padding(designSystem.cardSpacing)
                             }
                         }
+                    }
+                    
+                    // Checkmark indicator
+                    if selectedThing?.id == thing.id {
+                        VStack {
+                            HStack {
+                                Spacer()
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.system(size: 24))
+                                    .foregroundColor(.accentColor)
+                                    .shadow(color: designSystem.shadowColor, radius: designSystem.shadowRadius)
+                            }
+                            Spacer()
+                        }
+                        .padding(8)
                     }
                 }
                 .frame(minWidth: designSystem.assetsCardWidth)
@@ -218,6 +199,7 @@ public struct ThingsSubgridView: View {
 /// A view that displays a grid of Things cards grouped by time periods
 public struct ThingsGridView: View {
     @StateObject private var viewModel: AssetsViewModel
+    @StateObject private var evidenceViewModel: EvidenceViewModel
     
     // Logger for debugging
     private let logger = Logger(subsystem: "com.record-thing", category: "ui.things-grid")
@@ -229,7 +211,8 @@ public struct ThingsGridView: View {
     let onThingSelected: (Things) -> Void
     
     @State private var columns: Int
-
+    @State private var selectedThing: Things?
+    
     // Size class
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -239,14 +222,40 @@ public struct ThingsGridView: View {
     
     public init(
         viewModel: AssetsViewModel,
+        evidenceViewModel: EvidenceViewModel,
         designSystem: DesignSystemSetup = .light,
         columns: Int = 1,
         onThingSelected: @escaping (Things) -> Void
     ) {
         self._viewModel = StateObject(wrappedValue: viewModel)
+        self._evidenceViewModel = StateObject(wrappedValue: evidenceViewModel)
         self.designSystem = designSystem
         self.columns = columns
         self.onThingSelected = onThingSelected
+    }
+    
+    public var thingsView: some View {
+        // Main content
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 24) {
+                ForEach(viewModel.assetGroups) { group in
+                    timeSection(group: group)
+                    ThingsSubgridView(
+                        viewModel: viewModel,
+                        evidenceViewModel: evidenceViewModel,
+                        group: group,
+                        designSystem: designSystem,
+                        columns: columns,
+                        selectedThing: $selectedThing,
+                        onThingSelected: { thing in
+                            selectedThing = thing
+                            onThingSelected(thing)
+                        }
+                    )
+                }
+            }
+            .padding()
+        }
     }
     
     // MARK: - Body
@@ -268,21 +277,33 @@ public struct ThingsGridView: View {
                         .foregroundColor(.secondary)
                 }
             } else {
-                ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 24) {
-                        ForEach(viewModel.assetGroups) { group in
-                            timeSection(group: group)
-                            ThingsSubgridView(
-                                viewModel: viewModel,
-                                group: group,
-                                designSystem: designSystem,
-                                columns: columns,
-                                onThingSelected: onThingSelected
-                            )
+                #if os(iOS)
+                HStack {
+                    thingsView
+                    if let thing = selectedThing {
+                        ThingDetailPanel(
+                            thing: thing,
+                            evidenceViewModel: evidenceViewModel,
+                            designSystem: designSystem
+                        ) {
+                            selectedThing = nil
                         }
                     }
-                    .padding()
                 }
+                #else
+                HSplitView {
+                    thingsView
+                    if let thing = selectedThing {
+                        ThingDetailPanel(
+                            thing: thing,
+                            evidenceViewModel: evidenceViewModel,
+                            designSystem: designSystem
+                        ) {
+                            selectedThing = nil
+                        }
+                    }
+                }
+                #endif
             }
         }
         .onAppear {
@@ -305,8 +326,8 @@ public struct ThingsGridView: View {
                 // Date range subtitle
                 /*
                 let formatter = DateFormatter()
-//                formatter.dateStyle = .medium
-//                formatter.timeStyle = .none
+                formatter.dateStyle = .medium
+                formatter.timeStyle = .none
                 
                 Text("\(formatter.string(from: group.from)) - \(formatter.string(from: group.to))")
                     .font(.system(size: 14))
@@ -320,13 +341,44 @@ public struct ThingsGridView: View {
 
 // MARK: - Previews
 #if DEBUG
+public struct ThingsDates: View {
+    @Environment(\.blackbirdDatabase) var db
+
+    var df: DateFormatter {
+        let df = DateFormatter()
+        df.dateFormat = "yyyy-MM-dd hh:mm:ss"
+        return df
+    }
+    
+    public var body: some View {
+        VStack {
+            Button(action: {
+                Task {
+                    if let db = db {
+                        let dates = try await Things.query(in: db, columns: [\.$created_at], matching: \.$created_at != nil)
+                        print("Dates: \(dates.count)")
+                        for d in dates {
+                            if let created_at = d[\.$created_at] {
+                                print(df.string(from: created_at))
+                            }
+                        }
+                    }
+                }
+            }) {
+                Text("Calc")
+            }
+        }
+    }
+}
+
 struct ThingsGridView_Previews: PreviewProvider {
     static var previews: some View {
         @Previewable @StateObject var datasource = AppDatasource.shared
         @Previewable @StateObject var model = Model(loadedLangConst: "en")
         @Previewable @StateObject var viewModel = AssetsViewModel(db: AppDatasource.shared.db)
+        @Previewable @StateObject var evidenceViewModel = EvidenceViewModel.createDefault()
 
-        ThingsGridView(viewModel: viewModel, columns: 2) { thing in
+        ThingsGridView(viewModel: viewModel, evidenceViewModel: evidenceViewModel, columns: 2) { thing in
             print("Selected thing: \(thing.title ?? "Untitled")")
         }
         .environment(\.blackbirdDatabase, datasource.db)

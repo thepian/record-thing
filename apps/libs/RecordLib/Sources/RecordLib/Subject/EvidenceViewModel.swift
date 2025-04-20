@@ -596,6 +596,10 @@ public class EvidenceViewModel: ObservableObject {
         return true
     }
     
+    public func setThing(_ thing: Things) {
+        print("TODO apply thing: \(thing)")
+    }
+    
     /// Resets all checkbox items to unchecked state
     public func resetCheckboxItems() {
         checkboxItems = checkboxItems.map { item in
