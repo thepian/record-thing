@@ -189,7 +189,7 @@ struct ContentView: View {
     var assetsBrowsingView: some View {
         Group {
             if let assetsViewModel = assetsViewModel {
-                ThingsGridView(viewModel: assetsViewModel, columns: 2) { thing in
+                ThingsGridView(viewModel: assetsViewModel, evidenceViewModel: evidenceViewModel, columns: 2) { thing in
                     print("Selected thing: \(thing.title ?? "Untitled")")
                 }
             } else {

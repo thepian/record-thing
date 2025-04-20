@@ -168,7 +168,7 @@ AVCaptureSession resources must be released while the Application is in the back
 Apply alwaysDiscardsLateVideoFrames to AVCaptureVideoDataOutput in CaptureService.
 
 
-## Things Assets View
+## Things Assets View (ThingsGridView)
 
 Make loadDates() create a list of assetGroups. Take in a list of dates retrieved from created_at of things. Group them with the most recent first. Each group should have a `from` and `to` Date value, the values can be used to filter things fitting in the time range of the asset group. Leave the assets array empty.
 
@@ -183,3 +183,9 @@ Create groups as follows:
 
 Groups must not have overlapping time ranges(to/from).
 Exclude groups for which there are no things found.
+
+
+Wrap the ScrollView in a HSplitView with an optional detail panel to the right for 
+showing evidence and data belonging to a single thing. 
+If a single thing is shown a the thingCard is marked by a checkmark and the sidepanel is shown, 
+otherwise it is hidden.
