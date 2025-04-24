@@ -10,12 +10,13 @@ import SwiftUI
 import Blackbird
 import RecordLib
 
+
 struct ThingsView: View {
     @Environment(\.blackbirdDatabase) private var database
+    @State var evidenceUpdater = Evidence.ArrayUpdater()
 
     var thing: Things
     @State var thingEvidence = Evidence.LiveResults()
-    var evidenceUpdater = Evidence.ArrayUpdater()
 
     @State private var presentingOrderPlacedSheet = false
     @State private var presentingSecurityAlert = false
@@ -23,17 +24,28 @@ struct ThingsView: View {
     @Environment(\.colorScheme) private var colorScheme
     
     @State private var selectedEvidenceID: Evidence.ID?
-    @State private var topmostEvidenceID: Evidence.ID?
-    @Namespace private var namespace
     
     #if APPCLIP
     @State private var presentingAppStoreOverlay = false
     #endif
 
     @State private var showingActionSheet = false
-
+    
     var body: some View {
-        container
+        GridWithPopup(results: $thingEvidence.results, didLoad: $thingEvidence.didLoad, selectedID: $selectedEvidenceID, headerView: {
+            VStack(alignment: .leading) {
+                ThingsHeaderView(thing: thing)
+                Text(LocalizedStringKey(stringLiteral: "nav.evidence"),
+                     tableName: "evidence",
+                     comment: "Evidence in a smoothie. For languages that have different words for \"Ingredient\" based on semantic context.")
+                .font(Font.title).bold()
+                .foregroundStyle(.secondary)
+            }
+
+        }, bottomBar: { bottomBar }, itemContent: { item, isPresenting, close, flipCard in
+            EvidenceGraphic(evidence: item, title: Evidence.CardTitle(), style: isPresenting ? .cardFront : .thumbnail, closeAction: close, flipAction: flipCard)
+        })
+            .padding()
             #if os(macOS)
             .frame(minWidth: 500, idealWidth: 700, maxWidth: .infinity, minHeight: 400, maxHeight: .infinity)
             #endif
@@ -77,80 +89,11 @@ struct ThingsView: View {
                                                  comment: "OK button of alert dialog when payments are disabled"))
                 )
             }
-    }
-    
-    var container: some View {
-        ZStack {
-            ScrollView {
-                content
-                    #if os(macOS)
-                    .frame(maxWidth: 600)
-                    .frame(maxWidth: .infinity)
-                    #endif
-            }
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                bottomBar
-            }
-            
-            if thingEvidence.didLoad {
-                ForEach(thingEvidence.results) { evidence in
-                    let presenting = selectedEvidenceID ?? "" == evidence.id
-                    EvidenceCard(evidence: evidence, presenting: presenting, closeAction: deselectEvidence)
-                        .matchedGeometryEffect(id: evidence.id, in: namespace, isSource: presenting)
-                        .aspectRatio(0.75, contentMode: .fit)
-                        .shadow(color: Color.black.opacity(presenting ? 0.2 : 0), radius: 20, y: 10)
-                        .padding(20)
-                        .opacity(presenting ? 1 : 0)
-                        .zIndex(topmostEvidenceID == evidence.id ? 1 : 0)
-                        .accessibilityElement(children: .contain)
-                        .accessibility(sortPriority: presenting ? 1 : 0)
-                        .accessibility(hidden: !presenting)
-                }
-            } else {
-                ProgressView()
-            }
-        }
-        .onAppear {
-            evidenceUpdater.bind(from: database, to: $thingEvidence) {
-                try await Evidence.read(from: $0, matching: \.$thing_id == thing.id, orderBy: .ascending(\.$id))
-            }
-        }
-    }
-    
-    var content: some View {
-        VStack(spacing: 0) {
-            ThingsHeaderView(thing: thing)
-            
-            VStack(alignment: .leading) {
-                Text(LocalizedStringKey(stringLiteral: "nav.evidence"),
-                     tableName: "evidence",
-                     comment: "Evidence in a smoothie. For languages that have different words for \"Ingredient\" based on semantic context.")
-                    .font(Font.title).bold()
-                    .foregroundStyle(.secondary)
-                
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 130), spacing: 16, alignment: .top)], alignment: .center, spacing: 16) {
-                    ForEach(thingEvidence.results) { evidence in
-                        let presenting = selectedEvidenceID ?? "" == evidence.id
-                        Button(action: { select(evidence: evidence) }) {
-                            EvidenceGraphic(evidence: evidence, title: Evidence.CardTitle(), style: presenting ? .cardFront : .thumbnail)
-                                .matchedGeometryEffect(
-                                    id: evidence.id,
-                                    in: namespace,
-                                    isSource: !presenting
-                                )
-                                .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.squishable(fadeOnPress: false))
-                        .aspectRatio(1, contentMode: .fit)
-                        .zIndex(topmostEvidenceID == evidence.id ? 1 : 0)
-                        .accessibility(label: Text("\(evidence.name) Ingredient",
-                                                   comment: "Accessibility label for collapsed ingredient card in smoothie overview"))
-                    }
+            .onAppear {
+                evidenceUpdater.bind(from: database, to: $thingEvidence) {
+                    try await Evidence.read(from: $0, matching: \.$thing_id == thing.id, orderBy: .ascending(\.$id))
                 }
             }
-            .padding()
-
-        }
     }
     
     var bottomBar: some View {
@@ -163,21 +106,35 @@ struct ThingsView: View {
         }
         .background(.bar)
     }
-    
-    func select(evidence: Evidence) {
-        topmostEvidenceID = evidence.id
-        withAnimation(.openCard) {
-            selectedEvidenceID = evidence.id
-        }
-    }
-    
-    func deselectEvidence() {
-        withAnimation(.closeCard) {
-            selectedEvidenceID = nil
-        }
-    }
-
 }
+
+#if DEBUG
+struct DemoGridView: View {
+    @Environment(\.blackbirdDatabase) private var database
+    @State var evidenceUpdater = Evidence.ArrayUpdater()
+
+    var thingID: Things.ID
+    @State var thingEvidence = Evidence.LiveResults()
+
+    @State private var selectedEvidenceID: Evidence.ID?
+    
+    var body: some View {
+        GridWithPopup(results: $thingEvidence.results, didLoad: $thingEvidence.didLoad, selectedID: $selectedEvidenceID, headerView: {
+            EmptyView() }, bottomBar: { EmptyView() }, itemContent: { item, isPresenting, close, flipCard in
+            EvidenceGraphic(evidence: item, title: Evidence.CardTitle(), style: isPresenting ? .cardFront : .thumbnail, closeAction: close, flipAction: flipCard)
+        })
+            #if os(macOS)
+            .frame(minWidth: 500, idealWidth: 700, maxWidth: .infinity, minHeight: 400, maxHeight: .infinity)
+            #endif
+            .padding()
+            .onAppear {
+                evidenceUpdater.bind(from: database, to: $thingEvidence) {
+                    try await Evidence.read(from: $0, matching: \.$thing_id == thingID, orderBy: .ascending(\.$id))
+                }
+            }
+    }
+}
+
 
 
 #Preview(traits: .sizeThatFitsLayout) {
@@ -185,27 +142,34 @@ struct ThingsView: View {
     @Previewable @StateObject var model = Model(loadedLangConst: "en")
 
     NavigationStack {
-        ThingsView(thing: .Sports)
+        ThingsView(thing: .Jewelry)
     }
+    .environment(\.blackbirdDatabase, datasource.db)
+    .environmentObject(model)
 }
 
-//struct ThingsView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        @Previewable @StateObject var database = try! Blackbird.Database(path: "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite")
-//        @Previewable @StateObject var model = Model(loadedLangConst: "en")
-//
+struct EvidenceGrid_Previews: PreviewProvider {
+    static var previews: some View {
+        @Previewable @StateObject var datasource = AppDatasource.shared
+        @Previewable @StateObject var model = Model(loadedLangConst: "en")
+        @Previewable @State var list: [Evidence] = [
+            .avocado,
+            .almondMilk,
+            .coconut
+        ]
+        @Previewable @State var selectedEvidenceID: Evidence.ID?
+
+
+        DemoGridView(thingID: "2vlzWlLwaDYUS7T3a6VSUrF9xU6")
 //        Group {
-//            NavigationView {
-//                ThingsView(thing: .Sports)
-//            }
-//            
-//            ForEach([Things.Pet, .Room, .Furniture]) { thing in
-//                ThingsView(thing: thing)
-//                    .previewLayout(.sizeThatFits)
-//                    .frame(height: 700)
-//            }
+//            GridWithPopup(results: $list/*.constant(Evidence.all)*/, didLoad: .constant(true), selectedID: $selectedEvidenceID, headerView: { EmptyView() }, bottomBar: { EmptyView() },
+//              itemContent: { item, isPresenting, close, flipCard in
+//                EvidenceGraphic(evidence: item, title: Evidence.CardTitle(), style: isPresenting ? .cardFront : .thumbnail, closeAction: close, flipAction: flipCard)
+//            })
 //        }
-//        .environment(\.blackbirdDatabase, database)
-//        .environmentObject(Model(loadedLangConst: "en"))
-//    }
-//}
+        .environment(\.blackbirdDatabase, datasource.db)
+        .environmentObject(model)
+        .previewDisplayName("Evidence Grid")
+    }
+}
+#endif

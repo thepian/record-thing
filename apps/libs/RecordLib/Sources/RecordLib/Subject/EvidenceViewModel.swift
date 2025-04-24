@@ -10,17 +10,6 @@ import UIKit
 import AppKit
 #endif
 
-/// Used by Carousel for cards
-public protocol CardViewData: Equatable, Identifiable {
-    var id: UUID { get }
-    var _index: Int { get }
-    var title: String { get }
-    var image: Image? { get }
-    var color: Color { get }
-    var imageWidth: CGFloat? { get }
-    var imageHeight: CGFloat? { get }
-}
-
 /// The type of evidence piece
 /// TODO naming
 public enum EvidencePieceType: Equatable {
@@ -30,8 +19,8 @@ public enum EvidencePieceType: Equatable {
 }
 
 /// Represents a piece of evidence with associated metadata
-public struct EvidencePiece: CardViewData {
-    public let id: UUID
+public struct EvidencePiece: VisualRecording {
+    public let id: String
     public let _index: Int
     public let title: String
     public var color: Color
@@ -62,7 +51,7 @@ public struct EvidencePiece: CardViewData {
         imageWidth: CGFloat? = nil,
         imageHeight: CGFloat? = nil
     ) {
-        self.id = UUID()
+        self.id = UUID().uuidString
         self.title = title
         self.type = type
         self.metadata = metadata
@@ -388,10 +377,6 @@ public class EvidenceViewModel: ObservableObject {
     public let maxCheckboxItems: Int
     public let checkboxOrientation: CarouselOrientation
     
-    // Image stack configuration
-    public var showCardBorder: Bool
-    public var cardPlaceholderSystemImage: String?
-    
     // MARK: - Initialization
     
     /// Creates a new EvidenceViewModel
@@ -429,10 +414,6 @@ public class EvidenceViewModel: ObservableObject {
         self.designSystem = designSystem
         self.focusMode = focusMode
         self.reviewing = reviewing
-        
-        // Image stack configuration
-        self.showCardBorder = true
-        self.cardPlaceholderSystemImage = nil
         
         // Checkbox configuration
         self.checkboxOrientation = checkboxOrientation
@@ -653,7 +634,7 @@ public class EvidenceViewModel: ObservableObject {
     ///   - piece: The piece to update (defaults to current piece)
     public func setEvidenceOptions(_ options: [String], for piece: EvidencePiece? = nil) {
         let targetPiece = piece ?? currentPiece
-        guard var updatingPiece = targetPiece else { return }
+        guard let updatingPiece = targetPiece else { return }
         
         var metadata = updatingPiece.metadata
         metadata["evidenceOptions"] = options.joined(separator: "|")
@@ -720,6 +701,86 @@ public class EvidenceViewModel: ObservableObject {
                 self.currentPiece = updatedPiece
             }
         }
+    }
+    
+    
+    /// Creates an EvidenceViewModel from a list of Evidence records
+    /// - Parameters:
+    ///   - evidence: Array of Evidence records from the database
+    ///   - designSystem: Design system configuration for styling
+    ///   - reviewing: Whether the view is in review mode
+    /// - Returns: A configured EvidenceViewModel
+    @MainActor public static func create(from evidence: [Evidence], designSystem: DesignSystemSetup = .light, reviewing: Bool = false) -> EvidenceViewModel {
+        logger.debug("Creating EvidenceViewModel from \(evidence.count) evidence records")
+        
+        // Convert Evidence records to EvidencePieces
+        let pieces = evidence.enumerated().map { index, evidence in
+            // Determine the evidence type based on the data
+            let type: EvidencePieceType
+            if let localFile = evidence.local_file {
+                let fileURL = URL(fileURLWithPath: localFile)
+                let fileExtension = fileURL.pathExtension.lowercased()
+                
+                switch fileExtension {
+                case "mp4", "mov", "m4v":
+                    // Video files
+                    type = .video(fileURL)
+                case "jpg", "jpeg", "png", "heic":
+                    // Image files - we'll use system image for now
+                    // TODO: Implement custom image loading
+                    type = .system("photo")
+                case "pdf", "doc", "docx":
+                    // Document files
+                    type = .system("doc.text")
+                default:
+                    // Unknown file type
+                    type = .system("questionmark.circle")
+                }
+//            } else if let evidenceTypeName = evidence.evidence_type_name {
+//                // If there's an evidence type name, use it as a system image
+//                type = .system(evidenceTypeName)
+            } else {
+                // Default to a generic system image
+                type = .system("photo")
+            }
+            
+            // Create metadata from evidence data
+            var metadata: [String: String] = [:]
+            if let data = evidence.data {
+                metadata["data"] = data
+            }
+            if let evidenceType = evidence.evidence_type {
+                metadata["evidenceType"] = String(evidenceType)
+            }
+            // Add file extension to metadata if available
+            if let localFile = evidence.local_file {
+                let fileExtension = URL(fileURLWithPath: localFile).pathExtension.lowercased()
+                metadata["fileExtension"] = fileExtension
+            }
+            
+            return EvidencePiece(
+                index: index,
+                title: evidence.name,
+                type: type,
+                metadata: metadata,
+                timestamp: evidence.created_at,
+                color: .accentColor
+            )
+        }
+        
+        return EvidenceViewModel(
+            checkboxItems: [],
+            pieces: pieces,
+            currentPiece: pieces.first,
+            direction: .horizontal,
+            spacing: 2,
+            alignment: .leading,
+            maxCheckboxItems: 1,
+            checkboxOrientation: .horizontal,
+            designSystem: designSystem,
+            focusMode: false,
+            reviewing: reviewing
+        )
     }
     
     #if DEBUG

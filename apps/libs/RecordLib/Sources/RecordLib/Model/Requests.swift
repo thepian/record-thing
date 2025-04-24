@@ -9,6 +9,8 @@ import Foundation
 import Blackbird
 
 public struct Requests: BlackbirdModel, Identifiable {
+    public typealias ID = String
+    
     static public var tableName: String = "requests"
     static public var primaryKey: [BlackbirdColumnKeyPath] = [ \.$id ]
 

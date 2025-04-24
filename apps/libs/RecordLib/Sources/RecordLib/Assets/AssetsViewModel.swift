@@ -8,16 +8,18 @@ import Blackbird
 import UIKit
 #endif
 
+
 /// Group of assets by month
-public struct AssetGroup: Identifiable {
+public struct AssetGroup: Identifiable, Hashable {
     public let id = UUID()
     public let monthYear: String
     public let month: Int
     public let year: Int
-    public let assets: [Asset]
+    public var assets: [Asset]
     public let from: Date
     public let to: Date
     public let title: String
+    public var didLoad: Bool
     
     public init(monthYear: String, month: Int, year: Int, from: Date, to: Date, title: String) {
         self.monthYear = monthYear
@@ -27,6 +29,7 @@ public struct AssetGroup: Identifiable {
         self.from = from
         self.to = to
         self.title = title
+        self.didLoad = false
     }
     
     public init(monthYear: String, month: Int, year: Int, assets: [Asset]) {
@@ -37,6 +40,36 @@ public struct AssetGroup: Identifiable {
         self.from = Date()
         self.to = Date()
         self.title = ""
+        self.didLoad = true
+    }
+    
+    #if DEBUG
+    static public let today = AssetGroup(monthYear: "Jan 2024", month: 1, year: 2024, from: Date(), to: Date().addingTimeInterval(86400), title: "Today")
+    static public let year2024 = AssetGroup(monthYear: "2024", month: 0, year: 2024, from: {
+        var dateComps = DateComponents()
+        dateComps.calendar = Calendar.init(identifier: .gregorian)
+        dateComps.day = 1
+        dateComps.month = 1
+        dateComps.year = 2024
+        return dateComps.date!
+    }(), to: {
+        var dateComps = DateComponents()
+        dateComps.calendar = Calendar.init(identifier: .gregorian)
+        dateComps.day = 31
+        dateComps.month = 12
+        dateComps.year = 2024
+        return dateComps.date!
+    }(), title: "2024")
+    #endif
+    
+    // MARK: - Hashable Conformance
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    public static func == (lhs: AssetGroup, rhs: AssetGroup) -> Bool {
+        lhs.id == rhs.id
     }
 }
 
@@ -69,6 +102,52 @@ public class AssetsViewModel: ObservableObject, Observable {
         df.dateFormat = "yyyy-MM-dd hh:mm:ss"
         return df
     }
+    
+    // MARK: - Preview Helpers
+    
+    #if DEBUG
+    public static let fourThings: [Things] = [
+        .Electronics,
+        .Furniture,
+        .Jewelry,
+        .Room
+    ]
+    
+    public static let mockViewModel: AssetsViewModel = {
+        let viewModel = AssetsViewModel()
+        let calendar = Calendar.current
+        let now = Date()
+        
+        // Today's group
+        let todayStart = calendar.startOfDay(for: now)
+        let todayEnd = calendar.date(byAdding: .day, value: 1, to: todayStart)!
+        
+        // 2024 group
+        let year2024Start = calendar.date(from: DateComponents(year: 2024, month: 1, day: 1))!
+        let year2024End = calendar.date(from: DateComponents(year: 2025, month: 1, day: 1))!
+        
+        viewModel.assetGroups = [
+            AssetGroup(
+                monthYear: "Today",
+                month: calendar.component(.month, from: now),
+                year: calendar.component(.year, from: now),
+                from: todayStart,
+                to: todayEnd,
+                title: "Today"
+            ),
+            AssetGroup(
+                monthYear: "2024",
+                month: 1,
+                year: 2024,
+                from: year2024Start,
+                to: year2024End,
+                title: "2024"
+            )
+        ]
+        viewModel.isLoading = false
+        return viewModel
+    }()
+    #endif
     
     // MARK: - Initialization
     
@@ -287,42 +366,162 @@ public class AssetsViewModel: ObservableObject, Observable {
         // TODO: Implement category filtering
     }
     
-    /*
-    /// Deletes an asset
-    /// - Parameter asset: The asset to delete
-    public func deleteAsset(_ asset: Asset) async throws {
-        guard let db = db else {
-            throw NSError(domain: "AssetsViewModel", code: 1, userInfo: [NSLocalizedDescriptionKey: "Database not available"])
+    // Add a loading state tracker
+    private var loadingGroups: Set<UUID> = []
+    
+    /// Loads assets for a specific group
+    /// - Parameter group: The asset group to load assets for
+    public func loadAssets(for group: AssetGroup) {
+        // Skip if already loaded or loading
+        guard !group.didLoad && !loadingGroups.contains(group.id) else {
+            logger.debug("Skipping load for group \(group.title) - already loaded or loading")
+            return
         }
         
-        do {
-            try await db.query("""
-                DELETE FROM things
-                WHERE id = ?
-            """, asset.id)
-            
-            await MainActor.run {
-                // Remove from groups
-                for (index, group) in assetGroups.enumerated() {
-                    if let assetIndex = group.assets.firstIndex(where: { $0.id == asset.id }) {
-                        var updatedGroup = group
-                        updatedGroup.assets.remove(at: assetIndex)
-                        assetGroups[index] = updatedGroup
-                        break
-                    }
-                }
+        guard let db = db else {
+            logger.error("Database not available")
+            return
+        }
+        
+        // Mark group as loading
+        loadingGroups.insert(group.id)
+        
+        Task {
+            do {
+                // Query things within the date range
+                let things = try await Things.read(
+                    from: db,
+                    matching: \.$created_at >= group.from && \.$created_at < group.to
+                )
                 
-                // Clear selection if it was the selected asset
-                if selectedAsset?.id == asset.id {
-                    selectedAsset = nil
+                // For each thing, load its associated evidence
+                var assets: [Asset] = []
+                for thing in things {
+                    let evidence = try await Evidence.read(
+                        from: db,
+                        matching: \.$thing_id == thing.id,
+                        orderBy: .ascending(\.$created_at)
+                    )
+                    
+                    // Construct pieces from evidence array
+                    var pieces: [EvidencePiece] = []
+                    for (index, evidence) in evidence.enumerated() {
+                        // Create metadata
+                        var metadata: [String: String] = [:]
+                        if let data = evidence.data {
+                            metadata["data"] = data
+                        }
+                        if let evidenceType = evidence.evidence_type {
+                            metadata["evidenceType"] = String(evidenceType)
+                        }
+                        
+                        // Determine the piece type based on local_file
+                        let type: EvidencePieceType
+                        if let localFile = evidence.local_file {
+                            let fileURL = URL(fileURLWithPath: localFile)
+                            let fileExtension = fileURL.pathExtension.lowercased()
+                            
+                            switch fileExtension {
+                            case "mp4", "mov", "m4v":
+                                // Video files
+                                type = .video(fileURL)
+                                metadata["fileType"] = "video"
+                                
+                            case "jpg", "jpeg", "png", "heic":
+                                // Image files
+                                if let image = loadImage(from: fileURL) {
+                                    type = .custom(image)
+                                    metadata["fileType"] = "image"
+                                } else {
+                                    type = .system("photo")
+                                    metadata["fileType"] = "image"
+                                    metadata["error"] = "Failed to load image"
+                                }
+                                
+                            case "pdf", "doc", "docx":
+                                // Document files
+                                type = .system("doc.text")
+                                metadata["fileType"] = "document"
+                                
+                            default:
+                                // Unknown file type
+                                type = .system("questionmark.circle")
+                                metadata["fileType"] = "unknown"
+                            }
+                            
+                            metadata["fileExtension"] = fileExtension
+                            metadata["filePath"] = localFile
+                        } else {
+                            // Default to generic photo
+                            type = .system("photo")
+                            metadata["fileType"] = "system"
+                        }
+                        
+                        // Create the evidence piece
+                        let piece = EvidencePiece(
+                            index: index,
+                            title: evidence.name,
+                            type: type,
+                            metadata: metadata,
+                            timestamp: evidence.created_at,
+                            color: .accentColor
+                        )
+                        pieces.append(piece)
+                    }
+                    
+                    // Create an Asset instance for each Thing with its Evidence
+                    let asset = Asset(
+                        id: thing.id,
+                        name: thing.title ?? "Untitled",
+                        category: .other,
+                        createdAt: thing.created_at ?? Date(),
+                        tags: thing.tagsArray,
+                        thing: thing,
+                        evidence: evidence,
+                        pieces: pieces,
+                        thumbnailName: thing.evidence_type_name
+                    )
+                    assets.append(asset)
+                }
+                let assetsCount = assets.count
+                
+                await MainActor.run {
+                    // Update the group in assetGroups
+                    if let index = self.assetGroups.firstIndex(where: { $0.id == group.id }) {
+                        var updatedGroup = self.assetGroups[index]
+                        updatedGroup.assets = assets
+                        updatedGroup.didLoad = true
+                        self.assetGroups[index] = updatedGroup
+                    }
+                    
+                    // Remove from loading set
+                    self.loadingGroups.remove(group.id)
+                    
+                    logger.debug("Loaded \(things.count) things with \(assetsCount) assets for group \(group.title)")
+                }
+            } catch {
+                logger.error("Failed to load assets: \(error)")
+                await MainActor.run {
+                    self.loadingGroups.remove(group.id)
+                    logger.debug("removed.")
                 }
             }
-        } catch {
-            logger.error("Failed to delete asset: \(error)")
-            throw error
         }
     }
-     */
+    
+    // Helper function to load images from file system
+    private func loadImage(from url: URL) -> Image? {
+        #if os(iOS)
+        if let uiImage = UIImage(contentsOfFile: url.path) {
+            return Image(uiImage: uiImage)
+        }
+        #elseif os(macOS)
+        if let nsImage = NSImage(contentsOfFile: url.path) {
+            return Image(nsImage: nsImage)
+        }
+        #endif
+        return nil
+    }
     
     // MARK: - Orientation Tracking
     
@@ -354,6 +553,19 @@ public class AssetsViewModel: ObservableObject, Observable {
         }
     }
     #endif
+    
+    /// Updates the assets for a specific group
+    /// - Parameters:
+    ///   - groupId: The ID of the group to update
+    ///   - assets: The new assets to set
+    public func updateGroupAssets(groupId: UUID, assets: [Asset]) {
+        if let index = assetGroups.firstIndex(where: { $0.id == groupId }) {
+            var updatedGroup = assetGroups[index]
+            updatedGroup.assets = assets
+            assetGroups[index] = updatedGroup
+            logger.debug("Updated assets for group \(updatedGroup.title)")
+        }
+    }
 }
 
 public struct AssetsViewModelKey: EnvironmentKey {

@@ -21,7 +21,7 @@ enum GestureState {
 
 // MARK: - Carousel Implementation
 
-struct Carousel<CVD: CardViewData>: View {
+struct Carousel<CVD: VisualRecording>: View {
     // MARK: - Properties
     
     @State private var currentIndex: Int = 0
@@ -246,7 +246,7 @@ struct Carousel<CVD: CardViewData>: View {
 
 extension Carousel {
     struct CardView: View {
-        let card: any CardViewData
+        let card: any VisualRecording
         @Binding var currentIndex: Int
         let geometry: GeometryProxy
         let designSystem: DesignSystemSetup
@@ -378,8 +378,8 @@ extension Notification.Name {
 }
 
 #if DEBUG
-struct ExampleCardViewData: CardViewData {
-    let id: UUID
+struct ExampleCardViewData: VisualRecording {
+    let id: String
     let _index: Int
     let title: String
     let image: Image?
@@ -388,7 +388,7 @@ struct ExampleCardViewData: CardViewData {
     var imageHeight: CGFloat?
     var hasLoadedDimensions: Bool = false
     
-    init(id: UUID = UUID(), index: Int, title: String, color: Color = .red, imageName: String? = nil) {
+    init(id: String = UUID().uuidString, index: Int, title: String, color: Color = .red, imageName: String? = nil) {
         // "thepia_a_high-end_electric_mountain_bike_1"
         self.id = id
         self._index = index

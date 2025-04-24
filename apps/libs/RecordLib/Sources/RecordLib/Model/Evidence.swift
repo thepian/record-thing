@@ -10,6 +10,8 @@ import Foundation
 import Blackbird
 
 public struct Evidence: BlackbirdModel, Identifiable {
+    public typealias ID = String
+    
     static public func == (lhs: Evidence, rhs: Evidence) -> Bool {
         lhs.id == rhs.id && lhs.thing_account_id == rhs.thing_account_id
     }

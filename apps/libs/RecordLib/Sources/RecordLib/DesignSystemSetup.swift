@@ -157,7 +157,11 @@ public struct DesignSystemSetup {
         150
     }
 
+    // Image stack configuration
+    public var showCardBorder: Bool
+    public var cardPlaceholderSystemImage: String?
     
+
 
     // MARK: - Evidence Review Dimensions
     public let evidenceReviewFactor: CGFloat
@@ -248,6 +252,10 @@ public struct DesignSystemSetup {
 //            self.cameraWidth = 1280
 //            self.cameraHeight = 720
 //        }
+        
+        // Image stack configuration
+        self.showCardBorder = true
+        self.cardPlaceholderSystemImage = nil
     }
     
     // MARK: - Presets
