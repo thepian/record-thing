@@ -1,5 +1,5 @@
 /*
-See LICENSE folder for this sample’s licensing information.
+See LICENSE folder for this sample's licensing information.
 
 Abstract:
 A view that can flip between a front and back side.
@@ -11,6 +11,16 @@ public struct FlipView<Front: View, Back: View>: View {
     public var visibleSide: FlipViewSide
     @ViewBuilder public var front: Front
     @ViewBuilder public var back: Back
+    
+    public init(
+        visibleSide: FlipViewSide,
+        @ViewBuilder front: () -> Front,
+        @ViewBuilder back: () -> Back
+    ) {
+        self.visibleSide = visibleSide
+        self.front = front()
+        self.back = back()
+    }
 
     public var body: some View {
         ZStack {

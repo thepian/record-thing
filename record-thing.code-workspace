@@ -25,10 +25,10 @@
             "path": "."
         },
         {
-            "path": "../../../Datasets/evidentnet"
+            "path": "../Blackbird"
         },
         {
-            "path": "../Blackbird"
+            "path": "../evidentnet"
         }
     ]
 }

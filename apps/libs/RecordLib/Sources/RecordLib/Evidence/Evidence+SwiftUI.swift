@@ -15,12 +15,12 @@ extension Evidence {
     
     /// Defines how the `Evidence`'s title should be displayed in card mode
     public struct CardTitle {
-        var color = Color.black
-        var rotation = Angle.degrees(0)
-        var offset = CGSize.zero
-        var blendMode = BlendMode.normal
-        var opacity: Double = 1
-        var fontSize: Double = 1
+        public var color = Color.black
+        public var rotation = Angle.degrees(0)
+        public var offset = CGSize.zero
+        public var blendMode = BlendMode.normal
+        public var opacity: Double = 1
+        public var fontSize: Double = 1
         
         public init(
             color: Color = .black,
@@ -41,11 +41,11 @@ extension Evidence {
     
     /// Defines a state for the `Evidence` to transition from when changing between card and thumbnail
     public struct Crop {
-        var xOffset: Double = 0
-        var yOffset: Double = 0
-        var scale: Double = 1
+        public var xOffset: Double = 0
+        public var yOffset: Double = 0
+        public var scale: Double = 1
         
-        var offset: CGSize {
+        public var offset: CGSize {
             CGSize(width: xOffset, height: yOffset)
         }
         
@@ -75,7 +75,7 @@ extension Evidence {
 // MARK: - All Evidence
 
 extension Evidence {
-    static let avocado = Evidence(
+    static public let avocado = Evidence(
         id: "avocado",
         thing_account_id: "acc",
         thing_id: "id123",
@@ -83,7 +83,7 @@ extension Evidence {
         updated_at: Date.now
     )
     
-    static let almondMilk = Evidence(
+    static public let almondMilk = Evidence(
         id: "almond-milk",
         thing_account_id: "acc",
         thing_id: "id1231",
@@ -91,7 +91,7 @@ extension Evidence {
         updated_at: Date.now
     )
     
-    static let banana = Evidence(
+    static public let banana = Evidence(
         id: "banana",
         thing_account_id: "acc",
         thing_id: "id1232",
@@ -99,7 +99,7 @@ extension Evidence {
         updated_at: Date.now
     )
     
-    static let blueberry = Evidence(
+    static public let blueberry = Evidence(
         id: "blueberry",
         thing_account_id: "acc",
         thing_id: "id1233",
@@ -107,7 +107,7 @@ extension Evidence {
         updated_at: Date.now
     )
     
-    static let carrot = Evidence(
+    static public let carrot = Evidence(
         id: "carrot",
         thing_account_id: "acc",
         thing_id: "id1234",
@@ -115,7 +115,7 @@ extension Evidence {
         updated_at: Date.now
     )
     
-    static let chocolate = Evidence(
+    static public let chocolate = Evidence(
         id: "chocolate",
         thing_account_id: "acc",
         thing_id: "id1235",
@@ -123,7 +123,7 @@ extension Evidence {
         updated_at: Date.now
     )
     
-    static let coconut = Evidence(
+    static public let coconut = Evidence(
         id: "coconut",
         thing_account_id: "acc",
         thing_id: "id1231",
@@ -131,7 +131,7 @@ extension Evidence {
         updated_at: Date.now
     )
     
-    static let kiwi = Evidence(
+    static public let kiwi = Evidence(
         id: "kiwi",
         thing_account_id: "acc",
         thing_id: "id1232",
@@ -139,7 +139,7 @@ extension Evidence {
         updated_at: Date.now
     )
     
-    static let lemon = Evidence(
+    static public let lemon = Evidence(
         id: "lemon",
         thing_account_id: "acc",
         thing_id: "id1233",
@@ -147,7 +147,7 @@ extension Evidence {
         updated_at: Date.now
     )
     
-    static let mango = Evidence(
+    static public let mango = Evidence(
         id: "mango",
         thing_account_id: "acc",
         thing_id: "id1234",
@@ -155,7 +155,7 @@ extension Evidence {
         updated_at: Date.now
     )
     
-    static let orange = Evidence(
+    static public let orange = Evidence(
         id: "orange",
         thing_account_id: "acc",
         thing_id: "id1235",
@@ -163,7 +163,7 @@ extension Evidence {
         updated_at: Date.now
     )
     
-    static let papaya = Evidence(
+    static public let papaya = Evidence(
         id: "papaya",
         thing_account_id: "acc",
         thing_id: "id1231",
@@ -171,7 +171,7 @@ extension Evidence {
         updated_at: Date.now
     )
     
-    static let peanutButter = Evidence(
+    static public let peanutButter = Evidence(
         id: "peanut-butter",
         thing_account_id: "acc",
         thing_id: "id1232",
@@ -179,7 +179,7 @@ extension Evidence {
         updated_at: Date.now
     )
     
-    static let pineapple = Evidence(
+    static public let pineapple = Evidence(
         id: "pineapple",
         thing_account_id: "acc",
         thing_id: "id1233",
@@ -187,7 +187,7 @@ extension Evidence {
         updated_at: Date.now
     )
     
-    static let raspberry = Evidence(
+    static public let raspberry = Evidence(
         id: "raspberry",
         thing_account_id: "acc",
         thing_id: "id1234",
@@ -195,7 +195,7 @@ extension Evidence {
         updated_at: Date.now
     )
     
-    static let spinach = Evidence(
+    static public let spinach = Evidence(
         id: "spinach",
         thing_account_id: "acc",
         thing_id: "id1235",
@@ -203,7 +203,7 @@ extension Evidence {
         updated_at: Date.now
     )
     
-    static let strawberry = Evidence(
+    static public let strawberry = Evidence(
         id: "strawberry",
         thing_account_id: "acc",
         thing_id: "id1231",
@@ -211,7 +211,7 @@ extension Evidence {
         updated_at: Date.now
     )
 
-    static let water = Evidence(
+    static public let water = Evidence(
         id: "water",
         thing_account_id: "acc",
         thing_id: "id1231",
@@ -219,7 +219,7 @@ extension Evidence {
         updated_at: Date.now
     )
     
-    static let watermelon = Evidence(
+    static public let watermelon = Evidence(
         id: "watermelon",
         thing_account_id: "acc",
         thing_id: "id1232",

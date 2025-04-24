@@ -10,6 +10,8 @@ import Foundation
 import Blackbird
 
 public struct Things: BlackbirdModel, Identifiable {
+    public typealias ID = String
+    
     static public var tableName: String = "things"
     static public var primaryKey: [BlackbirdColumnKeyPath] = [ \.$account_id, \.$id ]
 
@@ -67,7 +69,7 @@ extension Things {
     static public var Pet: Things  { Things(id: "id1232", account_id: "acc", title: "Pet", description: "Pet description") }
     static public var Room: Things  { Things(id: "id1233", account_id: "acc", title: "Room", description: "Room description") }
     static public var Furniture: Things  { Things(id: "id1234", account_id: "acc", title: "Furniture", description: "Furniture description") }
-    static public var Jewelry: Things  { Things(id: "id1235", account_id: "acc", title: "Jewelry", description: "Jewelry description") }
+    static public var Jewelry: Things  { Things(id: "2vlzWlLwaDYUS7T3a6VSUrF9xU6", account_id: "acc", title: "Jewelry", description: "Jewelry description") }
     static public var Sports: Things  { Things(id: "2siiVeL3SRmN4zsoVI1FjBlizix", account_id: "acc", title: "Sports", description: "Sports description") }
     static public var Transportation: Things  { Things(id: "id1237", account_id: "acc", title: "Transportation", description: "Transportation description") }
 }

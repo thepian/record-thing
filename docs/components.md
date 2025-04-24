@@ -189,3 +189,9 @@ Wrap the ScrollView in a HSplitView with an optional detail panel to the right f
 showing evidence and data belonging to a single thing. 
 If a single thing is shown a the thingCard is marked by a checkmark and the sidepanel is shown, 
 otherwise it is hidden.
+
+Alternately the thing detail panel can be configured to be shown below the row of the selected item instead of on the right side. This is done using a custom layout approach for ThingsSubgridView. This is supported for both iOS and macOS and has customisation options for animation.
+The ThingsSubgridView must either show a panel below the row or to the right, not both.
+
+
+ 

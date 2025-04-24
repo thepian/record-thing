@@ -1,5 +1,5 @@
 /*
-See LICENSE folder for this sample’s licensing information.
+See LICENSE folder for this sample's licensing information.
 
 Abstract:
 A squishable button that has a consistent look for use on a card
@@ -7,12 +7,22 @@ A squishable button that has a consistent look for use on a card
 
 import SwiftUI
 
-struct CardActionButton: View {
+public struct CardActionButton: View {
     var label: LocalizedStringKey
     var systemImage: String
     var action: () -> Void
+    
+    public init(
+        label: LocalizedStringKey,
+        systemImage: String,
+        action: @escaping () -> Void
+    ) {
+        self.label = label
+        self.systemImage = systemImage
+        self.action = action
+    }
 
-    var body: some View {
+    public var body: some View {
         Button(action: action) {
             Image(systemName: systemImage)
                 .font(Font.title.bold())

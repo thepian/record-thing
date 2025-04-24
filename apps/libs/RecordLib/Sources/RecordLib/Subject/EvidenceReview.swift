@@ -166,7 +166,7 @@ public struct EvidenceReview: View {
     
     /// Image card stack component
     private var imageCardStack: some View {
-        ImageCardStack(viewModel: viewModel)
+        ImageCardStack(pieces: viewModel.pieces, designSystem: viewModel.designSystem)
             .onTapGesture {
                 withAnimation(.spring()) {
                     viewModel.reviewing.toggle()
