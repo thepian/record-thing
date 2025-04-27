@@ -1,4 +1,5 @@
 from cyksuid.v2 import ksuid
+from pathlib import Path
 
 DINO_EMBEDDING_SIZE = 768
 
@@ -13,3 +14,7 @@ commons = {
     'owner_id': owner_id,
 }
 
+DBP = Path(__file__).parent / "record-thing.sqlite"
+
+# This is wonky on iPython Notebooks
+assets_ref_path = Path(__file__).parent.parent.parent / "assets"
