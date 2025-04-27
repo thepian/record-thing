@@ -163,3 +163,5 @@ record-thing-debug.*
 /apps/RecordThing/DerivedData
 /.VSCodeCounter
 *.afdesign~lock~
+/assets/sample_images
+/assets/cache

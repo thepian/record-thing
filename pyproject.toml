@@ -1,0 +1,20 @@
+[project]
+name = "record-thing"
+version = "0.1.0"
+description = "Tools and Serverside for Record Thing App support"
+readme = "README.md"
+dependencies = [
+    "cyksuid>=2.1.0",
+    "duckdb>=1.2.2",
+    "google-cloud-aiplatform>=1.90.0",
+    "google-genai>=1.12.1",
+    "ipykernel>=6.29.5",
+    "matplotlib>=3.10.1",
+    "openai>=1.76.0",
+    "pandas>=2.2.3",
+    "requests>=2.32.3",
+    "requests-cache>=1.2.1",
+    "sparqlwrapper>=2.0.0",
+    "together>=1.5.5",
+    "vertexai>=1.43.0",
+]
