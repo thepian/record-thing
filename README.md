@@ -20,6 +20,12 @@ There is a hugging face model for DINO v2, which is a self-supervised learning m
 
 * [MPS or MLX for Domestic AI? The Answer Will Surprise You](https://medium.com/@koypish/mps-or-mlx-for-domestic-ai-the-answer-will-surprise-you-df4b111de8a0) 
 
+## Services and Accounts
+
+- Apple Developer
+- together.ai for ImageGen
+
+
 ## Apple Developer Account
 
 apps@thepia.com

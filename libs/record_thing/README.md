@@ -203,3 +203,8 @@ Evidence records refer to images or short video clips recorded by a user of a si
 In terms of staging the user may record it on an isolated background such as resting on a white table, or mounted in complementary settings for a presentational hero shot.
 Images are typically recorded using a mobile phone camera in portrait mode. EXIF data is added to reflect the time and date of the recording. The image is not intended to be used as a final product, but rather as a demo for the evidence record.
 ```
+
+
+```
+Make the .sync function support a local cache directory and specific files/directories all of which is mapped into the local tree being synced with the server. Also support configuration of write protected file paths locally that will not be modified by changes on the server.
+```

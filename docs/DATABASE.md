@@ -29,6 +29,30 @@ One file is skipped for now as it breaks Blackbird support.
 
 * `libs/record_thing/db/vector.sql`
 
+
+## Account (accounts)
+
+The RecordThing App will be tied to a single account at a time. Servers can work across accounts. The owners table points to the active account on the Phone.
+
+### Team
+
+The team is define by the account information
+
+- Team name
+- Team DB URL
+- Team Primary Bucket URL
+- Team Fallback Bucket URL
+- Team invite token
+- Team access token
+
+The user can backup the local SQLite DB to the Team Buckets.
+The user can reset the local SQLite DB to a state saved/published on the Team Buckets.
+The user can sync certain content in the local SQLite DB with the Team Postgres DB Server.
+The user can sync recording files with the Team Buckets(per user home folder)
+
+A demo team is created with generated Sample recordings and Belongings.
+
+
 ## Feed
 
 The Feed is a table that contains the user's feed. It is used to show the main feed for a user in the app. A feed entry can be a Thing, a Request, an Agreement, an Event, a single piece of evidence, or a Chat.

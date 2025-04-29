@@ -18,3 +18,5 @@ DBP = Path(__file__).parent / "record-thing.sqlite"
 
 # This is wonky on iPython Notebooks
 assets_ref_path = Path(__file__).parent.parent.parent / "assets"
+
+sync_demo_path = Path(__file__).parent / "sync-demo-config.json"

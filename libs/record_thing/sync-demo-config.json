@@ -1,0 +1,7 @@
+{
+    "bucket_name": "recordthing-demo",
+    "endpoint_url": "https://s3.us-west-001.backblazeb2.com",
+    "access_key_id": "b1df5b1fd5c78211966b0b12",
+    "secret_access_key": "K001poQE5eZXPMBsPNylV1CVymhWkk0",
+    "region": "us-west-001"
+}
