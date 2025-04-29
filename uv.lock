@@ -105,6 +105,46 @@ wheels = [
 ]
 
 [[package]]
+name = "boto3"
+version = "1.38.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "botocore" },
+    { name = "jmespath" },
+    { name = "s3transfer" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b4/76/69b7ac6613bafb355edba21045372cb8dc6ff5af3252efe6f30855d3fb20/boto3-1.38.4.tar.gz", hash = "sha256:4990df0087fe7be944ba06c2d1e6512b5a24f821af5a4881f24309e13ae29e68", size = 111763 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8c/74/11971c651e88169ffdba829e106dadadb64480748c3c5ecc08e55d71fc13/boto3-1.38.4-py3-none-any.whl", hash = "sha256:ab315d38409f5b3262b653a10b0fac786bcff7e51e03dcb99ff38ba16bf85630", size = 139899 },
+]
+
+[[package]]
+name = "botocore"
+version = "1.38.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "jmespath" },
+    { name = "python-dateutil" },
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/85/a2/5e866edcf30c7b5703dc345355a0314d1e4f731762d57aabd9665df70de7/botocore-1.38.4.tar.gz", hash = "sha256:6143546bb56f1da4dff8d285cb6a3b8b0b6442451fe5937cb48a62bf7275386f", size = 13856647 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/6b/67/93837ce62b4e49eaf77f076c4781e942386acb70ad1923429df8c6b1371e/botocore-1.38.4-py3-none-any.whl", hash = "sha256:6206cf07be1069efaead2ddc858eb752dafef276ebbe88ac32b5c427b1d90570", size = 13516497 },
+]
+
+[[package]]
+name = "bunnycdnpython"
+version = "0.0.8"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/cc/dc/2036c655dc7aa7ba07986a92b2ffc542032056e4c38bfcde09b41bd13400/bunnycdnpython-0.0.8.tar.gz", hash = "sha256:e2a88051b97be667a9a5c24ba6cb2ff86f455973f56b54af69f58a969a42b064", size = 14369 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2d/c9/71364cda077c67d3ccd53ea99c0cfe7a4067ab5a5d773f42cb770f429d9d/bunnycdnpython-0.0.8-py3-none-any.whl", hash = "sha256:105d3a6a1835e03ea786db52710cad040efb849981e6297ff160fc53e2ca8e7f", size = 14967 },
+]
+
+[[package]]
 name = "cachetools"
 version = "5.5.2"
 source = { registry = "https://pypi.org/simple" }
@@ -770,6 +810,15 @@ wheels = [
 ]
 
 [[package]]
+name = "jmespath"
+version = "1.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/00/2a/e867e8531cf3e36b41201936b7fa7ba7b5702dbef42922193f05c8976cd6/jmespath-1.0.1.tar.gz", hash = "sha256:90261b206d6defd58fdd5e85f478bf633a2901798906be2ad389150c5c60edbe", size = 25843 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/31/b4/b9b800c45527aadd64d5b442f9b932b00648617eb5d63d2c7a6587b7cafc/jmespath-1.0.1-py3-none-any.whl", hash = "sha256:02e2e4cc71b5bcab88332eebf907519190dd9e6e82107fa7f83b1003a6252980", size = 20256 },
+]
+
+[[package]]
 name = "jupyter-client"
 version = "8.6.3"
 source = { registry = "https://pypi.org/simple" }
@@ -1401,6 +1450,8 @@ name = "record-thing"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "boto3" },
+    { name = "bunnycdnpython" },
     { name = "cyksuid" },
     { name = "duckdb" },
     { name = "google-cloud-aiplatform" },
@@ -1409,6 +1460,7 @@ dependencies = [
     { name = "matplotlib" },
     { name = "openai" },
     { name = "pandas" },
+    { name = "pillow" },
     { name = "requests" },
     { name = "requests-cache" },
     { name = "sparqlwrapper" },
@@ -1418,6 +1470,8 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "boto3", specifier = ">=1.38.4" },
+    { name = "bunnycdnpython", specifier = ">=0.0.8" },
     { name = "cyksuid", specifier = ">=2.1.0" },
     { name = "duckdb", specifier = ">=1.2.2" },
     { name = "google-cloud-aiplatform", specifier = ">=1.90.0" },
@@ -1426,6 +1480,7 @@ requires-dist = [
     { name = "matplotlib", specifier = ">=3.10.1" },
     { name = "openai", specifier = ">=1.76.0" },
     { name = "pandas", specifier = ">=2.2.3" },
+    { name = "pillow", specifier = ">=11.2.1" },
     { name = "requests", specifier = ">=2.32.3" },
     { name = "requests-cache", specifier = ">=1.2.1" },
     { name = "sparqlwrapper", specifier = ">=2.0.0" },
@@ -1488,6 +1543,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/da/8a/22b7beea3ee0d44b1916c0c1cb0ee3af23b700b6da9f04991899d0c555d4/rsa-4.9.1.tar.gz", hash = "sha256:e7bdbfdb5497da4c07dfd35530e1a902659db6ff241e39d9953cad06ebd0ae75", size = 29034 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/64/8d/0133e4eb4beed9e425d9a98ed6e081a55d195481b7632472be1af08d2f6b/rsa-4.9.1-py3-none-any.whl", hash = "sha256:68635866661c6836b8d39430f97a996acbd61bfa49406748ea243539fe239762", size = 34696 },
+]
+
+[[package]]
+name = "s3transfer"
+version = "0.12.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "botocore" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/fc/9e/73b14aed38ee1f62cd30ab93cd0072dec7fb01f3033d116875ae3e7b8b44/s3transfer-0.12.0.tar.gz", hash = "sha256:8ac58bc1989a3fdb7c7f3ee0918a66b160d038a147c7b5db1500930a607e9a1c", size = 149178 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/89/64/d2b49620039b82688aeebd510bd62ff4cdcdb86cbf650cc72ae42c5254a3/s3transfer-0.12.0-py3-none-any.whl", hash = "sha256:35b314d7d82865756edab59f7baebc6b477189e6ab4c53050e28c1de4d9cce18", size = 84773 },
 ]
 
 [[package]]

@@ -4,6 +4,9 @@ version = "0.1.0"
 description = "Tools and Serverside for Record Thing App support"
 readme = "README.md"
 dependencies = [
+    "boto3>=1.38.4",
+    "buckia>=0.4.0",
+    "bunnycdnpython>=0.0.8",
     "cyksuid>=2.1.0",
     "duckdb>=1.2.2",
     "google-cloud-aiplatform>=1.90.0",
@@ -12,9 +15,13 @@ dependencies = [
     "matplotlib>=3.10.1",
     "openai>=1.76.0",
     "pandas>=2.2.3",
+    "pillow>=11.2.1",
     "requests>=2.32.3",
     "requests-cache>=1.2.1",
     "sparqlwrapper>=2.0.0",
     "together>=1.5.5",
     "vertexai>=1.43.0",
 ]
+
+[tool.mypy]
+python_version = "3.10"
