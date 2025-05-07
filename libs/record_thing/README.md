@@ -148,16 +148,16 @@ The library includes command-line tools for common operations:
 
 ```bash
 # Initialize a new database
-python -m record_thing.cli init-db
+uv run -m record_thing.cli init-db
 
 # Import reference data
-python -m record_thing.cli import-brands
+uv run -m record_thing.cli import-brands
 
 # Set up demo data
-python -m record_thing.cli setup-demo --team-id 2siiDemoTeamIdExample
+uv run -m record_thing.cli setup-demo --team-id 2siiDemoTeamIdExample
 
 # Sync user data
-python -m record_thing.cli sync-user --user-id 2siiUserIdExample
+uv run -m record_thing.cli sync-user --user-id 2siiUserIdExample
 ```
 
 ## Development
@@ -170,7 +170,7 @@ git clone https://github.com/yourusername/record-thing.git
 cd record-thing
 
 # Create a virtual environment
-python -m venv venv
+uv run -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install development dependencies

@@ -30,16 +30,19 @@ The Record Thing system follows a "storage bucket as server" architecture where:
 ### 3.1 Role Definitions
 
 1. **Free Tier Users**
+
    - Initially granted read-only access to bucket
    - Access to demo team content
    - Limited storage allocation in common storage bucket
 
 2. **Premium Users**
+
    - Read-write access to personal user folder
    - Access to premium team content
    - Expanded storage allocation in premium storage bucket
 
 3. **Enterprise Users**
+
    - Read-write access to personal user folder
    - Access to enterprise team content
    - Dedicated storage in enterprise storage bucket
@@ -52,6 +55,7 @@ The Record Thing system follows a "storage bucket as server" architecture where:
 ### 3.2 Authentication Flows
 
 1. **User Registration**
+
    - Programmatic creation of user IDs without requiring personal information
    - Passkey (biometric) registration for device authentication
    - Assignment to appropriate team (default: free tier)
@@ -69,28 +73,35 @@ The Record Thing system follows a "storage bucket as server" architecture where:
 The SQLite schema includes the following key entities (based on document analysis):
 
 1. **Accounts**: Users of the Record Thing App
+
    - Primary Key: account_id (KSUID)
    - Core fields: name, username, email, sms, region
 
 2. **Owners**: The account ID used to create new data on this node
+
    - Primary Key: account_id (KSUID)
 
 3. **Teams**: (To be implemented) Groups of users with shared access
+
    - Will define which Storage Bucket the app communicates with
 
 4. **Universe**: Defines a complete set of functionality for the App
+
    - Supports white-labeling, ML model selection, and user prompting
    - Fields: URL, name, description, enabledMenus, enabledFeatures, flags
 
 5. **Things**: Physical items belonging to the user
+
    - Primary Key: account_id + id (KSUID)
    - Core fields: UPC, ASIN, brand, model, category, evidence_type
 
 6. **Evidence**: Records that provide evidence of a thing
+
    - Links to Things via thing_account_id and thing_id
    - Contains evidence data and links to local files
 
 7. **Requests**: Evidence gathering actions that users complete
+
    - Can be sent by other users or registered third parties
    - Defines delivery methods for completed requests
 
@@ -101,10 +112,12 @@ The SQLite schema includes the following key entities (based on document analysi
 ### 4.2 Storage Bucket Structure
 
 1. **Common Storage Bucket**
+
    - `<demo-team-id>/`: Demo content folder
    - `<user-id>/`: Common user folders
 
 2. **Premium Storage Bucket**
+
    - `<demo-team-id>/`: Demo content folder
    - `<user-id>/`: Premium user folders
 
@@ -115,7 +128,9 @@ The SQLite schema includes the following key entities (based on document analysi
 ### 4.3 User Folder Structure
 
 Each user folder will contain:
+
 - SQLite database backup
+- Inbound additions for the database
 - Assets subfolder with images and clips
 - ML-related data for that user
 
@@ -125,18 +140,24 @@ Each user folder will contain:
 
 The library will use Buckia to provide:
 
-1. **Bi-directional Synchronization**
-   - Sync local SQLite DB with Storage Bucket
-   - Upload/download of assets (images, clips)
-   - Support for one-way sync configuration for specific files
-   - Orphaned file cleanup
+1. **Client directed Bi-directional Synchronization**
+
+   - Local client integrates a stream of server originated changes
+   - Local SQLite DB is the source of truth
+   - The local DB is uploaded to the Storage Bucket as a backup
+   - New clients can be set up by copying from the Storage Bucket
+   - New recordings are uploaded to the Storage Bucket
+   - Clients can use the Storage Bucket to share recordings with other users
 
 2. **Provider Support**
-   - Initial support for Bunny.net
-   - Extensible design for adding S3 and Linode support
+
+   - Buckia is used to communicate with the Storage Bucket and sync
+   - Initial support for Bunny.net and Backblaze B2
+   - Extensible design for adding S3 support for Cubbit and Linode
    - Common interface across providers
 
 3. **Sync Configuration**
+
    - Path mapping between local and remote systems
    - Directory structure preservation
    - Include/exclude patterns for file selection
@@ -149,11 +170,13 @@ The library will use Buckia to provide:
 ### 5.2 Database Management
 
 1. **Schema Creation and Migrations**
+
    - Initialize database tables in correct dependency order
    - Manage migrations for schema changes
    - Ensure cross-platform compatibility (iOS, macOS, Python)
 
 2. **Reference Data Management**
+
    - Populate product types, document types from standard sources
    - Import brand and company data from Wikidata
    - Manage translations for UI elements
@@ -166,11 +189,13 @@ The library will use Buckia to provide:
 ### 5.3 User & Team Management
 
 1. **User Creation**
+
    - Generate KSUID for new users
    - Associate with appropriate team
    - Set up initial database structure
 
 2. **Team Setup**
+
    - Configure team settings
    - Associate with appropriate Storage Bucket
    - Set up team-specific reference data
@@ -183,6 +208,7 @@ The library will use Buckia to provide:
 ### 5.4 ML Model Management
 
 1. **Model Packaging**
+
    - Package vision models as zip bundles (mlprogram for iOS)
    - Store in team folder for distribution
    - Version management for models
@@ -293,11 +319,13 @@ if auth_result.is_valid:
 ### 7.1 Phase 1: Core Infrastructure
 
 1. **Buckia Integration**
+
    - Implement Bunny.net provider
    - Develop core synchronization logic
    - Create CLI interface
 
 2. **Database Schema**
+
    - Finalize initial schema
    - Implement schema migration system
    - Create database initialization tools
@@ -312,11 +340,13 @@ if auth_result.is_valid:
 ### 7.2 Phase 2: Reference Data & Management
 
 1. **Product & Brand Data**
+
    - Import data from Wikidata
    - Set up reference data models
    - Implement categorization system
 
 2. **Demo Data**
+
    - Create realistic demo data sets
    - Implement demo setup tools
    - Test with mobile applications
@@ -331,11 +361,13 @@ if auth_result.is_valid:
 ### 7.3 Phase 3: Extended Features
 
 1. **Additional Storage Providers**
+
    - Implement S3 provider
    - Implement Linode provider
    - Test provider interoperability
 
 2. **Universe System**
+
    - Develop universe configuration
    - Implement ML model packaging
    - Create universe deployment tools
@@ -352,11 +384,13 @@ if auth_result.is_valid:
 ### 8.1 Test Categories
 
 1. **Unit Tests**
+
    - Test core functionality components
    - Verify database operations
    - Validate authentication flows
 
 2. **Integration Tests**
+
    - Test synchronization with actual storage buckets
    - Verify end-to-end authentication
    - Test database migrations
@@ -369,11 +403,13 @@ if auth_result.is_valid:
 ### 8.2 Testing Tools
 
 1. **Python Testing**
+
    - pytest for unit and integration tests
    - pytest-cov for coverage reports
    - mock for simulating external dependencies
 
 2. **Database Testing**
+
    - In-memory SQLite for unit tests
    - Test fixtures for database scenarios
    - Migration testing with schema versions
@@ -388,6 +424,7 @@ if auth_result.is_valid:
 ### 9.1 Package Distribution
 
 1. **PyPI Publishing**
+
    - Package core library for pip installation
    - Set up versioning and release process
    - Create documentation for installation
@@ -400,11 +437,13 @@ if auth_result.is_valid:
 ### 9.2 Monitoring & Maintenance
 
 1. **Logging**
+
    - Implement comprehensive logging
    - Configure log levels for different environments
    - Create log analysis tools
 
 2. **Error Handling**
+
    - Develop robust error handling
    - Create retry mechanisms for transient failures
    - Implement self-healing for common issues
@@ -417,16 +456,19 @@ if auth_result.is_valid:
 ## 10. Future Considerations
 
 1. **PostgreSQL Integration**
+
    - Plan for potential PostgreSQL backend
    - Design schema compatibility layer
    - Consider migration strategies
 
 2. **Advanced ML Capabilities**
+
    - Server-side ML processing for complex tasks
    - Federated learning from user submissions
    - Improved product recognition
 
 3. **Extended API**
+
    - REST API for additional integration options
    - WebSocket for real-time updates
    - GraphQL for flexible querying
@@ -445,4 +487,3 @@ if auth_result.is_valid:
 - **Thing**: Physical item recorded by a user in the Record Thing app
 - **Evidence**: Supporting documentation or media for a Thing (receipts, photos, etc.)
 - **Team**: Group of users with shared settings and Storage Bucket access
-

@@ -33,8 +33,26 @@ The project consists of both client applications and backend tools:
 ### Setting Up the Database
 
 ```bash
-python -m libs.record_thing.db_setup
+# Initialize a new database or view existing one
+uv run -m record_thing.cli init-db
+
+# Force reset an existing database
+uv run -m record_thing.cli init-db --force
+
+# Update database schema without losing data
+uv run -m record_thing.cli update-db
+
+# Create tables only (no sample data)
+uv run -m record_thing.cli tables-db
+
+# Populate database with sample data
+uv run -m record_thing.cli populate-db
+
+# Test database connection with verbose output
+uv run -m record_thing.cli test-db -v
 ```
+
+For more detailed CLI commands, see [CLI Documentation](docs/CLI.md).
 
 Alternatively, open the Jupyter notebook: `docs/record-thing.ipynb`
 
@@ -60,16 +78,25 @@ brew install xcode-build-server xcbeautify swiftformat
 
 ### Python Environment Setup
 
+Using pip:
 ```bash
-python -m venv .venv
+uv run -m venv .venv
 source .venv/bin/activate
 pip install -e .
+```
+
+Using uv (faster):
+```bash
+uv venv
+source .venv/bin/activate
+uv pip install -e .
 ```
 
 ## Documentation
 
 For more detailed information about specific components:
 
+- [CLI Commands](docs/CLI.md) - Command-line interface documentation
 - [Navigation](docs/navigation.md) - UI navigation and component structure
 - [Database Schema](docs/DATABASE.md) - Database structure and relationships
 - [Branding Guidelines](docs/BRANDING.md) - Visual identity specifications

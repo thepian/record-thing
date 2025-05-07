@@ -1,9 +1,15 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "record-thing"
 version = "0.1.0"
 description = "Tools and Serverside for Record Thing App support"
 readme = "README.md"
+requires-python = ">=3.11"
 dependencies = [
+    "black>=25.1.0",
     "boto3>=1.38.4",
     "buckia>=0.4.0",
     "bunnycdnpython>=0.0.8",
@@ -23,8 +29,33 @@ dependencies = [
     "vertexai>=1.43.0",
 ]
 
+# Add test dependencies
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]
+
 [project.scripts]
 record-thing = "record_thing.cli:main"
+record-thing-test = "pytest:main"
+record-thing-test-integration = "pytest:main"
+
+[tool.setuptools]
+package-dir = {"" = "libs"}
+packages = ["record_thing"]
+
+# Configure pytest
+[tool.pytest.ini_options]
+testpaths = ["libs/record_thing/tests"]
+python_files = "test_*.py"
+pythonpath = [".", "libs"]
+addopts = "-v --cov=record_thing"
+
+# Configure test coverage
+[tool.coverage.run]
+source = ["libs/record_thing"]
+omit = ["libs/record_thing/tests/*"]
 
 [tool.mypy]
 python_version = "3.10"

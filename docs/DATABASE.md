@@ -3,32 +3,31 @@
 The database contains the following tables:
 
 |---------------|------------------------------|
-| Table         | Description                  |
+| Table | Description |
 |===============|==============================|
-| Universe      | Each is defined by a downloading a ZIP file that contains a description and assets. It describes a complete set of functionality for the App.              |
-| Things        | Things belonging to the user. It has been identified by the user by scanning and recording. |
-| Evidence      | Evidence is a set of records that are evidence of the thing. |
-| Requests      | Requests are a set of Evidence Gathering actions that the user is asked to complete. |
-| Accounts      | Accounts are the users of the RecordThing App. RecordThing App has a single account. |
-| Owners        | Owners are the owners of the things. |
-| ProductType   | Global product types with common identifiers and iconic images.                 |
-| DocumentType  | Global document types with common identifiers and iconic images.                 |
+| Universe | Each is defined by a downloading a ZIP file that contains a description and assets. It describes a complete set of functionality for the App. |
+| Things | Things belonging to the user. It has been identified by the user by scanning and recording. |
+| Evidence | Evidence is a set of records that are evidence of the thing. |
+| Requests | Requests are a set of Evidence Gathering actions that the user is asked to complete. |
+| Accounts | Accounts are the users of the RecordThing App. RecordThing App has a single account. |
+| Owners | Owners are the owners of the things. |
+| ProductType | Global product types with common identifiers and iconic images. |
+| DocumentType | Global document types with common identifiers and iconic images. |
 |===============|==============================|
 
 The database is a SQLite database, created by running(in order):
 
-* `libs/record_thing/db/account.sql`
-* `libs/record_thing/db/evidence.sql`
-* `libs/record_thing/db/assets.sql`
-* `libs/record_thing/db/auth.sql`
-* `libs/record_thing/db/product.sql`
-* `libs/record_thing/db/agreements.sql`
-* `libs/record_thing/db/translations.sql`
+- `libs/record_thing/db/account.sql`
+- `libs/record_thing/db/evidence.sql`
+- `libs/record_thing/db/assets.sql`
+- `libs/record_thing/db/auth.sql`
+- `libs/record_thing/db/product.sql`
+- `libs/record_thing/db/agreements.sql`
+- `libs/record_thing/db/translations.sql`
 
 One file is skipped for now as it breaks Blackbird support.
 
-* `libs/record_thing/db/vector.sql`
-
+- `libs/record_thing/db/vector.sql`
 
 ## Account (accounts)
 
@@ -36,7 +35,7 @@ The RecordThing App will be tied to a single account at a time. Servers can work
 
 ### Team
 
-The team is define by the account information
+The team is defines by the account information
 
 - Team name
 - Team DB URL
@@ -50,8 +49,16 @@ The user can reset the local SQLite DB to a state saved/published on the Team Bu
 The user can sync certain content in the local SQLite DB with the Team Postgres DB Server.
 The user can sync recording files with the Team Buckets(per user home folder)
 
-A demo team is created with generated Sample recordings and Belongings.
+The initial database contains a demo user account and owner with data for onboarding and demo purposes. As part of the onboarding a new user is created within the free tier.
 
+Two teams are defined in the initial database:
+
+1. Free tier team
+2. Premium tier team
+
+The team_id for these teams are generated, but must be maintained the same across all devices.
+
+A demo user is created, belonging to the free tier team, with generated Sample recordings and Belongings.
 
 ## Feed
 
@@ -74,7 +81,6 @@ A thing might be constructed and be tied to a product later.
 The product might be constructed based on the first piece of evidence after which the thing is created.
 Products have a canonical URL for the official product website, support website, Canonical Wikipedia page, Wikidata page.
 
-
 ## Brands
 
 Brands are the manufacturers of products. They are identified by a name and an iconic image.
@@ -83,7 +89,6 @@ The record can hold contact information, support information, legal status, etc.
 Brands can be grouped under a common name by a parent_brand_id.
 The brand description is a text field that can be used to store information about the brand. The description is used to merge duplicate brand records.
 Brands have canonical URLs for official brand websites, support website, Canonical Wikipedia page, Wikidata page, isni code.
-
 
 ## Things
 
@@ -139,12 +144,10 @@ DocumentTypes are categories of documents identified by various naming conventio
 
 I would like to extend the translations in a SwiftUI application by loading them from a SQLite table. The database(record-thing.sqlite) is stored in the App Documents folder. If no database is found a default image is copied from the App Resources. How do I do it so the application loads fast and translations are applied to all translated texts in the application. I want to use the text localisation built into SwiftUI labels. Use Blackbird to access the SQLite Database.
 
-
 ## Image Asset
 
 `libs/record_thing/db/assets.sql` contains the image assets for the application. Small versions of the images are stored in a SQLite database. The images are stored in a table with a unique path and a binary iconic_png blob. The images are loaded from the database and displayed in the application. The original image is saved in the Apps documents directory and in the associated remote Bucket.
 `alt_url` and `original_url` are used to manage where to download originals missing from the local cache, and where to find the original locally. Columns sha1/md5 save hashes for the original.
-
 
 # Collecting brands
 
@@ -154,8 +157,7 @@ Added multiple entity types:
 Q431289 (brand)
 Q167270 (trademark)
 Q4830453 (business with industry)
-Q2088357 (retail chain)
-2. Reduced statement count filter from 10 to 5
+Q2088357 (retail chain) 2. Reduced statement count filter from 10 to 5
 Used UNION to combine different types
 Maintained all existing property fetching
 This should capture:
@@ -165,14 +167,11 @@ Notable businesses
 Retail chains
 More niche or regional brands
 
-
-
 # Generating examples
 
-Add brand lists in addition to types for brand names that produce  the types of products
+Add brand lists in addition to types for brand names that produce the types of products
 
 Add 10 showcase product examples to each group with name, product description, designed year, product shot description (pose, background, subject, style)
-
 
 # Generating examples
 
@@ -197,3 +196,67 @@ Add showcase product examples to vehicles with name, product description, design
 
 TODO the rest...
 
+### Example of adding fields to a table
+
+```sql
+PRAGMA foreign_keys = OFF;
+
+BEGIN;
+
+CREATE TABLE _teams_new (
+    team_id TEXT PRIMARY KEY
+  , name TEXT
+  , region TEXT
+  , tier TEXT
+  , is_demo BOOLEAN DEFAULT(0)
+  , is_active BOOLEAN DEFAULT(1)
+  , storage_domain TEXT
+  , storage_bucket_name TEXT
+  , storage_bucket_region TEXT
+  , fallback_domain TEXT
+  , fallback_bucket_name TEXT
+  , fallback_bucket_region TEXT
+  , created_at FLOAT DEFAULT(0.0)
+  , updated_at FLOAT DEFAULT(0.0)
+);
+
+INSERT INTO _teams_new (
+    team_id
+  , name
+  , region
+  , tier
+  , is_demo
+  , is_active
+  , storage_domain
+  , storage_bucket_name
+  , storage_bucket_region
+  , created_at
+  , updated_at
+)
+SELECT
+    team_id
+  , name
+  , region
+  , tier
+  , is_demo
+  , is_active
+  , storage_domain
+  , storage_bucket_name
+  , storage_bucket_region
+  , created_at
+  , updated_at
+FROM teams;
+
+DROP TABLE teams;
+
+PRAGMA legacy_alter_table = ON;
+
+ALTER TABLE _teams_new RENAME TO teams;
+
+PRAGMA legacy_alter_table = OFF;
+
+COMMIT;
+
+PRAGMA foreign_keys = ON;
+
+```
