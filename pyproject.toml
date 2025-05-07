@@ -23,5 +23,8 @@ dependencies = [
     "vertexai>=1.43.0",
 ]
 
+[project.scripts]
+record-thing = "record_thing.cli:main"
+
 [tool.mypy]
 python_version = "3.10"
