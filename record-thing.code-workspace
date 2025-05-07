@@ -18,7 +18,18 @@
                 "priority": 4
             }
         ],
-        "sweetpad.build.xcodeWorkspacePath": "apps/RecordThing/RecordThing.xcodeproj/project.xcworkspace"
+        "sweetpad.build.xcodeWorkspacePath": "apps/RecordThing/RecordThing.xcodeproj/project.xcworkspace",
+        "python.testing.pytestEnabled": true,
+        "python.testing.unittestEnabled": false,
+        "python.testing.nosetestsEnabled": false,
+        "python.testing.pytestArgs": [
+            "libs/record_thing/tests"
+        ],
+        "python.analysis.extraPaths": [
+            ".",
+            "libs"
+        ],
+        "python.envFile": "${workspaceFolder}/.env",
     },
     "folders": [
         {

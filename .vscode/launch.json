@@ -1,0 +1,135 @@
+{
+    "version": "0.2.0",
+    "inputs": [
+        {
+            "id": "dbPath",
+            "type": "promptString",
+            "description": "Enter the database path",
+            "default": "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite"
+        }
+    ],
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}:${workspaceFolder}/libs"
+            }
+        },
+        {
+            "name": "Record Thing CLI: Initialize Database",
+            "type": "shell",
+            "command": "cd ${workspaceFolder} && uv run -m record_thing.cli init-db",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "name": "Record Thing CLI: Initialize Database (Force)",
+            "type": "shell",
+            "command": "cd ${workspaceFolder} && uv run -m record_thing.cli init-db --force",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "name": "Record Thing CLI: Update Database Schema",
+            "type": "shell",
+            "command": "cd ${workspaceFolder} && uv run -m record_thing.cli update-db",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "name": "Record Thing CLI: Create Tables Only",
+            "type": "shell",
+            "command": "cd ${workspaceFolder} && uv run -m record_thing.cli tables-db",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "name": "Record Thing CLI: Populate with Sample Data",
+            "type": "shell",
+            "command": "cd ${workspaceFolder} && uv run -m record_thing.cli populate-db",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "name": "Record Thing CLI: Test Database",
+            "type": "shell",
+            "command": "cd ${workspaceFolder} && uv run -m record_thing.cli test-db -v",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "name": "Record Thing CLI: Test Database (Custom Path)",
+            "type": "shell",
+            "command": "cd ${workspaceFolder} && uv run -m record_thing.cli test-db --db-path ${input:dbPath} -v",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "name": "Python: Test Connection",
+            "type": "python",
+            "request": "launch",
+            "module": "libs.record_thing.tests.test_connection",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}:${workspaceFolder}/libs"
+            }
+        },
+        {
+            "name": "Python: Test DB Connection",
+            "type": "python",
+            "request": "launch",
+            "module": "libs.record_thing.tests.test_db_connection",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}:${workspaceFolder}/libs"
+            }
+        },
+        {
+            "name": "Python: Test Integration",
+            "type": "python",
+            "request": "launch",
+            "module": "libs.record_thing.tests.test_integration",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}:${workspaceFolder}/libs"
+            }
+        },
+        {
+            "name": "Python: All Tests",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "libs/record_thing/tests",
+                "-v"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}:${workspaceFolder}/libs"
+            }
+        }
+    ]
+}

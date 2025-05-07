@@ -6,7 +6,8 @@ import requests
 from requests.exceptions import HTTPError
 from urllib import parse
 
-logger = logging.getLogger('bunny')
+logger = logging.getLogger("bunny")
+
 
 class Storage:
 
@@ -113,7 +114,6 @@ class Storage:
         storage_path=None,
         local_upload_file_path=os.getcwd(),
     ):
-
         """
         This function uploads files to your BunnyCDN storage zone
         Parameters
