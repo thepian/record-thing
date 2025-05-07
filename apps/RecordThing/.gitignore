@@ -5,6 +5,9 @@
 # Finder
 .DS_Store
 
+DerivedData/
+
+
 # Xcode - User files
 xcuserdata/
 
