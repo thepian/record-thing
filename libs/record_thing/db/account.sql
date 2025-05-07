@@ -19,3 +19,12 @@ CREATE TABLE IF NOT EXISTS owners (
     -- , created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- TODO teams, flag demo; demo account?
+CREATE TABLE IF NOT EXISTS teams (
+    team_id TEXT PRIMARY KEY, -- KSUID
+    name TEXT,
+    region TEXT, -- e.g., 'US', 'EU', 'APAC' for legal compliance
+    is_demo BOOLEAN DEFAULT 0,
+    is_active BOOLEAN DEFAULT 1,
+    created_at FLOAT DEFAULT 0.0 -- Unix timestamp
+);

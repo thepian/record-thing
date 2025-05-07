@@ -30,13 +30,15 @@ SQL_FILES = [
 ]
 
 # TODO this needs to always be called
-def ensure_owner_account(con, dummy_account_data = True) -> None:
+def ensure_owner_account(con, dummy_account_data = True) -> str:
     """
     Scenarios:
     1) No owners or accounts exist
     2) No owner exist, but accounts exist
     3) Owner exists, but no accounts exist
     4) Owner and accounts exist
+
+    returns the owner_id
     """
     cursor = con.cursor()
     cursor.execute("SELECT * FROM owners LIMIT 1")
@@ -67,6 +69,8 @@ def ensure_owner_account(con, dummy_account_data = True) -> None:
         commons['account_id'] = one_owner[0]
         commons['owner_id'] = one_owner[0]
     cursor.close()
+
+    return commons['owner_id']
 
 
 

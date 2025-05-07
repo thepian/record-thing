@@ -6,3 +6,8 @@ from .db_setup import (
 from .db.schema import (
     init_db_tables, init_evidence, init_categories
 )
+
+__version__ = "0.1.0"
+
+# Expose CLI entrypoint
+from .cli import main as cli_main
