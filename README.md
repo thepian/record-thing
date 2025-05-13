@@ -1,8 +1,9 @@
 # Record Thing
 
-A comprehensive solution for recording, recognizing, and organizing physical items using computer vision and machine learning.
-
 ## Overview
+
+A comprehensive solution for recording, recognizing, and organizing physical items using computer vision and machine learning. It presents the user with a iOS/Android/macOS app to record things and events in the world and organise the recordings so they can be used for various purposes.
+Recorded things can be used to prove claims, be shared with other users, and be used to create a community showcase. As a user you can request a recording from another user.
 
 Record Thing helps users:
 
@@ -10,6 +11,7 @@ Record Thing helps users:
 - Organize items by categories
 - Collect evidence about items (receipts, photos, etc.)
 - Manage requests related to items
+- Make a recording based on a pre-defined workflow
 
 ## Project Structure
 
@@ -56,15 +58,26 @@ For more detailed CLI commands, see [CLI Documentation](docs/CLI.md).
 
 Alternatively, open the Jupyter notebook: `docs/record-thing.ipynb`
 
+### Sync with Server
+
+The server storage is a Storage Bucket (Bunny CDN) that syncs with the local database and local recording files.
+
+```bash
+uv run buckia --config ./assets
+uv run buckia sync --folder=13434535345
+```
+
 ### Building the iOS/macOS App
 
 iOS:
+
 ```bash
 cd apps/RecordThing
 xcodebuild -scheme "RecordThing iOS" -configuration Debug -derivedDataPath ./DerivedData -destination "platform=iOS Simulator,name=iPhone 14 Pro"
 ```
 
 macOS:
+
 ```bash
 cd apps/RecordThing
 xcodebuild -scheme "RecordThing macOS" -configuration Debug -derivedDataPath ./DerivedData
@@ -79,6 +92,7 @@ brew install xcode-build-server xcbeautify swiftformat
 ### Python Environment Setup
 
 Using pip:
+
 ```bash
 uv run -m venv .venv
 source .venv/bin/activate
@@ -86,6 +100,7 @@ pip install -e .
 ```
 
 Using uv (faster):
+
 ```bash
 uv venv
 source .venv/bin/activate
@@ -118,6 +133,7 @@ Record Thing Ecosystem
 ## Dataset
 
 The project uses the ICDAR2019 SROIE dataset for receipt recognition:
+
 - [ICDAR-2019-SROIE](https://github.com/zzzDavid/ICDAR-2019-SROIE)
 - [Papers with Code: SROIE](https://paperswithcode.com/dataset/sroie)
 

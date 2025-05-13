@@ -1,9 +1,10 @@
 # Product Requirements Document (PRD)
+
 # Record Thing Server-Side & Data Handling
 
 ## 1. Executive Summary
 
-The Record Thing server-side component is a Python library designed to manage data synchronization, authentication, and reference data for the Record Thing mobile application. The library facilitates synchronization between local SQLite databases and cloud Storage Buckets, manages user authentication via WorkOS, and provides tools for setting up and maintaining reference and demo data. The system architecture emphasizes offline-first functionality with cloud backup and sharing capabilities rather than a traditional REST API approach.
+The Record Thing server-side component is a Python library designed to manage data synchronization, authentication, and reference data for the Record Thing mobile application. The library facilitates synchronization between local SQLite databases with associated media recording files and cloud Storage Buckets, manages user authentication via WorkOS, and provides tools for setting up and maintaining reference and demo data. The system architecture emphasizes offline-first functionality with cloud backup and sharing capabilities rather than a traditional REST API approach.
 
 ## 2. System Overview
 
