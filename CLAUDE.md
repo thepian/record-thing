@@ -124,6 +124,8 @@ Record Thing Ecosystem
     └── Buckia - Synchronization with Storage Buckets
 ```
 
+The Record Thing client-side component is a Swift/Kotlin library designed to manage data synchronization, authentication, and reference data for the Record Thing mobile application. The library facilitates synchronization between local SQLite databases with associated media recording files and cloud Storage Buckets. The system architecture emphasizes offline-first functionality with cloud backup and sharing capabilities rather than a traditional REST API approach.
+
 ### Key Components
 
 #### Database Structure
@@ -155,21 +157,68 @@ The app uses a combination of navigation types:
 - Models are defined as Swift structs conforming to BlackbirdModel
 - Automatic schema migration is handled by Blackbird
 
+#### Client Persistence and Sync
+
+The client settings are persisted beyond the uninstall of the App:
+
+- User settings including User ID saved in the App Group Shared Data (`group.com.thepia.recordthing`)
+- Other Thepia Apps can access the same settings
+- Passkeys and tokens stored in the keychain and set up for iCloud sharing
+
+The client App's database management:
+
+- Local primary SQLite database in App Support Folder stores data and downscaled media
+- New recordings saved as local files in App Documents Folder and referenced in database
+- Database backed up to App Documents folder when app becomes inactive/goes to background
+- Uses APFS Copy-on-Write for instantaneous copying
+- No need to check if changes were made since the last backup
+
+Database initialization flow on first launch:
+
+1. Try copying existing database from App Documents folder
+2. Try copying database from Storage bucket folder if user ID is set in App settings
+3. Try downloading demo database from cloud storage bucket
+4. Fall back to copying demo database from Assets folder in App bundle
+5. Create new User ID and Account record, changing the database owner
+
+Client app sync capabilities:
+
+- Download DB records for a specific user and replace existing records
+- Backup local database to cloud storage bucket under user's folder
+- Sync recording files between App Documents folder and Storage bucket
+- Configure auto-sync of all recordings or selective sync when sharing
+
+Demo mode operation:
+
+- Toggle in settings to run with demo user
+- Limits ability to modify database to protect demo data
+- "Reset Demo" button available to reset by downloading from Demo User's Storage bucket
+- No syncing with cloud storage bucket in demo mode
+
 #### Storage Bucket Structure
 
 1. **Common Storage Bucket**
 
    - `<demo-team-id>/`: Demo content folder
    - `<user-id>/`: Common user folders
+     - `recordings/`: Original recording files
+     - `images/`: Downscaled images for viewing
+     - `inbound/`: Incoming SQLite database diff files for updates
 
 2. **Premium Storage Bucket**
 
    - `<demo-team-id>/`: Demo content folder
    - `<user-id>/`: Premium user folders
+     - `recordings/`: Original recording files
+     - `images/`: Downscaled images for viewing
+     - `inbound/`: Incoming SQLite database diff files for updates
 
 3. **Enterprise Storage Bucket**
    - `<demo-team-id>/`: Demo content folder
    - `<user-id>/`: Enterprise user folders
+     - `recordings/`: Original recording files
+     - `images/`: Downscaled images for viewing
+     - `inbound/`: Incoming SQLite database diff files for updates
 
 ## Important Notes
 
@@ -179,6 +228,14 @@ The app uses a combination of navigation types:
 4. Image assets are synced between local storage and CDN
 5. MLX is used for model training and serving on Apple Silicon
 6. Tables use SQLite constraints that are compatible with Blackbird in Swift (no TIMESTAMP, DATETIME, or TIME fields)
+7. The client app views of recordings are fetched from the storage bucket using CDN URLs
+8. Web download cache directory is in the App Support folder
+9. An incremental file approach is used for updating SQLite databases:
+   - Uses SQLite database files to hold and track changes
+   - Table definitions from incoming DB files adjust the local DB file
+   - Additional tables track references to changes
+   - Local DB table tracks past applied changes
+   - Change files named with KSUIDs for easy sorting and application
 
 ## Code Generation Guidelines
 

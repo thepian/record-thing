@@ -1,0 +1,74 @@
+# Record Thing Project Rules
+
+## Swift Code Rules
+
+- When using UIKit or AppKit specific functionality, create a cross-platform function or class that implements using AppKit or UIKit based on the OS.
+- General purpose iOS and macOS functionality (Services, Views, Models and ViewModels) is stored in libs/RecordLib.
+- Concrete functionality with App Specific configurations should not be placed in libs/RecordLib.
+- Always add debug logs (os logger) & comments in the code for easier debug & readability.
+- Wrap SwiftUI previews with `#if DEBUG`.
+- Wrap Mock structs and classes with `#if DEBUG`.
+- For components that react to events or external @State variables, a toolbar should be added to the preview that allows triggering changes and events.
+
+## Logging in Swift View Components
+
+- Use Logger with proper subsystem and category:
+  ```swift
+  let logger = Logger(subsystem: "com.thepia.toytown", category: "ui")
+  ```
+- Always ensure you're not capturing sensitive or personal user input.
+- Segment logs using different subsystems (e.g., data, UI, network) and categories.
+- Adopt uniform naming conventions for loggers.
+- Use different log levels depending on the build (more verbose in debug, minimal in release).
+- Incorporate metadata for better diagnostics.
+
+## Service Documentation
+
+- Methods in a service must have a doc-string that includes when to use and from where it is expected to be called.
+- A docstring for the Service Class must summarize the Application feature the service oversees.
+
+## Target Platforms
+
+- The app supports both iOS and macOS.
+- Use conditional compilation where necessary to handle platform differences.
+
+## Database Rules
+
+- Use Blackbird ORM for database access.
+- Follow the established schema in libs/record_thing/db/.
+- Use SQLite with Vector Extensions for ML features.
+- Database migrations should follow the pattern in the example SQL migrations.
+
+## ML Processing
+
+- Use DINO v2 for computer vision and scene recognition.
+- Optimize ML processing for on-device execution.
+- Use MLX framework for Apple Silicon optimization.
+- Implement KNN-based scene recognition for categorizing captured images.
+
+## Sync Strategy
+
+- Use B2/Bunny CDN for asset synchronization and storage.
+- Handle conflict resolution for offline changes.
+- Support both local storage and cloud synchronization.
+
+## UI Components
+
+- Follow MVVM architecture pattern.
+- Use SwiftUI for declarative UI.
+- Ensure components adapt to different screen sizes and input methods.
+- Maintain consistent UX across iOS and macOS.
+
+## Project Structure
+
+- iOS and macOS apps in apps/RecordThing
+- Shared Swift code in apps/RecordThing/Shared
+- Python backend in libs/record_thing
+- Swift library in libs/RecordLib
+
+## Development Workflow
+
+- Use uv for Python environment management.
+- Use xcodebuild for iOS and macOS builds.
+- Use CLI tools for database management.
+- Follow the established testing and QA process. 
