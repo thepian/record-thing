@@ -145,3 +145,7 @@ The project uses the ICDAR2019 SROIE dataset for receipt recognition:
 ## License
 
 See [LICENSE](LICENSE) for details.
+
+### Auth prompt
+
+I want to use keychain/keyring functionality on my website to authenticate users and protect access tokens and other secrets for accessing backend services. This should enable a single registration with touchid/faceid that can be used across apple devices for the same user. It should be possible to replicate the authentication approach in other contexts such as python cli or swiftui
