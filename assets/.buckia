@@ -1,0 +1,73 @@
+namespace: recordthing
+
+# Demo Storage Zone
+demo:
+  # Basic config
+  provider: bunny
+  bucket_name: recordthing-demo
+  domain: storage.bunnycdn.net
+  region: eu
+  token_context: demo
+
+  # Folders to sync (top-level directories in the bucket)
+  folders:
+    - 2siEySuKO1wK4XiJHWQ0YxhLxd2
+
+  # Sync settings
+  paths:
+    - demo/ # Will receive incoming changes from the bucket
+    - static/data/ # Will be uploaded to the bucket
+  delete_orphaned: true
+  max_workers: 8
+
+  # Advanced settings
+  checksum_algorithm: sha256
+  conflict_resolution: local_wins # Options: local_wins, remote_wins, newest_wins, ask
+
+# Common Storage Zone
+common:
+  # Basic config
+  provider: bunny
+  bucket_name: recordthing-common
+  domain: storage.bunnycdn.net
+  region: eu
+  token_context: common
+
+  # Folders to sync (top-level directories in the bucket)
+  folders:
+    - 2siEySuKO1wK4XiJHWQ0YxhLxd2
+
+  # Sync settings
+  paths:
+    - common/ # Will receive incoming changes from the bucket
+    - static/data/ # Will be uploaded to the bucket
+  delete_orphaned: true
+  max_workers: 8
+
+  # Advanced settings
+  checksum_algorithm: sha256
+  conflict_resolution: local_wins # Options: local_wins, remote_wins, newest_wins, ask
+
+# Common Storage Zone
+premium:
+  # Basic config
+  provider: bunny
+  bucket_name: recordthing-premium
+  domain: storage.bunnycdn.net
+  region: eu
+  token_context: premium
+
+  # Folders to sync (top-level directories in the bucket)
+  folders:
+    - 2siEySuKO1wK4XiJHWQ0YxhLxd2
+
+  # Sync settings
+  paths:
+    - premium/ # Will receive incoming changes from the bucket
+    - static/data/ # Will be uploaded to the bucket
+  delete_orphaned: true
+  max_workers: 8
+
+  # Advanced settings
+  checksum_algorithm: sha256
+  conflict_resolution: local_wins # Options: local_wins, remote_wins, newest_wins, ask
