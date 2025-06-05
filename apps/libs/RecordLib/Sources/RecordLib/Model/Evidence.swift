@@ -23,6 +23,8 @@ public struct Evidence: BlackbirdModel, Identifiable {
     @BlackbirdColumn public var thing_account_id: String
     @BlackbirdColumn public var thing_id: String?
     @BlackbirdColumn public var request_id: String?
+    @BlackbirdColumn public var strategist_account_id: String?
+    @BlackbirdColumn public var strategist_id: String?
     
 //    -- created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 

@@ -52,6 +52,7 @@ class Model: ObservableObject {
     @Published var selectedThingID: Things.ID?
     @Published var selectedRequestID: Requests.ID?
     @Published var selectedTypeID: EvidenceType.ID?
+    @Published var selectedStrategistID: Strategists.ID?
 
     @Published var searchString = ""
     

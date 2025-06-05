@@ -12,6 +12,8 @@ Record Thing helps users:
 - Collect evidence about items (receipts, photos, etc.)
 - Manage requests related to items
 - Make a recording based on a pre-defined workflow
+- Share content from other apps (YouTube, web pages) into strategic focus areas
+- Organize knowledge around strategic interests through the Thepia Strategist system
 
 ## Project Structure
 
@@ -137,9 +139,20 @@ The project uses the ICDAR2019 SROIE dataset for receipt recognition:
 - [ICDAR-2019-SROIE](https://github.com/zzzDavid/ICDAR-2019-SROIE)
 - [Papers with Code: SROIE](https://paperswithcode.com/dataset/sroie)
 
+## iOS Sharing Implementation
+
+RecordThing includes an iOS Share Extension that allows users to share content from other apps directly into the app:
+
+- **YouTube Video Sharing**: Share videos from the YouTube app into strategic focus areas
+- **Web Content Sharing**: Share any web page from Safari or other browsers
+- **Thepia Strategist**: Organize shared content around strategic interests and projects
+- **Evidence Linking**: Connect shared content to physical items or strategic focus areas
+
+For detailed implementation information, see [docs/SHARING_IMPLEMENTATION.md](docs/SHARING_IMPLEMENTATION.md).
+
 ## Services and Accounts
 
-- Apple Developer (apps@thepia.com)
+- Apple Developer (<apps@thepia.com>)
 - together.ai for ImageGen
 
 ## License

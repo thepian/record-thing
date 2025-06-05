@@ -66,12 +66,27 @@ CREATE TABLE IF NOT EXISTS requests (
 );
 
 
+-- Strategists table (Thepia Strategist knowledge base)
+CREATE TABLE IF NOT EXISTS strategists (
+    id TEXT NOT NULL DEFAULT '',  -- KSUID
+    account_id TEXT NOT NULL DEFAULT '',
+    title TEXT NULL DEFAULT NULL, -- Title/name of the strategic focus area
+    description TEXT NULL DEFAULT NULL, -- Description of the strategic area
+    tags TEXT NULL DEFAULT NULL, -- JSON array of tags
+    created_at FLOAT NULL DEFAULT NULL,
+    updated_at FLOAT NULL DEFAULT NULL,
+    PRIMARY KEY (account_id, id)
+    -- , FOREIGN KEY (account_id) REFERENCES accounts(account_id)
+);
+
 -- Evidence table
 CREATE TABLE IF NOT EXISTS evidence (
     id TEXT PRIMARY KEY,  -- KSUID
     thing_account_id TEXT,
     thing_id TEXT,
     request_id INTEGER,
+    strategist_account_id TEXT,
+    strategist_id TEXT,
     -- created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     -- updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_at FLOAT NULL DEFAULT NULL,
@@ -80,7 +95,8 @@ CREATE TABLE IF NOT EXISTS evidence (
     data TEXT, -- JSON object containing evidence data
     local_file TEXT -- Path to local file (.jpg or .png), starts with '/images/
     -- , FOREIGN KEY (thing_account_id, thing_id) REFERENCES things(account_id, id),
-    -- FOREIGN KEY (request_id) REFERENCES requests(id)
+    -- FOREIGN KEY (request_id) REFERENCES requests(id),
+    -- FOREIGN KEY (strategist_account_id, strategist_id) REFERENCES strategists(account_id, id)
 );
 
 
