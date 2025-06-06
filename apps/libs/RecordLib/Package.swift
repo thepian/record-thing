@@ -40,9 +40,6 @@ let package = Package(
                 "RecordLib"
             ],
             path: "Tests/RecordLibTests",
-            exclude: [
-                "Info.plist"
-            ],
             sources: [
                 "Assets/AssetsViewModelTests.swift"
             ]),

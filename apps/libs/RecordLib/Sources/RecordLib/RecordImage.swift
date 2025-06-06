@@ -77,10 +77,10 @@ public extension RecordImage {
     /// Converts the image to JPEG data with the specified compression quality
     /// - Parameter compressionQuality: The quality of the resulting JPEG image, expressed as a value from 0.0 to 1.0
     /// - Returns: JPEG data representation of the image, or nil if conversion failed
-    func jpegData(compressionQuality: CGFloat) -> Data? {
+    func recordJpegData(compressionQuality: CGFloat) -> Data? {
         #if canImport(UIKit)
         // UIImage has a built-in jpegData method
-        return self.jpegData(compressionQuality: compressionQuality)
+        return (self as UIImage).jpegData(compressionQuality: compressionQuality)
         #elseif canImport(AppKit)
         // For NSImage, we need to convert to a bitmap representation first
         guard let tiffData = self.tiffRepresentation,

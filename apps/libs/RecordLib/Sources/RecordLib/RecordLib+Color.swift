@@ -45,5 +45,30 @@ extension Color {
         return Color(UIColor.tertiarySystemBackground)
 #endif
     }
+    
+    // System grays and separators
+    static public var systemGray4: Color {
+#if os(macOS)
+        return Color(NSColor.separatorColor)
+#else
+        return Color(UIColor.systemGray4)
+#endif
+    }
+    
+    static public var systemGray6: Color {
+#if os(macOS)
+        return Color(NSColor.controlColor)
+#else
+        return Color(UIColor.systemGray6)
+#endif
+    }
+    
+    static public var separator: Color {
+#if os(macOS)
+        return Color(NSColor.separatorColor)
+#else
+        return Color(UIColor.separator)
+#endif
+    }
 }
 

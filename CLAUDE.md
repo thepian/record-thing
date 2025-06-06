@@ -237,6 +237,35 @@ Demo mode operation:
    - Local DB table tracks past applied changes
    - Change files named with KSUIDs for easy sorting and application
 
+## iOS Share Extension Implementation
+
+### Overview
+RecordThing includes an iOS Share Extension that allows users to share content from other apps (YouTube, Safari, etc.) directly into the app. Content can be categorized as either "Things" (physical items) or "Strategists" (strategic focus areas in the Thepia knowledge base).
+
+### Database Schema Extensions
+- **Strategists Table**: New table for Thepia Strategist knowledge base with KSUID primary keys
+- **Evidence Extensions**: Added strategist_account_id and strategist_id fields to link evidence to strategic focus areas
+- **Relationship Pattern**: Follows existing Things/Evidence relationship model
+
+### Share Extension Components
+- **ShareViewController.swift**: Main extension controller with SwiftUI integration
+- **ShareContentView.swift**: SwiftUI interface for content categorization and saving
+- **Content Support**: Handles URLs, web pages, and text content (optimized for YouTube sharing)
+- **App Groups**: Configured for data sharing between main app and extension
+
+### Main App Integration
+- **StrategistsMenu/List/Row/View**: Complete SwiftUI view hierarchy for strategists
+- **Model Extensions**: Added selectedStrategistID to main app model
+- **Navigation**: Integrated with existing app navigation patterns
+
+### Implementation Status
+- ✅ Core share extension structure and SwiftUI interface
+- ✅ Database schema and Swift models
+- ✅ Main app views for strategists
+- 🚧 Xcode project target configuration (requires manual setup)
+- 🚧 Database saving implementation in share extension
+- 🚧 App group configuration and testing
+
 ## Code Generation Guidelines
 
 ### General Principles

@@ -127,11 +127,14 @@ struct RecordThingApp: App {
         // Configure logging to omit trace level logs
         Logger.configureLogging()
         logger.debug("RecordThingApp initialized")
-        
+
+        // Debug ShareExtension availability
+        debugShareExtension()
+
         #if os(macOS)
         // Initialize window state observer
         windowStateObserver = WindowStateObserver(captureService: captureService)
-        
+
         // Configure window management
         NSApplication.shared.windowsMenu = NSMenu(title: "Window")
         let showAllWindowsItem = NSMenuItem(
@@ -143,6 +146,79 @@ struct RecordThingApp: App {
         NSApplication.shared.windowsMenu?.addItem(showAllWindowsItem)
         #endif
     }
+
+    private func debugShareExtension() {
+        logger.debug("🔍 Debugging ShareExtension availability...")
+
+        // Check bundle structure
+        let mainBundle = Bundle.main
+        logger.debug("📱 Main app bundle ID: \(mainBundle.bundleIdentifier ?? "unknown")")
+        logger.debug("📱 Main app bundle path: \(mainBundle.bundlePath)")
+
+        // Check for PlugIns directory
+        let plugInsPath = mainBundle.bundlePath + "/PlugIns"
+        let fileManager = FileManager.default
+
+        if fileManager.fileExists(atPath: plugInsPath) {
+            logger.debug("✅ PlugIns directory exists at: \(plugInsPath)")
+
+            do {
+                let pluginContents = try fileManager.contentsOfDirectory(atPath: plugInsPath)
+                logger.debug("📂 PlugIns contents: \(pluginContents)")
+
+                // Look for ShareExtension.appex
+                let shareExtensionPath = plugInsPath + "/ShareExtension.appex"
+                if fileManager.fileExists(atPath: shareExtensionPath) {
+                    logger.debug("✅ ShareExtension.appex found at: \(shareExtensionPath)")
+
+                    // Try to load the extension bundle
+                    if let extensionBundle = Bundle(path: shareExtensionPath) {
+                        logger.debug("✅ ShareExtension bundle loaded successfully")
+                        logger.debug("🆔 Extension bundle ID: \(extensionBundle.bundleIdentifier ?? "unknown")")
+                        logger.debug("📋 Extension display name: \(extensionBundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? "unknown")")
+
+                        // Check Info.plist configuration
+                        if let extensionInfo = extensionBundle.object(forInfoDictionaryKey: "NSExtension") as? [String: Any] {
+                            logger.debug("📄 NSExtension info found")
+
+                            if let attributes = extensionInfo["NSExtensionAttributes"] as? [String: Any],
+                               let activationRule = attributes["NSExtensionActivationRule"] as? [String: Any] {
+                                logger.debug("⚙️ Activation rules: \(activationRule)")
+                            }
+                        }
+                    } else {
+                        logger.error("❌ Failed to load ShareExtension bundle")
+                    }
+                } else {
+                    logger.error("❌ ShareExtension.appex NOT found at expected path")
+                }
+            } catch {
+                logger.error("❌ Failed to read PlugIns directory: \(error.localizedDescription)")
+            }
+        } else {
+            logger.error("❌ PlugIns directory does NOT exist")
+        }
+
+        #if os(iOS)
+        // Check if extension is registered with the system
+        checkSystemExtensionRegistration()
+        #endif
+    }
+
+    #if os(iOS)
+    private func checkSystemExtensionRegistration() {
+        logger.debug("🔍 Checking system extension registration...")
+
+        // This will be called when the app becomes active
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            // Note: There's no public API to query system extensions directly
+            // The extension registration happens automatically when the app is installed
+            logger.debug("📋 Extension registration is handled automatically by iOS")
+            logger.debug("🔗 Our extension should appear in share sheets if properly configured")
+            logger.debug("💡 Check the ShareExtension Debug view for detailed bundle information")
+        }
+    }
+    #endif
     
     var body: some Scene {
         WindowGroup {

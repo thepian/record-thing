@@ -448,6 +448,13 @@ public class CaptureService: NSObject, ObservableObject {
     
     // Modify setupCaptureSession to respect subdued mode
     func setupCaptureSession(completion: @escaping (Error?) -> ()) {
+        // Check if we're running on a Mac (Catalyst or simulator) - skip camera setup
+        #if targetEnvironment(macCatalyst) || targetEnvironment(simulator)
+        logger.debug("Running on Mac environment - skipping camera setup")
+        completion(CaptureError.deviceNotAvailable(comment: "Camera not available on Mac environment"))
+        return
+        #endif
+
         // Find appropriate camera device based on platform
         var videoDevice: AVCaptureDevice?
         
@@ -613,20 +620,37 @@ public class CaptureService: NSObject, ObservableObject {
     // called from view button
     public func askForPermission() async {
         logger.debug("Requesting camera access asynchronously")
+
+        // Check if we're running on a Mac (Catalyst or simulator)
+        #if targetEnvironment(macCatalyst) || targetEnvironment(simulator)
+        logger.debug("Running on Mac environment - skipping camera permission request")
+        DispatchQueue.main.async {
+            self.permissionGranted = false
+            self.logger.debug("Camera access denied on Mac environment")
+        }
+        return
+        #endif
+
         let granted = await AVCaptureDevice.requestAccess(for: .video)
-        
+
         // Update permission state
         DispatchQueue.main.async {
             self.permissionGranted = granted
             self.logger.debug("Camera access \(granted ? "granted" : "denied") asynchronously")
-            
+
             // Start monitoring for permission changes if denied
             if !granted {
                 self.startPermissionMonitoring()
             }
         }
-        
-        // TODO fix this leaks the continuation
+
+        // Only try to start session if permission was granted
+        guard granted else {
+            logger.debug("Camera permission denied - not starting session")
+            return
+        }
+
+        // Fixed continuation leak by ensuring it's always resumed
         await withCheckedContinuation { continuation in
             self.startSessionIfAuthorized() { err in
                 if let error = err {
