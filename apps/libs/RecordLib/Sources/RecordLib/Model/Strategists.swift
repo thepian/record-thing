@@ -48,11 +48,40 @@ extension Strategists {
         Strategists(id: "strat123", account_id: "acc")
         Strategists(id: "strat234", account_id: "acc")
     }
+
+    // Used in previews.
+    static public var AIStrategy: Strategists {
+        Strategists(id: "strat123", account_id: "acc", title: "AI & Machine Learning", description: "Strategic focus on AI technologies")
+    }
+    static public var BusinessStrategy: Strategists {
+        Strategists(id: "strat234", account_id: "acc", title: "Business Development", description: "Growth and expansion strategies")
+    }
 }
 
+// MARK: - Strategists Builder
 @resultBuilder
-public struct StrategistsArrayBuilder {
-    static public func buildBlock(_ components: Strategists...) -> [Strategists] {
-        return components
+enum StrategistsArrayBuilder {
+    static public func buildEither(first component: [Strategists]) -> [Strategists] {
+        return component
+    }
+
+    static public func buildEither(second component: [Strategists]) -> [Strategists] {
+        return component
+    }
+
+    static public func buildOptional(_ component: [Strategists]?) -> [Strategists] {
+        return component ?? []
+    }
+
+    static public func buildExpression(_ expression: Strategists) -> [Strategists] {
+        return [expression]
+    }
+
+    static public func buildExpression(_ expression: ()) -> [Strategists] {
+        return []
+    }
+
+    static public func buildBlock(_ strategists: [Strategists]...) -> [Strategists] {
+        return strategists.flatMap { $0 }
     }
 }

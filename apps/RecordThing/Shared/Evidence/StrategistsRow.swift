@@ -58,19 +58,9 @@ struct StrategistsRow: View {
 }
 
 #Preview {
-    let strategist = Strategists(
-        id: "test123",
-        account_id: "acc123",
-        title: "AI & Machine Learning Strategy",
-        description: "Exploring the latest developments in artificial intelligence and machine learning technologies for strategic advantage.",
-        tags: "[\"AI\", \"ML\", \"Strategy\", \"Technology\"]",
-        created_at: Date(),
-        updated_at: Date()
-    )
-    
     @Previewable @StateObject var model = Model(loadedLangConst: "en")
-    
-    StrategistsRow(strategist: strategist)
+
+    StrategistsRow(strategist: Strategists.AIStrategy)
         .environmentObject(model)
         .padding()
 }

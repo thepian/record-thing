@@ -16,14 +16,13 @@ struct StrategistsView: View {
     
     // Load evidence related to this strategist
     @BlackbirdLiveModels var evidence: Blackbird.LiveResults<Evidence>
-    
+
     init(strategist: Strategists) {
         self.strategist = strategist
         self._evidence = BlackbirdLiveModels({ db in
             try await Evidence.read(
                 from: db,
-                where: "strategist_account_id = ? AND strategist_id = ?",
-                orderBy: .descending(\.$created_at),
+                sqlWhere: "strategist_account_id = ? AND strategist_id = ? ORDER BY created_at DESC",
                 strategist.account_id, strategist.id
             )
         })
@@ -175,21 +174,11 @@ struct EvidenceRowView: View {
 }
 
 #Preview {
-    let strategist = Strategists(
-        id: "test123",
-        account_id: "acc123",
-        title: "AI & Machine Learning Strategy",
-        description: "Exploring the latest developments in artificial intelligence and machine learning technologies for strategic advantage.",
-        tags: "[\"AI\", \"ML\", \"Strategy\", \"Technology\"]",
-        created_at: Date(),
-        updated_at: Date()
-    )
-    
     @Previewable @StateObject var datasource = AppDatasource.shared
     @Previewable @StateObject var model = Model(loadedLangConst: "en")
 
     NavigationView {
-        StrategistsView(strategist: strategist)
+        StrategistsView(strategist: Strategists.AIStrategy)
     }
     .environment(\.blackbirdDatabase, datasource.db)
     .environmentObject(model)
