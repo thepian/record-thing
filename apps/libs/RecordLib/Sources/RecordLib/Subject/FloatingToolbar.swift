@@ -389,7 +389,9 @@ struct FloatingToolbar_Previews: PreviewProvider {
                             Spacer()
                         }
                         .navigationTitle("Stack")
+                        #if !os(macOS)
                         .navigationBarTitleDisplayMode(.inline)
+                        #endif
                     } accountContent: {
                         VStack {
                             Text("Account View")
@@ -397,7 +399,9 @@ struct FloatingToolbar_Previews: PreviewProvider {
                             Spacer()
                         }
                         .navigationTitle("Account")
+                        #if !os(macOS)
                         .navigationBarTitleDisplayMode(.inline)
+                        #endif
                     }
                     .padding(.top, 20)
                     

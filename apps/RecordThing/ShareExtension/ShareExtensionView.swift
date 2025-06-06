@@ -7,6 +7,16 @@
 //
 
 import SwiftUI
+import os.log
+import RecordLib
+
+#if canImport(UIKit)
+import UIKit
+#endif
+
+#if canImport(AppKit)
+import AppKit
+#endif
 
 struct ShareExtensionView: View {
     @StateObject private var contentViewModel = SharedContentViewModel()
@@ -16,6 +26,9 @@ struct ShareExtensionView: View {
     let onSave: (String) -> Void
     let onCancel: () -> Void
     let onContentUpdate: (SharedContentViewModel) -> Void
+    
+    // Logger following cursor rules
+    private let logger = Logger(subsystem: "com.thepia.recordthing", category: "shareextension-ui")
     
     var body: some View {
         GeometryReader { geometry in
@@ -43,14 +56,17 @@ struct ShareExtensionView: View {
 
                         Spacer()
 
-                        Button(action: onCancel) {
+                        Button(action: {
+                            logger.info("User tapped cancel button")
+                            onCancel()
+                        }) {
                             Image(systemName: "xmark.circle.fill")
                                 .font(.title2)
                                 .foregroundColor(.secondary)
                         }
                     }
                     .padding()
-                    .background(Color(.systemBackground))
+                    .background(Color.systemBackground)
 
                     ScrollView {
                         VStack(spacing: 20) {
@@ -76,10 +92,11 @@ struct ShareExtensionView: View {
                                             text: $note,
                                             placeholder: "What's this about?",
                                             isLoading: isLoading,
-                                            onSend: {
-                                                isLoading = true
-                                                onSave(note)
-                                            }
+                                                                                onSend: {
+                                        logger.info("User initiated send action (iPad layout) with note length: \(note.count)")
+                                        isLoading = true
+                                        onSave(note)
+                                    }
                                         )
                                         .frame(minHeight: 100)
                                     }
@@ -90,6 +107,7 @@ struct ShareExtensionView: View {
                                         placeholder: "What's this about?",
                                         isLoading: isLoading,
                                         onSend: {
+                                            logger.info("User initiated send action (iPhone layout) with note length: \(note.count)")
                                             isLoading = true
                                             onSave(note)
                                         }
@@ -103,7 +121,7 @@ struct ShareExtensionView: View {
 
 
                 }
-                .background(Color(.systemBackground))
+                .background(Color.systemBackground)
                 .cornerRadius(16)
                 .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
                 .padding(geometry.size.width > 600 ? 40 : 20) // Larger padding on iPad
@@ -113,6 +131,7 @@ struct ShareExtensionView: View {
         }
         .background(Color.clear) // Ensure transparent background
         .onAppear {
+            logger.info("ShareExtensionView appeared, initializing content")
             onContentUpdate(contentViewModel)
         }
     }
@@ -132,10 +151,10 @@ struct TextEditorWithButton: View {
         ZStack(alignment: .bottomTrailing) {
             // Text editor background
             RoundedRectangle(cornerRadius: 8)
-                .fill(Color(.systemGray6))
+                .fill(Color.tertiarySystemBackground)
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color(.systemGray4), lineWidth: 1)
+                        .stroke(Color.secondarySystemBackground, lineWidth: 1)
                 )
             
             // Text editor with placeholder
@@ -196,14 +215,14 @@ struct SharedContentPreview: View {
         VStack(spacing: 0) {
                 // Hero image
                 if let heroImage = content.heroImage {
-                    Image(uiImage: heroImage)
+                    heroImage.asImage
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(height: 120)
                         .clipped()
                         .cornerRadius(8, corners: [.topLeft, .topRight])
                 } else if let placeholderImage = content.placeholderHeroImage {
-                    Image(uiImage: placeholderImage)
+                    placeholderImage.asImage
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(height: 120)
@@ -244,12 +263,12 @@ struct SharedContentPreview: View {
                     }
                 }
                 .padding()
-                .background(Color(.systemGray6))
+                .background(Color.tertiarySystemBackground)
                 .cornerRadius(8, corners: [.bottomLeft, .bottomRight])
             }
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color(.systemGray4), lineWidth: 1)
+                    .stroke(Color.secondarySystemBackground, lineWidth: 1)
             )
     }
 }
@@ -257,7 +276,7 @@ struct SharedContentPreview: View {
 struct LoadingContentPreview: View {
     var body: some View {
         RoundedRectangle(cornerRadius: 8)
-                .fill(Color(.systemGray6))
+                .fill(Color.tertiarySystemBackground)
                 .frame(height: 120)
                 .overlay(
                     VStack {
@@ -275,7 +294,7 @@ struct LoadingContentPreview: View {
 struct PlaceholderContentPreview: View {
     var body: some View {
         RoundedRectangle(cornerRadius: 8)
-                .fill(Color(.systemGray6))
+                .fill(Color.tertiarySystemBackground)
                 .frame(height: 120)
                 .overlay(
                     HStack {
@@ -294,26 +313,9 @@ struct PlaceholderContentPreview: View {
 
 // MARK: - Helper Extensions
 
-extension View {
-    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-        clipShape(RoundedCorner(radius: radius, corners: corners))
-    }
-}
+// Corner radius functionality is now provided by RecordLib
 
-struct RoundedCorner: Shape {
-    var radius: CGFloat = .infinity
-    var corners: UIRectCorner = .allCorners
-
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(
-            roundedRect: rect,
-            byRoundingCorners: corners,
-            cornerRadii: CGSize(width: radius, height: radius)
-        )
-        return Path(path.cgPath)
-    }
-}
-
+#if DEBUG
 #Preview {
     ShareExtensionView(
         onSave: { note in
@@ -327,11 +329,12 @@ struct RoundedCorner: Shape {
             let sampleContent = SharedContent(
                 url: URL(string: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
                 title: "Sample YouTube Video",
-                text: nil,
-                image: nil,
+                text: Optional<String>.none,
+                image: Optional<RecordImage>.none,
                 contentType: .youTubeVideo(videoId: "dQw4w9WgXcQ")
             )
             viewModel.updateContent(sampleContent)
         }
     )
 }
+#endif

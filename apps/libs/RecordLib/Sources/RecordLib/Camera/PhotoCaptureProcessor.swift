@@ -37,8 +37,8 @@ class PhotoCaptureProcessor: NSObject {
     // MARK: - Image Saving
     
     func saveImage(image: RecordImage, name: String) {
-        // Use the jpegData method from RecordImage extension
-        guard let data = image.jpegData(compressionQuality: 0.95) else {
+        // Use the recordJpegData method from RecordImage extension
+        guard let data = image.recordJpegData(compressionQuality: 0.95) else {
             logger.error("Error getting JPEG data for \(name)")
             return
         }
@@ -359,8 +359,8 @@ extension PhotoCaptureProcessorRef: AVCapturePhotoCaptureDelegate {
     
     /// Saves an image to disk
     private func saveImage(image: RecordImage, name: String) {
-        // Use the jpegData method from RecordImage extension
-        guard let data = image.jpegData(compressionQuality: 0.95) else {
+        // Use the recordJpegData method from RecordImage extension
+        guard let data = image.recordJpegData(compressionQuality: 0.95) else {
             logger.error("Error getting JPEG data for \(name)")
             return
         }

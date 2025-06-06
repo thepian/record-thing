@@ -129,6 +129,7 @@ struct TestConfiguration {
     }
     
     /// Creates a mock SharedContentViewModel with test data
+    @MainActor
     static func createMockViewModel(with content: SharedContent? = nil) -> SharedContentViewModel {
         let viewModel = SharedContentViewModel()
         
@@ -140,6 +141,7 @@ struct TestConfiguration {
     }
     
     /// Creates a mock SharedContentViewModel in loading state
+    @MainActor
     static func createLoadingViewModel() -> SharedContentViewModel {
         let viewModel = SharedContentViewModel()
         viewModel.setLoading(true)
@@ -147,6 +149,7 @@ struct TestConfiguration {
     }
     
     /// Creates a mock SharedContentViewModel in error state
+    @MainActor
     static func createErrorViewModel(error: String = "Test error") -> SharedContentViewModel {
         let viewModel = SharedContentViewModel()
         viewModel.setError(error)
