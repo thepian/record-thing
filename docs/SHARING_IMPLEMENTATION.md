@@ -49,6 +49,36 @@ This allows evidence to be linked to either:
 - Requests (existing functionality)  
 - Strategists (new functionality)
 
+## ShareExtension UI
+
+The share extension UI is built using SwiftUI and provides a simple interface for users to categorize and save shared content. It should visualise the shared content by a hero image extracted from the content or contents of the shared URL. 
+The shared item is put in a table using Blackbird for "Unprocessed Shares". They will later be processed and moved to the Evidence table. 
+
+The processing will,
+
+- Identify the content type
+- Identify the name of people depicted in the content
+- Identify the location of the content
+- Identify the date of the content
+- Identify the author of the content
+- Identify the title of the content
+- Identify the description of the content
+- Identify the tags of the content
+- Identify the image of the content
+- Identify the video of the content
+- Identify the audio of the content
+- Identify the document of the content
+- Identify the transcript of the content
+
+Once we identify what we can, it is used to decide,
+
+- Is this for strategist and should be tied to a specific strategist?
+- Does this relate to an existing Thing?
+- Does this represent a new Thing? (I.e. Personal Belonging recently purchased)
+- Does this represent a personal event?
+- Does this represent a process/flow the user is currently in?
+
+
 ## Implementation Files
 
 ### Share Extension (`apps/RecordThing/ShareExtension/`)

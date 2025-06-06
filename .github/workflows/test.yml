@@ -1,0 +1,192 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ['3.11', '3.12']
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        version: "latest"
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      run: uv python install ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: |
+        uv sync --all-extras
+        uv add pytest pytest-cov pytest-xdist pytest-timeout psutil
+    
+    - name: Run unit tests
+      run: |
+        uv run -m pytest libs/record_thing/tests -v \
+          --cov=record_thing \
+          --cov-report=xml \
+          --cov-report=html \
+          --cov-report=term-missing \
+          --timeout=300
+    
+    - name: Run database creation tests
+      run: |
+        uv run -m pytest tests/test_database_creation.py -v \
+          --timeout=600
+    
+    - name: Run schema migration tests
+      run: |
+        uv run -m pytest tests/test_schema_migration.py -v \
+          --timeout=600
+    
+    - name: Run data generation tests
+      run: |
+        uv run -m pytest tests/test_data_generation.py -v \
+          --timeout=900
+    
+    - name: Run iOS compatibility tests
+      run: |
+        uv run -m pytest tests/test_ios_compatibility.py -v \
+          --timeout=300
+    
+    - name: Run performance tests
+      run: |
+        uv run -m pytest tests/test_performance.py -v \
+          --timeout=1200 \
+          -m "not slow"
+    
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v4
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+        token: ${{ secrets.CODECOV_TOKEN }}
+    
+    - name: Upload test artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-artifacts-${{ matrix.os }}-${{ matrix.python-version }}
+        path: |
+          coverage.xml
+          htmlcov/
+          test_databases/
+          test_reports/
+        retention-days: 30
+
+  integration-test:
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        version: "latest"
+    
+    - name: Set up Python
+      run: uv python install 3.11
+    
+    - name: Install dependencies
+      run: uv sync --all-extras
+    
+    - name: Run full integration test suite
+      run: |
+        uv run -m pytest tests/test_full_integration.py -v \
+          --timeout=1800
+    
+    - name: Generate test database artifacts
+      run: |
+        mkdir -p artifacts
+        # Create fresh database
+        uv run -m record_thing.cli init-db --db-path artifacts/fresh-database.sqlite --force
+        # Create database with demo data
+        uv run -m record_thing.cli init-db --db-path artifacts/demo-database.sqlite --force
+        uv run -m record_thing.cli populate-db --db-path artifacts/demo-database.sqlite
+        # Create database with large dataset
+        uv run python tests/generate_large_dataset.py artifacts/large-dataset.sqlite
+    
+    - name: Upload database artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-databases
+        path: artifacts/
+        retention-days: 90
+
+  documentation:
+    runs-on: ubuntu-latest
+    needs: [test, integration-test]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        version: "latest"
+    
+    - name: Set up Python
+      run: uv python install 3.11
+    
+    - name: Install dependencies
+      run: uv sync --all-extras
+    
+    - name: Generate test coverage documentation
+      run: |
+        uv run python tests/generate_test_docs.py
+    
+    - name: Upload documentation
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-documentation
+        path: docs/testing/
+        retention-days: 30
+
+  fast-test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        version: "latest"
+    
+    - name: Set up Python
+      run: uv python install 3.11
+    
+    - name: Install dependencies
+      run: uv sync --all-extras
+    
+    - name: Run fast tests only
+      run: |
+        uv run -m pytest tests/ -v \
+          -m "not slow and not performance" \
+          --timeout=300 \
+          --maxfail=5
+    
+    - name: Quick database creation test
+      run: |
+        uv run -m pytest tests/test_database_creation.py::TestDatabaseCreation::test_create_database_with_sample_data -v
+    
+    - name: Quick iOS compatibility test
+      run: |
+        uv run -m pytest tests/test_ios_compatibility.py::TestiOSCompatibility::test_blackbird_model_schema_compatibility -v

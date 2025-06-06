@@ -7,36 +7,220 @@
 //
 
 import UIKit
-import Social
+import SwiftUI
 import UniformTypeIdentifiers
 import os
 
-class ShareViewController: SLComposeServiceViewController {
+class ShareViewController: UIViewController {
 
     private let logger = Logger(subsystem: "com.thepia.recordthing.shareextension", category: "ShareViewController")
+    private var contentViewModel: SharedContentViewModel?
+    private let youtubeService = YouTubeService()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        // Set transparent background to avoid grey background
+        view.backgroundColor = UIColor.clear
+
+        // Add print statements that will definitely appear in system logs
+        print("🚀 SHAREEXTENSION: viewDidLoad - Extension is active!")
+        print("📱 SHAREEXTENSION: Extension bundle ID: \(Bundle.main.bundleIdentifier ?? "unknown")")
 
         logger.info("🚀 ShareExtension viewDidLoad - Extension is active!")
         logger.info("📱 Extension bundle ID: \(Bundle.main.bundleIdentifier ?? "unknown")")
 
         // Log host app info if available
         if let hostAppBundleID = Bundle.main.object(forInfoDictionaryKey: "NSExtensionHostApplicationBundleIdentifier") as? String {
+            print("📱 SHAREEXTENSION: Host app bundle ID: \(hostAppBundleID)")
             logger.info("📱 Host app bundle ID: \(hostAppBundleID)")
         } else {
+            print("📱 SHAREEXTENSION: Host app bundle ID: unknown")
             logger.info("📱 Host app bundle ID: unknown")
         }
 
-        // Set up the UI
-        self.title = "Save to RecordThing"
-        self.placeholder = "Add a note about this content..."
+        // Set up SwiftUI interface
+        setupSwiftUIInterface()
 
         // Log extension context info
         logExtensionContext()
 
         // Extract and log shared content immediately
         extractSharedContent()
+    }
+
+    private func setupSwiftUIInterface() {
+        // Create SwiftUI view
+        let shareView = ShareExtensionView(
+            onSave: { [weak self] note in
+                self?.handleSave(with: note)
+            },
+            onCancel: { [weak self] in
+                self?.handleCancel()
+            },
+            onContentUpdate: { [weak self] viewModel in
+                self?.contentViewModel = viewModel
+                self?.updateContentViewModel()
+            }
+        )
+
+        // Wrap in UIHostingController
+        let hostingController = UIHostingController(rootView: shareView)
+
+        // Set transparent background for hosting controller
+        hostingController.view.backgroundColor = UIColor.clear
+
+        // Add as child view controller
+        addChild(hostingController)
+        view.addSubview(hostingController.view)
+        hostingController.didMove(toParent: self)
+
+        // Set up constraints
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+
+    private func handleSave(with note: String) {
+        print("💾 SHAREEXTENSION: User tapped Save button")
+        logger.info("User tapped Save button")
+
+        if !note.isEmpty {
+            print("📝 SHAREEXTENSION: User note: \(note)")
+            logger.info("User note: \(note)")
+        }
+
+        // Process the shared content
+        processSharedContent()
+
+        print("✅ SHAREEXTENSION: Completing request")
+        // Complete the extension
+        extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
+    }
+
+    private func handleCancel() {
+        logger.info("User tapped Cancel button")
+
+        // Cancel the extension
+        extensionContext?.cancelRequest(withError: NSError(domain: "ShareExtension", code: 0, userInfo: [NSLocalizedDescriptionKey: "User cancelled"]))
+    }
+
+    private func updateContentViewModel() {
+        guard let viewModel = contentViewModel else { return }
+
+        Task { @MainActor in
+            viewModel.setLoading(true)
+
+            // Extract content from extension context
+            if let sharedContent = await extractSharedContentForDisplay() {
+                viewModel.updateContent(sharedContent)
+            } else {
+                viewModel.setError("Could not load shared content")
+            }
+
+            viewModel.setLoading(false)
+        }
+    }
+
+    private func extractSharedContentForDisplay() async -> SharedContent? {
+        guard let extensionItem = extensionContext?.inputItems.first as? NSExtensionItem,
+              let attachments = extensionItem.attachments else {
+            return nil
+        }
+
+        var extractedURL: URL?
+        var extractedTitle: String?
+        var extractedText: String?
+        var extractedImage: UIImage?
+
+        // Extract URL
+        for attachment in attachments {
+            if attachment.hasItemConformingToTypeIdentifier("public.url") {
+                do {
+                    let urlData = try await attachment.loadItem(forTypeIdentifier: "public.url", options: nil)
+                    if let url = urlData as? URL {
+                        extractedURL = url
+                        break
+                    }
+                } catch {
+                    logger.error("Failed to extract URL: \(error.localizedDescription)")
+                }
+            }
+        }
+
+        // Extract text if no URL found
+        if extractedURL == nil {
+            for attachment in attachments {
+                if attachment.hasItemConformingToTypeIdentifier("public.text") {
+                    do {
+                        let textData = try await attachment.loadItem(forTypeIdentifier: "public.text", options: nil)
+                        if let text = textData as? String {
+                            extractedText = text
+                            // Try to extract URL from text
+                            if let urlFromText = extractURLFromText(text) {
+                                extractedURL = urlFromText
+                            }
+                            break
+                        }
+                    } catch {
+                        logger.error("Failed to extract text: \(error.localizedDescription)")
+                    }
+                }
+            }
+        }
+
+        // Determine content type and fetch enhanced data
+        let contentType: SharedContent.ContentType
+        if let url = extractedURL {
+            if YouTubeService.isYouTubeURL(url), let videoId = YouTubeService.extractVideoID(from: url) {
+                contentType = .youTubeVideo(videoId: videoId)
+
+                // Fetch YouTube metadata and thumbnail
+                if let metadata = await youtubeService.fetchVideoMetadata(for: videoId) {
+                    extractedTitle = metadata.title
+                }
+
+                if let thumbnail = await youtubeService.fetchThumbnail(for: videoId, quality: .high) {
+                    extractedImage = thumbnail
+                }
+            } else {
+                contentType = .webPage
+                extractedTitle = extractionContext(from: url)
+            }
+        } else if extractedText != nil {
+            contentType = .text
+        } else {
+            contentType = .unknown
+        }
+
+        return SharedContent(
+            url: extractedURL,
+            title: extractedTitle,
+            text: extractedText,
+            image: extractedImage,
+            contentType: contentType
+        )
+    }
+
+    private func extractionContext(from url: URL) -> String? {
+        // For YouTube, try to get a better title
+        if YouTubeService.isYouTubeURL(url) {
+            return "YouTube Video"
+        }
+
+        // For other URLs, use the host
+        return url.host
+    }
+
+    private func extractURLFromText(_ text: String) -> URL? {
+        let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+        let matches = detector?.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
+
+        return matches?.first?.url
     }
 
     private func logExtensionContext() {
@@ -64,30 +248,7 @@ class ShareViewController: SLComposeServiceViewController {
         }
     }
 
-    override func isContentValid() -> Bool {
-        // Always return true for minimal implementation
-        return true
-    }
 
-    override func didSelectPost() {
-        logger.info("User tapped Post button")
-
-        // Log the user's comment if any
-        if let comment = contentText, !comment.isEmpty {
-            logger.info("User comment: \(comment)")
-        }
-
-        // Process the shared content
-        processSharedContent()
-
-        // Complete the extension
-        self.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
-    }
-
-    override func configurationItems() -> [Any]! {
-        // No configuration items for minimal implementation
-        return []
-    }
 
     // MARK: - Content Processing
 
@@ -172,6 +333,10 @@ class ShareViewController: SLComposeServiceViewController {
     }
 
     private func handleURL(_ url: URL) {
+        // Add print statements for system logs
+        print("📱 SHAREEXTENSION: Received URL: \(url.absoluteString)")
+        print("   SHAREEXTENSION: Host: \(url.host ?? "none")")
+
         logger.info("📱 Received URL: \(url.absoluteString)")
         logger.info("   Scheme: \(url.scheme ?? "none")")
         logger.info("   Host: \(url.host ?? "none")")
@@ -180,21 +345,25 @@ class ShareViewController: SLComposeServiceViewController {
         logger.info("   Fragment: \(url.fragment ?? "none")")
 
         // Check if it's a YouTube URL
-        if isYouTubeURL(url) {
+        if YouTubeService.isYouTubeURL(url) {
+            print("🎥 SHAREEXTENSION: YOUTUBE VIDEO DETECTED!")
             logger.info("🎥 YOUTUBE VIDEO DETECTED!")
             logger.info("   ✅ This is exactly what we want to capture!")
 
             // Extract video ID if possible
-            if let videoID = extractYouTubeVideoID(from: url) {
+            if let videoID = YouTubeService.extractVideoID(from: url) {
+                print("   🆔 SHAREEXTENSION: Video ID: \(videoID)")
                 logger.info("   🆔 Video ID: \(videoID)")
                 logger.info("   🔗 Full YouTube URL: https://www.youtube.com/watch?v=\(videoID)")
             } else {
+                print("   ⚠️ SHAREEXTENSION: Could not extract video ID")
                 logger.warning("   ⚠️ Could not extract video ID from YouTube URL")
             }
 
-            // Log success for debugging
+            print("   🎯 SHAREEXTENSION: Successfully detected YouTube content!")
             logger.info("   🎯 ShareExtension successfully detected YouTube content!")
         } else {
+            print("🌐 SHAREEXTENSION: Regular web URL detected")
             logger.info("🌐 Regular web URL detected")
             logger.info("   📝 This will be saved as general web content")
         }
@@ -231,40 +400,6 @@ class ShareViewController: SLComposeServiceViewController {
         logger.info("✅ Content processing completed (logged only)")
     }
 
-    // MARK: - YouTube Detection Helpers
+    // MARK: - Helper Methods
 
-    private func isYouTubeURL(_ url: URL) -> Bool {
-        guard let host = url.host?.lowercased() else { return false }
-
-        return host.contains("youtube.com") ||
-               host.contains("youtu.be") ||
-               host.contains("m.youtube.com") ||
-               host.contains("www.youtube.com")
-    }
-
-    private func extractYouTubeVideoID(from url: URL) -> String? {
-        // Handle youtu.be short URLs
-        if url.host?.contains("youtu.be") == true {
-            return String(url.path.dropFirst()) // Remove leading "/"
-        }
-
-        // Handle youtube.com URLs
-        if let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems {
-            return queryItems.first(where: { $0.name == "v" })?.value
-        }
-
-        return nil
-    }
-
-    private func extractURLFromText(_ text: String) -> URL? {
-        // Simple URL detection in text
-        let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
-        let matches = detector?.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
-
-        if let match = matches?.first, let url = match.url {
-            return url
-        }
-
-        return nil
-    }
 }
