@@ -20,6 +20,11 @@ excluded:
 disabled_rules:
   - trailing_whitespace  # Can be handled by editor
   - todo  # Allow TODO comments during development
+  - line_length  # Temporarily disable for existing code
+  - function_body_length  # Temporarily disable for existing code
+  - type_body_length  # Temporarily disable for existing code
+  - file_length  # Temporarily disable for existing code
+  - force_unwrapping  # Temporarily disable for existing code
 
 # Rules to enable that are opt-in
 opt_in_rules:

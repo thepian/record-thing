@@ -15,7 +15,7 @@ on:
       - '.github/workflows/ios-tests.yml'
 
 env:
-  DEVELOPER_DIR: /Applications/Xcode_15.4.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_15.0.app/Contents/Developer
 
 jobs:
   test-ios:
@@ -24,9 +24,9 @@ jobs:
     
     strategy:
       matrix:
-        destination: 
-          - 'platform=iOS Simulator,name=iPhone 16,OS=18.0'
-          - 'platform=iOS Simulator,name=iPad Pro (13-inch) (M4),OS=18.0'
+        destination:
+          - 'platform=iOS Simulator,name=iPhone 15 Pro,OS=17.5'
+          - 'platform=iOS Simulator,name=iPad Pro (12.9-inch) (6th generation),OS=17.5'
         scheme: ['RecordLib', 'ShareExtension']
     
     steps:
@@ -36,7 +36,7 @@ jobs:
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '15.4'
+        xcode-version: '15.0'
         
     - name: Cache derived data
       uses: actions/cache@v4
@@ -54,7 +54,7 @@ jobs:
       
     - name: Boot simulator
       run: |
-        DEVICE_ID=$(xcrun simctl list devices available | grep "iPhone 16" | grep -v "Plus" | grep -v "Pro" | head -1 | grep -o '[A-F0-9-]\{36\}')
+        DEVICE_ID=$(xcrun simctl list devices available | grep "iPhone 15 Pro" | head -1 | grep -o '[A-F0-9-]\{36\}')
         echo "Booting simulator: $DEVICE_ID"
         xcrun simctl boot "$DEVICE_ID" || true
         xcrun simctl list devices | grep Booted
@@ -65,7 +65,7 @@ jobs:
         cd apps/RecordThing
         xcodebuild test \
           -project RecordThing.xcodeproj \
-          -scheme RecordLib \
+          -scheme RecordLibTests \
           -destination '${{ matrix.destination }}' \
           -resultBundlePath TestResults-RecordLib.xcresult \
           -enableCodeCoverage YES \

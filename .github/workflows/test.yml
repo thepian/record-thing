@@ -59,6 +59,12 @@ jobs:
       run: |
         uv run -m pytest tests/test_ios_compatibility.py -v \
           --timeout=300
+
+    - name: Trigger iOS Swift tests
+      if: matrix.os == 'macos-latest'
+      run: |
+        echo "iOS Swift tests will be run in separate workflow"
+        # The ios-tests.yml workflow will handle Swift/iOS testing
     
     - name: Run performance tests
       run: |

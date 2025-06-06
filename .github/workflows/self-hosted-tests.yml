@@ -1,0 +1,236 @@
+name: Self-Hosted iOS Tests
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+    paths:
+      - 'apps/RecordThing/**'
+      - 'apps/libs/**'
+      - '.github/workflows/self-hosted-tests.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'apps/RecordThing/**'
+      - 'apps/libs/**'
+      - '.github/workflows/self-hosted-tests.yml'
+  workflow_dispatch:
+    inputs:
+      run_performance_tests:
+        description: 'Run performance tests'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  test-ios-self-hosted:
+    name: iOS Tests (Self-Hosted)
+    runs-on: [self-hosted, macos, xcode]
+    if: github.repository == 'thepian/record-thing'
+    
+    strategy:
+      matrix:
+        scheme: ['RecordLibTests']
+        destination: 
+          - 'platform=iOS Simulator,name=iPhone 15 Pro'
+          - 'platform=iOS Simulator,name=iPad Pro (12.9-inch) (6th generation)'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Clean up previous builds
+      run: |
+        cd apps/RecordThing
+        rm -rf DerivedData
+        rm -rf TestResults-*.xcresult
+        
+    - name: List available simulators
+      run: xcrun simctl list devices available
+      
+    - name: Boot simulator
+      run: |
+        # Extract device name from destination
+        DEVICE_NAME=$(echo '${{ matrix.destination }}' | sed 's/.*name=\([^,]*\).*/\1/')
+        echo "Looking for device: $DEVICE_NAME"
+        
+        # Find and boot the device
+        DEVICE_ID=$(xcrun simctl list devices available | grep "$DEVICE_NAME" | head -1 | grep -o '[A-F0-9-]\{36\}')
+        if [ -n "$DEVICE_ID" ]; then
+          echo "Booting simulator: $DEVICE_ID ($DEVICE_NAME)"
+          xcrun simctl boot "$DEVICE_ID" || true
+        else
+          echo "Device not found: $DEVICE_NAME"
+          exit 1
+        fi
+        
+    - name: Build and test RecordLib
+      run: |
+        cd apps/RecordThing
+        xcodebuild test \
+          -project RecordThing.xcodeproj \
+          -scheme ${{ matrix.scheme }} \
+          -destination '${{ matrix.destination }}' \
+          -resultBundlePath TestResults-${{ matrix.scheme }}.xcresult \
+          -enableCodeCoverage YES \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          ONLY_ACTIVE_ARCH=NO
+          
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-${{ matrix.scheme }}-${{ strategy.job-index }}
+        path: |
+          apps/RecordThing/TestResults-*.xcresult
+        retention-days: 7
+        
+    - name: Generate code coverage report
+      if: matrix.scheme == 'RecordLibTests'
+      run: |
+        cd apps/RecordThing
+        xcrun xccov view --report --json TestResults-${{ matrix.scheme }}.xcresult > coverage.json || true
+        
+    - name: Upload coverage to Codecov
+      if: matrix.scheme == 'RecordLibTests' && matrix.destination == 'platform=iOS Simulator,name=iPhone 15 Pro'
+      uses: codecov/codecov-action@v4
+      with:
+        file: apps/RecordThing/coverage.json
+        flags: ios,swift,self-hosted
+        name: self-hosted-coverage
+        fail_ci_if_error: false
+        token: ${{ secrets.CODECOV_TOKEN }}
+
+  build-shareextension:
+    name: Build ShareExtension
+    runs-on: [self-hosted, macos, xcode]
+    if: github.repository == 'thepian/record-thing'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Clean up previous builds
+      run: |
+        cd apps/RecordThing
+        rm -rf DerivedData
+        
+    - name: Build ShareExtension
+      run: |
+        cd apps/RecordThing
+        xcodebuild build \
+          -project RecordThing.xcodeproj \
+          -scheme ShareExtension \
+          -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          ONLY_ACTIVE_ARCH=NO
+          
+    - name: Build RecordThing iOS
+      run: |
+        cd apps/RecordThing
+        xcodebuild build \
+          -project RecordThing.xcodeproj \
+          -scheme 'RecordThing iOS' \
+          -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          ONLY_ACTIVE_ARCH=NO
+
+  lint-self-hosted:
+    name: Lint and Format Check (Self-Hosted)
+    runs-on: [self-hosted, macos, xcode]
+    if: github.repository == 'thepian/record-thing'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Run SwiftLint
+      run: |
+        cd apps/RecordThing
+        if command -v swiftlint &> /dev/null; then
+          swiftlint lint --reporter github-actions-logging
+        else
+          echo "SwiftLint not installed, skipping..."
+        fi
+
+  performance-tests:
+    name: Performance Tests
+    runs-on: [self-hosted, macos, xcode]
+    if: github.repository == 'thepian/record-thing' && (github.event.inputs.run_performance_tests == 'true' || github.event_name == 'schedule')
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Run Performance Tests
+      run: |
+        cd apps/RecordThing
+        echo "Performance tests would run here"
+        echo "This could include:"
+        echo "- ShareExtension URL processing benchmarks"
+        echo "- Memory usage tests"
+        echo "- UI responsiveness tests"
+        echo "- Build time measurements"
+        
+    - name: Upload performance results
+      uses: actions/upload-artifact@v4
+      with:
+        name: performance-results
+        path: |
+          apps/RecordThing/performance-*.json
+        retention-days: 30
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: [self-hosted, macos, xcode]
+    if: github.repository == 'thepian/record-thing'
+    needs: [build-shareextension]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Boot simulator for integration tests
+      run: |
+        DEVICE_ID=$(xcrun simctl list devices available | grep "iPhone 15 Pro" | head -1 | grep -o '[A-F0-9-]\{36\}')
+        echo "Booting simulator for integration tests: $DEVICE_ID"
+        xcrun simctl boot "$DEVICE_ID" || true
+        
+    - name: Build and install app for testing
+      run: |
+        cd apps/RecordThing
+        
+        # Build the app
+        xcodebuild build \
+          -project RecordThing.xcodeproj \
+          -scheme 'RecordThing iOS' \
+          -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
+          -derivedDataPath DerivedData \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          ONLY_ACTIVE_ARCH=NO
+          
+        # Find the built app
+        APP_PATH=$(find DerivedData -name "*.app" -path "*/Debug-iphonesimulator/*" | head -1)
+        echo "Built app at: $APP_PATH"
+        
+        # Install app in simulator
+        DEVICE_ID=$(xcrun simctl list devices booted | grep "iPhone 15 Pro" | head -1 | grep -o '[A-F0-9-]\{36\}')
+        if [ -n "$DEVICE_ID" ] && [ -n "$APP_PATH" ]; then
+          xcrun simctl install "$DEVICE_ID" "$APP_PATH"
+          echo "App installed successfully"
+        else
+          echo "Failed to install app"
+          exit 1
+        fi
+        
+    - name: Run integration tests
+      run: |
+        echo "Integration tests would run here"
+        echo "This could include:"
+        echo "- ShareExtension end-to-end workflow tests"
+        echo "- YouTube URL sharing tests"
+        echo "- UI automation tests"
+        echo "- Cross-component integration tests"
