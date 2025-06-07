@@ -299,8 +299,7 @@ final class iCloudSyncTests: XCTestCase {
       // Check if file has iCloud metadata
       do {
         let resourceValues = try fileURL.resourceValues(forKeys: [
-          .ubiquitousItemDownloadingStatusKey,
-          .ubiquitousItemIsDownloadedKey,
+          .ubiquitousItemDownloadingStatusKey
         ])
 
         if resourceValues.ubiquitousItemDownloadingStatus != nil {

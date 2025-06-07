@@ -267,6 +267,8 @@ struct RecordThingApp: App {
       )
       .windowResizability(.contentSize)
       .commands {
+        SidebarCommands()
+
         CommandGroup(replacing: .newItem) {
           Button("New Window") {
             NSApplication.shared.requestUserAttention(.informationalRequest)

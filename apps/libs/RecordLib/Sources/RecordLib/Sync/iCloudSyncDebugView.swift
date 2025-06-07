@@ -39,9 +39,11 @@ public struct iCloudSyncDebugView: View {
         debugActionsSection
       }
       .navigationTitle("iCloud Sync Debug")
-      .navigationBarTitleDisplayMode(.large)
+      #if os(iOS)
+        .navigationBarTitleDisplayMode(.large)
+      #endif
       .toolbar {
-        ToolbarItem(placement: .navigationBarTrailing) {
+        ToolbarItem(placement: .primaryAction) {
           Button("Refresh") {
             refreshData()
           }
@@ -456,9 +458,11 @@ private struct DocumentDetailView: View {
         }
       }
       .navigationTitle("Document Details")
-      .navigationBarTitleDisplayMode(.inline)
+      #if os(iOS)
+        .navigationBarTitleDisplayMode(.inline)
+      #endif
       .toolbar {
-        ToolbarItem(placement: .navigationBarTrailing) {
+        ToolbarItem(placement: .confirmationAction) {
           Button("Done") {
             dismiss()
           }
@@ -502,14 +506,16 @@ private struct SyncLogsView: View {
         }
       }
       .navigationTitle("Sync Logs")
-      .navigationBarTitleDisplayMode(.inline)
+      #if os(iOS)
+        .navigationBarTitleDisplayMode(.inline)
+      #endif
       .toolbar {
-        ToolbarItem(placement: .navigationBarLeading) {
+        ToolbarItem(placement: .cancellationAction) {
           Button("Clear") {
             logs.removeAll()
           }
         }
-        ToolbarItem(placement: .navigationBarTrailing) {
+        ToolbarItem(placement: .confirmationAction) {
           Button("Done") {
             dismiss()
           }

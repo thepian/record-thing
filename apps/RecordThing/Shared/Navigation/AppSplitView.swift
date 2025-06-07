@@ -548,9 +548,11 @@ struct SimpleUpgradeView: View {
           .foregroundColor(.secondary)
       }
       .padding()
-      .navigationBarTitleDisplayMode(.inline)
+      #if os(iOS)
+        .navigationBarTitleDisplayMode(.inline)
+      #endif
       .toolbar {
-        ToolbarItem(placement: .navigationBarTrailing) {
+        ToolbarItem(placement: .confirmationAction) {
           Button("Close") {
             dismiss()
           }

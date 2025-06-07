@@ -279,7 +279,11 @@ public struct ThingsSubgridView: View {
     if adaptiveColumns {
       return [GridItem(.adaptive(minimum: 150))]
     } else {
-      var baseColumns = viewModel.isLandscape ? Int(Double(columns) * 1.5) : columns
+      #if os(iOS)
+        var baseColumns = viewModel.isLandscape ? Int(Double(columns) * 1.5) : columns
+      #else
+        var baseColumns = columns
+      #endif
       // consider size class .regular landscape to have columns * 2
       #if os(iOS)
         if horizontalSizeClass == .regular {

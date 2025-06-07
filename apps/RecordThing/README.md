@@ -1,107 +1,156 @@
-# Record Thing: Building a Feature-Rich App with SwiftUI
+# RecordThing: A Modern SwiftUI Recording and Knowledge Management App
 
-Create a shared codebase to build a multiplatform app that offers widgets and an App Clip.
+A multiplatform SwiftUI app for recording, organizing, and sharing knowledge across devices with automatic iCloud syncing.
 
 ## Overview
 
-- Note: This sample project is associated with WWDC21 sessions [10107: Platforms State of the Union](https://developer.apple.com/wwdc21/10107/), [10012: What's New in App Clips](https://developer.apple.com/wwdc21/10012/), [10013: Build Light and Fast App Clips](https://developer.apple.com/wwdc21/10013/), [10220: Localize your SwiftUI App](https://developer.apple.com/wwdc21/10220/).
+RecordThing is a comprehensive knowledge management application built with SwiftUI that runs on iOS, iPadOS, and macOS. The app enables users to:
 
-  It's also associated with WWDC20 sessions [10637: Platforms State of the Union](https://developer.apple.com/wwdc20/10637/), [10146: Configure and Link Your App Clips](https://developer.apple.com/wwdc20/10146/), [10120: Streamline Your App Clip](https://developer.apple.com/wwdc20/10120/), [10118: Create App Clips for Other Businesses](https://developer.apple.com/wwdc20/10118/), [10096: Explore Packages and Projects with Xcode Playgrounds](https://developer.apple.com/wwdc20/10096/), and [10028: Meet WidgetKit](https://developer.apple.com/wwdc20/10028/).
+- **Record and organize content** using a structured workflow system
+- **Share content from other apps** (YouTube, web pages) into strategic focus areas  
+- **Manage knowledge** through the integrated Thepia Strategist system
+- **Sync data automatically** across all devices using iCloud Documents
+- **Access widgets** for quick information display on iOS Home Screen and macOS Notification Center
 
-The Fruta sample project builds an app for macOS, iOS, and iPadOS that implements [SwiftUI](https://developer.apple.com/documentation/swiftui) platform features like widgets, App Clips, and localization. Users can order smoothies, save favorite drinks, collect rewards, and browse recipes. It contains two flavors of app targets:
+The app implements modern SwiftUI features including:
 
-- Simple iOS and macOS app targets that you build using [Personal Team](https://help.apple.com/xcode/mac/11.4/#/dev17411c009) signing. This iOS app runs in Simulator, and only requires a standard Apple ID to install on a device. The simple app implements a rich, localized [SwiftUI](https://developer.apple.com/documentation/swiftui) interface. Users can browse and order smoothies, and save favorite drinks.
-- Full featured iOS All and macOS All app targets. The full iOS app runs in Simulator, and on devices with an Apple Developer membership. This app includes widget extensions that enable users to add a widget to their iOS Home Screen or the macOS Notification Center, and to view their rewards or a favorite smoothie. This app also embeds an App Clip. With the App Clip, users can discover and instantly launch some of the app's functionality on their iPhone or iPad without installing the app.
+- **Cross-platform shared codebase** for iOS, iPadOS, and macOS
+- **ShareExtension** for importing content from other apps
+- **Widget extensions** for Home Screen and Notification Center integration
+- **iCloud Documents syncing** for seamless cross-device data access
+- **Comprehensive database management** with debugging and monitoring tools
 
-The Fruta sample app leverages [Sign in with Apple](https://developer.apple.com/documentation/sign_in_with_apple) and [Apple Pay](https://developer.apple.com/documentation/passkit) to provide a streamlined user experience.
+## Building and Running RecordThing
 
-## Configure the Sample Code Project
+### Requirements
 
-To build this project for iOS 15.4, use Xcode 13.3. The runtime requirement is iOS 15.4. To build this project for macOS 12.3, use Xcode 13.3.
+- **iOS/iPadOS**: iOS 18.4+ (built with Xcode 16+)
+- **macOS**: macOS 15.4+ (built with Xcode 16+)
+- **Development**: Xcode 16+ with Swift 6.0+
 
-To configure the iOS and macOS app targets without an Apple Developer account, follow these steps:
+### Quick Start
 
-1. In the targets’ Signing & Capabilities panes click Add Account, and log in with your Apple ID.
-2. Chose the Your Name (Personal Team) from the team drop down menu.
-3. Click build-and-run.
-4. On iOS and iPadOS devices you need to navigate to Settings > General > VPN & Device Management and trust your developer certificate.
+1. **Clone the repository** and open `RecordThing.xcodeproj`
+2. **Select your target**: Choose "RecordThing iOS" for mobile or "RecordThing macOS" for desktop
+3. **Configure signing**: Set your development team in Signing & Capabilities
+4. **Build and run**: ⌘+R to build and launch the app
 
-To configure the iOS All and macOS All apps, follow these steps:
+### Development Setup
 
-1. To run on your devices, including on macOS, set your team in the targets’ Signing & Capabilities panes. Xcode manages the provisioning profiles for you.
-2. To run on an iOS or iPadOS device, open the `iOSClip.entitlements` file and update the value of the [Parent Application Identifiers Entitlement](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_parent-application-identifiers) to match the iOS app's bundle identifier.
-3. Make a note of the App Group name on the iOS target’s Signing & Capabilities tab in Project Settings. Substitute this value for group.example.fruta in the `Model.swift` file.
-4. To enable the in-app-purchase flow, edit the Fruta iOS "Run" scheme, and select `Configuration.storekit` for StoreKit Configuration.
+For development with personal Apple ID:
+1. In Signing & Capabilities, click "Add Account" and sign in with your Apple ID
+2. Select "Your Name (Personal Team)" from the team dropdown
+3. Build and run - the app will use the development database automatically
 
-## Create a Shared Codebase in SwiftUI
+For device testing:
+1. On iOS/iPadOS devices, go to Settings > General > VPN & Device Management
+2. Trust your developer certificate to run the app
 
-To create a single app definition that works for multiple platforms, the project defines a structure that conforms to the [App](https://developer.apple.com/documentation/swiftui/app) protocol. Because the `@main` attribute precedes the structure definition, the system recognizes the structure as the entry point into the app. Its computed body property returns a [WindowGroup](https://developer.apple.com/documentation/swiftui/windowgroup) scene that contains the view hierarchy displayed by the app to the user. SwiftUI manages the presentation of the scene and its contents in a platform-appropriate manner.
+### ShareExtension Setup
+
+The ShareExtension allows importing content from other apps:
+1. The extension is automatically included when building the main app
+2. Test by sharing a YouTube video or web page to RecordThing
+3. Content appears in "Unprocessed Shares" for organization
+
+## Architecture
+
+### SwiftUI App Structure
+
+RecordThing uses a shared SwiftUI app definition that works across all platforms:
 
 ```swift
 @main
-struct FrutaApp: App {
-    @StateObject private var model = Model()
-
+struct RecordThingApp: App {
+    @StateObject private var appDatasource = AppDatasource.shared
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environmentObject(model)
+            AppSplitView()
+                .environmentObject(appDatasource)
         }
         .commands {
             SidebarCommands()
-            SmoothieCommands(model: model)
         }
     }
 }
 ```
 
-[View in Source](x-source-tag://SingleAppDefinitionTag)
+The app leverages SwiftUI's cross-platform capabilities to provide a consistent experience across iOS, iPadOS, and macOS while adapting to each platform's unique characteristics.
 
-For more information, see [App Structure and Behavior](https://developer.apple.com/documentation/swiftui/app-structure-and-behavior).
+### Database Management
 
-## Offer an App Clip
+RecordThing uses SQLite with Blackbird for database operations:
 
-On iOS and iPadOS, the Fruta app offers some of its functionality to users who don't have the full app installed as an App Clip. The app's Xcode project contains an App Clip target, and, instead of duplicating code, reuses code that’s shared across all platforms to build the App Clip. In shared code, the project makes use of the Active Compilation Condition build setting to exclude code for targets that don't define the `APPCLIP` value. For example, only the App Clip target presents an App Store overlay to prompt the user to get the full app.
+- **Development Database**: Automatically used when available in the project directory
+- **Production Database**: Copied from app bundle to Documents directory
+- **iCloud Sync**: Documents directory automatically syncs across devices
+- **Debug Tools**: Comprehensive database monitoring and debugging interface
+
+### ShareExtension Integration
+
+The ShareExtension enables content import from other apps:
 
 ```swift
-
-VStack(spacing: 0) {
-    Spacer()
-
-    orderStatusCard
-
-    Spacer()
-
-    #if EXTENDED_ALL
-    if presentingBottomBanner {
-        bottomBanner
-    }
-    #endif
-
-    #if APPCLIP
-    Text(verbatim: "App Store Overlay")
-        .hidden()
-        .appStoreOverlay(isPresented: $presentingAppStoreOverlay) {
-            SKOverlay.AppClipConfiguration(position: .bottom)
+// ShareExtension processes shared content
+struct ShareExtensionView: View {
+    @StateObject private var viewModel = ShareExtensionViewModel()
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                // Content preview and organization interface
+                SharedContentPreview(content: viewModel.sharedContent)
+                StrategistSelector(selectedStrategist: $viewModel.selectedStrategist)
+            }
         }
-    #endif
-}
-.onChange(of: model.hasAccount) { _ in
-    #if APPCLIP
-    if model.hasAccount {
-        presentingAppStoreOverlay = true
     }
-    #endif
 }
 ```
 
-[View in Source](x-source-tag://ActiveCompilationConditionTag)
+## Features
 
-For more information, see [Creating an App Clip with Xcode](https://developer.apple.com/documentation/app_clips/creating_an_app_clip_with_xcode) and [Choosing the Right Functionality for Your App Clip](https://developer.apple.com/documentation/app_clips/choosing_the_right_functionality_for_your_app_clip).
+### Knowledge Management
 
-## Create a Widget
+- **Things**: Core content items with metadata and relationships
+- **Evidence**: Supporting materials and documentation
+- **Strategists**: Organizational categories for strategic focus areas
+- **Workflows**: Structured processes for content creation and organization
 
-To allow users to see some of the app's content as a widget on their iOS Home screen or in the macOS Notification Center, the Xcode project contains targets for widget extensions. Both use code that’s shared across all targets.
+### Cross-Platform Syncing
+
+RecordThing leverages iOS's built-in iCloud Documents functionality:
+
+- **Automatic Syncing**: Files in Documents folder sync automatically across devices
+- **Cross-Device Access**: Data appears automatically on iPhone, iPad, and Mac
+- **Built-in Conflict Resolution**: iOS handles conflicts by creating versioned files
+- **Download on Demand**: Files appear but download when accessed to save storage
+
+### Debugging and Monitoring
+
+Access comprehensive debugging tools via Settings:
+
+- **Database Debug**: Monitor database connections, performance, and errors
+- **iCloud Debug**: Track sync status, file states, and troubleshoot issues
+- **Performance Monitoring**: Real-time metrics and health checks
+
+## Widget Extensions
+
+RecordThing includes widget extensions for iOS Home Screen and macOS Notification Center:
+
+```swift
+struct RecordThingWidget: Widget {
+    let kind: String = "RecordThingWidget"
+    
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: kind, provider: Provider()) { entry in
+            RecordThingWidgetEntryView(entry: entry)
+        }
+        .configurationDisplayName("RecordThing")
+        .description("Quick access to your latest recordings and knowledge items.")
+    }
+}
+```
 
 For more information, see [WidgetKit](https://developer.apple.com/documentation/widgetkit).
 
@@ -165,3 +214,38 @@ let allStates = SimpleiCloudManager.shared.documentStates
 ```
 
 For comprehensive documentation, see [iCloud Sync Documentation](../../docs/ICLOUD_SYNC.md).
+
+## Testing
+
+### ShareExtension Testing
+
+See [ShareExtension Testing Documentation](ShareExtension/TESTING.md) for comprehensive testing instructions.
+
+### Database Testing
+
+The app includes extensive database testing capabilities:
+
+- Unit tests for database operations
+- Integration tests for cross-platform compatibility
+- Performance benchmarks for large datasets
+- Error handling and recovery testing
+
+### iCloud Sync Testing
+
+Test iCloud functionality across devices:
+
+1. Enable iCloud on multiple devices with the same Apple ID
+2. Create content on one device and verify it appears on others
+3. Test conflict resolution by editing the same content simultaneously
+4. Monitor sync status using the debug interface
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes with appropriate tests
+4. Submit a pull request
+
+## License
+
+See [LICENSE](LICENSE/LICENSE.txt) for details.

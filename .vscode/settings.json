@@ -1,4 +1,7 @@
 {
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 500,
+  "files.trimTrailingWhitespace": false,
   "MicroPython.executeButton": [
     {
       "text": "▶",

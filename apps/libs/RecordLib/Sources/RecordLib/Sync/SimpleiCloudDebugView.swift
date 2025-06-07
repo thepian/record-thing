@@ -21,44 +21,42 @@ public struct SimpleiCloudDebugView: View {
   public init() {}
 
   public var body: some View {
-    NavigationView {
-      List {
-        // Status Section
-        statusSection
+    List {
+      // Status Section
+      statusSection
 
-        // Controls Section
-        controlsSection
+      // Controls Section
+      controlsSection
 
-        // Statistics Section
-        statisticsSection
+      // Statistics Section
+      statisticsSection
 
-        // Documents Section
-        documentsSection
+      // Documents Section
+      documentsSection
 
-        // Test Actions Section
-        testActionsSection
-      }
-      .navigationTitle("iCloud Documents")
-      #if os(iOS)
-        .navigationBarTitleDisplayMode(.large)
-      #endif
-      .toolbar {
-        ToolbarItem(placement: .primaryAction) {
-          Button("Refresh") {
-            refreshDocuments()
-          }
+      // Test Actions Section
+      testActionsSection
+    }
+    .navigationTitle("iCloud Documents")
+    #if os(iOS)
+      .navigationBarTitleDisplayMode(.large)
+    #endif
+    .toolbar {
+      ToolbarItem(placement: .primaryAction) {
+        Button("Refresh") {
+          refreshDocuments()
         }
       }
-      .onAppear {
-        refreshDocuments()
-      }
-      .sheet(isPresented: $showingCreateFileSheet) {
-        CreateFileSheet(
-          fileName: $newFileName,
-          fileContent: $newFileContent,
-          onCreate: createTestFile
-        )
-      }
+    }
+    .onAppear {
+      refreshDocuments()
+    }
+    .sheet(isPresented: $showingCreateFileSheet) {
+      CreateFileSheet(
+        fileName: $newFileName,
+        fileContent: $newFileContent,
+        onCreate: createTestFile
+      )
     }
   }
 

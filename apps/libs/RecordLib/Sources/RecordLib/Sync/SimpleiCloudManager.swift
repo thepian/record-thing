@@ -59,7 +59,8 @@ public class SimpleiCloudManager: ObservableObject {
 
   private func checkiCloudAvailability() {
     // Check if iCloud container is available
-    iCloudContainerURL = fileManager.url(forUbiquityContainerIdentifier: nil)
+    iCloudContainerURL = fileManager.url(
+      forUbiquityContainerIdentifier: "iCloud.com.thepia.recordthing")
     isAvailable = iCloudContainerURL != nil
 
     if self.isAvailable {

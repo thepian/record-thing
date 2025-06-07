@@ -89,8 +89,8 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
         let url = URL(fileURLWithPath: debugPath)
 
         do {
-          db = try Blackbird.Database(path: url.absoluteString)
-          logger.info("✅ Successfully opened Debug DB: \(url.absoluteString)")
+          db = try Blackbird.Database(path: url.platformPath)
+          logger.info("✅ Successfully opened Debug DB: \(url.platformPath)")
 
           // Update monitoring
           let connectionInfo = DatabaseConnectionInfo(
@@ -122,8 +122,8 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
       let url = URL(fileURLWithPath: testPath)
 
       do {
-        db = try Blackbird.Database(path: url.absoluteString)
-        logger.info("✅ Successfully opened Dev DB: \(url.absoluteString)")
+        db = try Blackbird.Database(path: url.platformPath)
+        logger.info("✅ Successfully opened Dev DB: \(url.platformPath)")
 
         // Update monitoring
         let connectionInfo = DatabaseConnectionInfo(
@@ -146,18 +146,18 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
     let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
       .appendingPathComponent("record-thing.sqlite")
 
-    logger.info("📁 Production database path: \(documentsPath.path)")
+    logger.info("📁 Production database path: \(documentsPath.platformPath)")
 
     // Copy default database if needed
-    if !FileManager.default.fileExists(atPath: documentsPath.path) {
+    if !FileManager.default.fileExists(atPath: documentsPath.platformPath) {
       logger.info("📋 Production database not found, copying from bundle...")
 
       if let bundleDbPath = Bundle.main.path(
         forResource: "default-record-thing", ofType: "sqlite")
       {
         do {
-          try FileManager.default.copyItem(atPath: bundleDbPath, toPath: documentsPath.path)
-          logger.info("✅ Successfully copied DB from bundle to: \(documentsPath.path)")
+          try FileManager.default.copyItem(atPath: bundleDbPath, toPath: documentsPath.platformPath)
+          logger.info("✅ Successfully copied DB from bundle to: \(documentsPath.platformPath)")
         } catch {
           logger.error("❌ Failed to copy database from bundle: \(error)")
         }
@@ -165,21 +165,22 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
         logger.error("❌ Bundle database 'default-record-thing.sqlite' not found")
       }
     } else {
-      logger.info("✅ Production database already exists at: \(documentsPath.path)")
+      logger.info("✅ Production database already exists at: \(documentsPath.platformPath)")
     }
 
     // Connect to database
     do {
       logger.info("🔗 Connecting to production database...")
-      db = try Blackbird.Database(path: documentsPath.path)
-      logger.info("✅ Successfully opened production DB: \(documentsPath.path)")
+      db = try Blackbird.Database(path: documentsPath.platformPath)
+      logger.info("✅ Successfully opened production DB: \(documentsPath.platformPath)")
 
       // Update monitoring
       let connectionInfo = DatabaseConnectionInfo(
-        path: documentsPath.path,
+        path: documentsPath.platformPath,
         type: .production,
         connectedAt: Date(),
-        fileSize: try? FileManager.default.attributesOfItem(atPath: documentsPath.path)[.size]
+        fileSize: try? FileManager.default.attributesOfItem(atPath: documentsPath.platformPath)[
+          .size]
           as? Int64,
         isReadOnly: false
       )
@@ -268,13 +269,13 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
         .appendingPathComponent("record-thing.sqlite")
 
       // Remove existing database
-      try? FileManager.default.removeItem(atPath: documentsPath.path)
+      try? FileManager.default.removeItem(atPath: documentsPath.platformPath)
 
       // Copy default database
       if let bundleDbPath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite")
       {
-        try? FileManager.default.copyItem(atPath: bundleDbPath, toPath: documentsPath.path)
-        logger.debug("Copied default DB to: \(documentsPath.path)")
+        try? FileManager.default.copyItem(atPath: bundleDbPath, toPath: documentsPath.platformPath)
+        logger.debug("Copied default DB to: \(documentsPath.platformPath)")
         DatabaseMonitor.shared.logActivity(
           .databaseReset, details: "Copied default database to documents")
       }
