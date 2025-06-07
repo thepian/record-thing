@@ -6,9 +6,9 @@ Create a shared codebase to build a multiplatform app that offers widgets and an
 
 - Note: This sample project is associated with WWDC21 sessions [10107: Platforms State of the Union](https://developer.apple.com/wwdc21/10107/), [10012: What's New in App Clips](https://developer.apple.com/wwdc21/10012/), [10013: Build Light and Fast App Clips](https://developer.apple.com/wwdc21/10013/), [10220: Localize your SwiftUI App](https://developer.apple.com/wwdc21/10220/).
 
-    It's also associated with WWDC20 sessions [10637: Platforms State of the Union](https://developer.apple.com/wwdc20/10637/), [10146: Configure and Link Your App Clips](https://developer.apple.com/wwdc20/10146/), [10120: Streamline Your App Clip](https://developer.apple.com/wwdc20/10120/), [10118: Create App Clips for Other Businesses](https://developer.apple.com/wwdc20/10118/), [10096: Explore Packages and Projects with Xcode Playgrounds](https://developer.apple.com/wwdc20/10096/), and [10028: Meet WidgetKit](https://developer.apple.com/wwdc20/10028/).
+  It's also associated with WWDC20 sessions [10637: Platforms State of the Union](https://developer.apple.com/wwdc20/10637/), [10146: Configure and Link Your App Clips](https://developer.apple.com/wwdc20/10146/), [10120: Streamline Your App Clip](https://developer.apple.com/wwdc20/10120/), [10118: Create App Clips for Other Businesses](https://developer.apple.com/wwdc20/10118/), [10096: Explore Packages and Projects with Xcode Playgrounds](https://developer.apple.com/wwdc20/10096/), and [10028: Meet WidgetKit](https://developer.apple.com/wwdc20/10028/).
 
-The Fruta sample project builds an app for macOS, iOS, and iPadOS that implements [SwiftUI](https://developer.apple.com/documentation/swiftui) platform features like widgets, App Clips, and localization. Users can order smoothies, save favorite drinks, collect rewards, and browse recipes. It contains two flavors of app targets: 
+The Fruta sample project builds an app for macOS, iOS, and iPadOS that implements [SwiftUI](https://developer.apple.com/documentation/swiftui) platform features like widgets, App Clips, and localization. Users can order smoothies, save favorite drinks, collect rewards, and browse recipes. It contains two flavors of app targets:
 
 - Simple iOS and macOS app targets that you build using [Personal Team](https://help.apple.com/xcode/mac/11.4/#/dev17411c009) signing. This iOS app runs in Simulator, and only requires a standard Apple ID to install on a device. The simple app implements a rich, localized [SwiftUI](https://developer.apple.com/documentation/swiftui) interface. Users can browse and order smoothies, and save favorite drinks.
 - Full featured iOS All and macOS All app targets. The full iOS app runs in Simulator, and on devices with an Apple Developer membership. This app includes widget extensions that enable users to add a widget to their iOS Home Screen or the macOS Notification Center, and to view their rewards or a favorite smoothie. This app also embeds an App Clip. With the App Clip, users can discover and instantly launch some of the app's functionality on their iPhone or iPad without installing the app.
@@ -17,7 +17,7 @@ The Fruta sample app leverages [Sign in with Apple](https://developer.apple.com/
 
 ## Configure the Sample Code Project
 
-To build this project for iOS 15.4, use Xcode 13.3. The runtime requirement is iOS 15.4. To build this project for macOS 12.3, use Xcode 13.3. 
+To build this project for iOS 15.4, use Xcode 13.3. The runtime requirement is iOS 15.4. To build this project for macOS 12.3, use Xcode 13.3.
 
 To configure the iOS and macOS app targets without an Apple Developer account, follow these steps:
 
@@ -37,11 +37,11 @@ To configure the iOS All and macOS All apps, follow these steps:
 
 To create a single app definition that works for multiple platforms, the project defines a structure that conforms to the [App](https://developer.apple.com/documentation/swiftui/app) protocol. Because the `@main` attribute precedes the structure definition, the system recognizes the structure as the entry point into the app. Its computed body property returns a [WindowGroup](https://developer.apple.com/documentation/swiftui/windowgroup) scene that contains the view hierarchy displayed by the app to the user. SwiftUI manages the presentation of the scene and its contents in a platform-appropriate manner.
 
-``` swift
+```swift
 @main
 struct FrutaApp: App {
     @StateObject private var model = Model()
-    
+
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -54,29 +54,30 @@ struct FrutaApp: App {
     }
 }
 ```
+
 [View in Source](x-source-tag://SingleAppDefinitionTag)
 
 For more information, see [App Structure and Behavior](https://developer.apple.com/documentation/swiftui/app-structure-and-behavior).
 
-## Offer an App Clip 
+## Offer an App Clip
 
 On iOS and iPadOS, the Fruta app offers some of its functionality to users who don't have the full app installed as an App Clip. The app's Xcode project contains an App Clip target, and, instead of duplicating code, reuses code that’s shared across all platforms to build the App Clip. In shared code, the project makes use of the Active Compilation Condition build setting to exclude code for targets that don't define the `APPCLIP` value. For example, only the App Clip target presents an App Store overlay to prompt the user to get the full app.
 
-``` swift
+```swift
 
 VStack(spacing: 0) {
     Spacer()
-    
+
     orderStatusCard
-    
+
     Spacer()
-    
+
     #if EXTENDED_ALL
     if presentingBottomBanner {
         bottomBanner
     }
     #endif
-    
+
     #if APPCLIP
     Text(verbatim: "App Store Overlay")
         .hidden()
@@ -93,6 +94,7 @@ VStack(spacing: 0) {
     #endif
 }
 ```
+
 [View in Source](x-source-tag://ActiveCompilationConditionTag)
 
 For more information, see [Creating an App Clip with Xcode](https://developer.apple.com/documentation/app_clips/creating_an_app_clip_with_xcode) and [Choosing the Right Functionality for Your App Clip](https://developer.apple.com/documentation/app_clips/choosing_the_right_functionality_for_your_app_clip).
@@ -102,3 +104,64 @@ For more information, see [Creating an App Clip with Xcode](https://developer.ap
 To allow users to see some of the app's content as a widget on their iOS Home screen or in the macOS Notification Center, the Xcode project contains targets for widget extensions. Both use code that’s shared across all targets.
 
 For more information, see [WidgetKit](https://developer.apple.com/documentation/widgetkit).
+
+## iCloud Documents Syncing
+
+RecordThing leverages iOS's built-in iCloud Documents functionality to automatically sync user data across devices. With the proper `CloudDocuments` entitlement, files stored in the app's Documents directory are automatically synchronized to iCloud and made available on all devices signed in with the same Apple ID.
+
+### Key Features
+
+- **Automatic Syncing**: Files in Documents folder sync automatically across devices
+- **Cross-Device Access**: Data appears automatically on iPhone, iPad, and Mac
+- **Built-in Conflict Resolution**: iOS handles conflicts by creating versioned files
+- **Download on Demand**: Files appear but download when accessed to save storage
+- **Background Optimization**: iOS optimizes sync timing for battery and bandwidth
+
+### Implementation
+
+The app includes the `CloudDocuments` entitlement in `iOS.entitlements`:
+
+```xml
+<key>com.apple.developer.icloud-services</key>
+<array>
+    <string>CloudKit</string>
+    <string>CloudDocuments</string>
+</array>
+```
+
+### Monitoring and Debugging
+
+Access the iCloud sync debug interface via:
+**Settings → Sync & Backup → iCloud Debug**
+
+The debug view provides:
+
+- iCloud availability status
+- File-by-file sync status
+- Sync statistics and progress
+- Test file creation capabilities
+- Troubleshooting information
+
+### What Gets Synced
+
+- **Database**: `record-thing.sqlite` - Main app database
+- **Assets**: `assets/` folder - User recordings and media files
+- **Backups**: Database backup copies
+- **User files**: Any files created in Documents directory
+
+### Production Monitoring
+
+Monitor sync health in production code:
+
+```swift
+// Check overall sync status
+let summary = SimpleiCloudManager.shared.getSyncSummary()
+
+// Monitor specific files
+let dbStatus = SimpleiCloudManager.shared.getFileStatus("record-thing.sqlite")
+
+// Get detailed sync states
+let allStates = SimpleiCloudManager.shared.documentStates
+```
+
+For comprehensive documentation, see [iCloud Sync Documentation](../../docs/ICLOUD_SYNC.md).

@@ -398,7 +398,7 @@ struct ImprovedSettingsView: View {
 
       Section {
         HStack {
-          Label("Auto Sync", systemImage: "arrow.triangle.2.circlepath")
+          Label("iCloud Sync", systemImage: "icloud.and.arrow.up")
           Spacer()
           Toggle("", isOn: $autoSyncEnabled)
             .disabled(true)  // Disabled for free tier
@@ -409,10 +409,14 @@ struct ImprovedSettingsView: View {
         }
         .disabled(true)
 
+        NavigationLink("iCloud Debug") {
+          SimpleiCloudDebugView()
+        }
+
       } header: {
         Text("Sync & Backup")
       } footer: {
-        Text("Sync features are available with Premium plan.")
+        Text("iCloud sync is available with Premium plan. Debug view shows sync status and logs.")
       }
 
       Section {

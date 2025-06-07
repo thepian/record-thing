@@ -93,7 +93,7 @@ The RecordThing app implements a sophisticated freemium tier system that require
 - **Cloud Synchronization**: Full bi-directional sync with Storage Bucket
 - **Privacy Controls**: Option to mark recordings as private (not used for AI training)
 - **Multi-Device Sync**: Database synchronization across iOS, iPadOS, and macOS
-- **iCloud Integration**: Additional backup layer through iCloud
+- **iCloud Integration**: Automatic cross-device sync via iCloud Documents (see [iCloud Sync Documentation](ICLOUD_SYNC.md))
 - **Advanced Sharing**: Full sharing capabilities with other users
 - **Custom Workflows**: Database support for user-defined recording processes
 
