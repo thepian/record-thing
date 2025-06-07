@@ -95,7 +95,30 @@ struct AppSplitView<DetailContent: View>: View {
           }
 
           NavigationLink {
-            Text("iuoptyuptyoiu")
+            List {
+              Section {
+                NavigationLink("Settings") {
+                  ImprovedSettingsView(
+                    captureService: captureService,
+                    designSystem: designSystem
+                  )
+                }
+
+                Button("Update Account") {
+                  // Account update action
+                }
+
+              } header: {
+                Text("Actions")
+              }
+
+              Section {
+                Text("Account Profile")
+              } header: {
+                Text("Account & Teams")
+              }
+            }
+            .navigationTitle("Actions")
           } label: {
             Label("Actions", systemImage: "signature")
           }

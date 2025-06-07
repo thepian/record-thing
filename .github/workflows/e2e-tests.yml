@@ -1,0 +1,265 @@
+name: E2E Tests - iPhone Navigation
+
+# DISABLED: Requires macOS runners to be configured
+# Uncomment the 'on' section below when macOS runners are available
+
+# on:
+#   push:
+#     branches: [ main, develop, feature/* ]
+#     paths:
+#       - 'apps/RecordThing/**'
+#       - '.github/workflows/e2e-tests.yml'
+#   pull_request:
+#     branches: [ main, develop ]
+#     paths:
+#       - 'apps/RecordThing/**'
+#       - '.github/workflows/e2e-tests.yml'
+
+# Manual trigger only until macOS runners are configured
+on:
+  workflow_dispatch:
+    inputs:
+      test_filter:
+        description: "Test filter pattern (optional)"
+        required: false
+        default: ""
+      simulator_device:
+        description: "Simulator device"
+        required: false
+        default: "iPhone 16"
+        type: choice
+        options:
+          - "iPhone 16"
+          - "iPhone 16 Plus"
+          - "iPhone 15"
+          - "iPad Air (5th generation)"
+      runner_type:
+        description: "Runner type"
+        required: true
+        default: "github-hosted"
+        type: choice
+        options:
+          - "github-hosted"
+          - "self-hosted"
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
+  XCODE_VERSION: "16.2"
+
+jobs:
+  e2e-tests:
+    name: iPhone Navigation E2E Tests
+    runs-on: ${{ github.event.inputs.runner_type == 'self-hosted' && 'self-hosted' || 'macos-15' }}
+    timeout-minutes: 45
+
+    strategy:
+      fail-fast: false
+      matrix:
+        device:
+          - ${{ github.event.inputs.simulator_device || 'iPhone 16' }}
+        ios_version: ["18.2"]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: Cache Xcode DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-xcode-deriveddata-${{ hashFiles('**/*.xcodeproj', '**/*.xcworkspace') }}
+          restore-keys: |
+            ${{ runner.os }}-xcode-deriveddata-
+
+      - name: List available simulators
+        run: |
+          xcrun simctl list devices available
+          echo "Available runtimes:"
+          xcrun simctl list runtimes
+
+      - name: Create and boot simulator
+        id: simulator
+        run: |
+          # Create simulator if it doesn't exist
+          DEVICE_TYPE=$(xcrun simctl list devicetypes | grep "${{ matrix.device }}" | head -1 | sed 's/.*(\(.*\)).*/\1/')
+          RUNTIME=$(xcrun simctl list runtimes | grep "iOS ${{ matrix.ios_version }}" | head -1 | sed 's/.*(\(.*\)).*/\1/')
+
+          echo "Device Type: $DEVICE_TYPE"
+          echo "Runtime: $RUNTIME"
+
+          # Check if simulator already exists
+          EXISTING_UUID=$(xcrun simctl list devices | grep "${{ matrix.device }}" | grep "${{ matrix.ios_version }}" | head -1 | sed 's/.*(\([^)]*\)).*/\1/')
+
+          if [ -n "$EXISTING_UUID" ]; then
+            echo "Using existing simulator: $EXISTING_UUID"
+            SIMULATOR_UUID=$EXISTING_UUID
+          else
+            echo "Creating new simulator..."
+            SIMULATOR_UUID=$(xcrun simctl create "E2E-Test-${{ matrix.device }}" "$DEVICE_TYPE" "$RUNTIME")
+            echo "Created simulator: $SIMULATOR_UUID"
+          fi
+
+          # Boot the simulator
+          echo "Booting simulator..."
+          xcrun simctl boot "$SIMULATOR_UUID" || true
+
+          # Wait for simulator to be ready
+          echo "Waiting for simulator to be ready..."
+          timeout 120 bash -c 'until xcrun simctl list devices | grep "$0" | grep -q "Booted"; do sleep 2; done' "$SIMULATOR_UUID"
+
+          echo "simulator_uuid=$SIMULATOR_UUID" >> $GITHUB_OUTPUT
+          echo "Simulator UUID: $SIMULATOR_UUID"
+
+      - name: Build RecordThing for Simulator
+        run: |
+          cd apps/RecordThing
+
+          # Clean build folder
+          rm -rf build/
+
+          # Build for simulator
+          xcodebuild \
+            -project RecordThing.xcodeproj \
+            -scheme "RecordThing iOS" \
+            -destination "id=${{ steps.simulator.outputs.simulator_uuid }}" \
+            -configuration Debug \
+            -derivedDataPath build/ \
+            build
+
+      - name: Install app on simulator
+        run: |
+          cd apps/RecordThing
+
+          # Find the built app
+          APP_PATH=$(find build/ -name "*.app" -type d | head -1)
+          echo "App path: $APP_PATH"
+
+          if [ -z "$APP_PATH" ]; then
+            echo "❌ App not found in build directory"
+            exit 1
+          fi
+
+          # Install app on simulator
+          xcrun simctl install "${{ steps.simulator.outputs.simulator_uuid }}" "$APP_PATH"
+          echo "✅ App installed successfully"
+
+      - name: Launch app and verify
+        run: |
+          # Launch the app
+          xcrun simctl launch "${{ steps.simulator.outputs.simulator_uuid }}" com.thepia.recordthing
+
+          # Wait for app to launch
+          sleep 5
+
+          # Verify app is running
+          if xcrun simctl list apps "${{ steps.simulator.outputs.simulator_uuid }}" | grep -q "com.thepia.recordthing"; then
+            echo "✅ App launched successfully"
+          else
+            echo "❌ App failed to launch"
+            exit 1
+          fi
+
+      - name: Setup Python for E2E tests
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run E2E Navigation Tests
+        id: e2e_tests
+        run: |
+          cd apps/RecordThing/Tests/E2E
+
+          # Make test runner executable
+          chmod +x run_e2e_tests.py
+
+          # Run E2E tests
+          echo "Running E2E tests..."
+          python3 run_e2e_tests.py \
+            --simulator-uuid "${{ steps.simulator.outputs.simulator_uuid }}" \
+            --bundle-id "com.thepia.recordthing" \
+            --report
+
+      - name: Capture simulator screenshot on failure
+        if: failure()
+        run: |
+          # Take screenshot for debugging
+          SCREENSHOT_PATH="simulator-failure-screenshot.png"
+          xcrun simctl io "${{ steps.simulator.outputs.simulator_uuid }}" screenshot "$SCREENSHOT_PATH"
+          echo "Screenshot saved to: $SCREENSHOT_PATH"
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-results-${{ matrix.device }}-${{ matrix.ios_version }}
+          path: |
+            simulator-failure-screenshot.png
+            apps/RecordThing/Tests/E2E/*.log
+          retention-days: 7
+
+      - name: Cleanup simulator
+        if: always()
+        run: |
+          # Shutdown and delete the simulator if we created it
+          xcrun simctl shutdown "${{ steps.simulator.outputs.simulator_uuid }}" || true
+
+          # Only delete if we created it (has E2E-Test prefix)
+          if xcrun simctl list devices | grep "${{ steps.simulator.outputs.simulator_uuid }}" | grep -q "E2E-Test"; then
+            xcrun simctl delete "${{ steps.simulator.outputs.simulator_uuid }}" || true
+            echo "Cleaned up test simulator"
+          fi
+
+      - name: Report test results
+        if: always()
+        run: |
+          if [ "${{ steps.e2e_tests.outcome }}" = "success" ]; then
+            echo "✅ All E2E tests passed!"
+          else
+            echo "❌ Some E2E tests failed. Check the logs above for details."
+            exit 1
+          fi
+
+  # Summary job that depends on all test jobs
+  e2e-summary:
+    name: E2E Test Summary
+    runs-on: ubuntu-latest
+    needs: [e2e-tests]
+    if: always()
+
+    steps:
+      - name: Check test results
+        run: |
+          if [ "${{ needs.e2e-tests.result }}" = "success" ]; then
+            echo "✅ All E2E tests passed successfully!"
+          else
+            echo "❌ E2E tests failed. Please check the individual job logs."
+            exit 1
+          fi
+
+      - name: Post summary
+        if: always()
+        run: |
+          echo "## 📱 iPhone Navigation E2E Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.e2e-tests.result }}" = "success" ]; then
+            echo "✅ **All tests passed!** The iPhone navigation flows are working correctly." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Tests failed.** There are issues with the iPhone navigation flows." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Test Coverage" >> $GITHUB_STEP_SUMMARY
+          echo "- Camera → Actions → Camera navigation" >> $GITHUB_STEP_SUMMARY
+          echo "- Actions → Settings → Actions navigation" >> $GITHUB_STEP_SUMMARY
+          echo "- Camera → Assets → Camera navigation" >> $GITHUB_STEP_SUMMARY
+          echo "- Actions view content validation" >> $GITHUB_STEP_SUMMARY
+          echo "- Settings view content validation" >> $GITHUB_STEP_SUMMARY
+          echo "- Navigation error recovery" >> $GITHUB_STEP_SUMMARY
