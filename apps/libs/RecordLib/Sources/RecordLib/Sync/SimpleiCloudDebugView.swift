@@ -12,6 +12,7 @@ import os
 public struct SimpleiCloudDebugView: View {
   @StateObject private var iCloudManager = SimpleiCloudManager.shared
   @State private var showingCreateFileSheet = false
+  @State private var showingDiagnostics = false
   @State private var newFileName = ""
   @State private var newFileContent = ""
   @State private var documents: [URL] = []
@@ -57,6 +58,18 @@ public struct SimpleiCloudDebugView: View {
         fileContent: $newFileContent,
         onCreate: createTestFile
       )
+    }
+    .alert("iCloud Diagnostics", isPresented: $showingDiagnostics) {
+      Button("Copy to Clipboard") {
+        #if os(iOS)
+          UIPasteboard.general.string = iCloudManager.getDiagnosticInfo()
+        #elseif os(macOS)
+          NSPasteboard.general.setString(iCloudManager.getDiagnosticInfo(), forType: .string)
+        #endif
+      }
+      Button("OK") {}
+    } message: {
+      Text(iCloudManager.getDiagnosticInfo())
     }
   }
 
@@ -245,6 +258,14 @@ public struct SimpleiCloudDebugView: View {
             logger.info("Documents folder: \(iCloudManager.getDocumentsURL().path)")
           #endif
         }
+      }
+
+      Button("Show Diagnostics") {
+        showingDiagnostics = true
+      }
+
+      Button("Trigger Database Backup") {
+        AppDatasource.shared.triggerManualBackup()
       }
     } header: {
       Text("Test Actions")

@@ -61,6 +61,35 @@ If you subscribe to the Premium tier:
 
 We implement appropriate technical and organizational measures to protect your personal information.
 
+## Document Types and File Handling
+
+Record Thing supports various document types for import and export:
+
+### Supported File Types
+
+- **Database Files**: SQLite files with schema validation for data import/investigation
+- **Media Files**: Images, videos, and audio from Photos app or Files app
+- **Container Files** (Future): Evidence containers (`.evidence`) and Things containers (`.things`)
+- **Email Files** (Planned): Email messages and backups for evidence collection
+
+### File Processing
+
+All file processing occurs locally on your device:
+
+- **Local Analysis**: File metadata and content analyzed on-device only
+- **No Cloud Processing**: Imported files are not sent to external servers
+- **Schema Validation**: Database compatibility checked locally
+- **Privacy Preserved**: File contents remain private during processing
+
+### iCloud Documents Integration
+
+When you enable iCloud Documents sync:
+
+- **Your Control**: Managed through your iOS Settings, not by us
+- **Apple's Infrastructure**: Uses Apple's secure iCloud infrastructure
+- **No Access**: We cannot access your iCloud Documents data
+- **End-to-End Encryption**: Apple provides encryption in transit and at rest
+
 ## Data Sharing and Disclosure
 
 We may share your information:

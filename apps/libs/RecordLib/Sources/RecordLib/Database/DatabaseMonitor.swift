@@ -158,7 +158,7 @@ public class DatabaseMonitor: ObservableObject {
     case .connectionLost, .error:
       currentStatus = .error
       isHealthy = false
-    case .databaseReset, .databaseReloaded:
+    case .databaseReset, .databaseReloaded, .databaseBackup:
       currentStatus = .connected
       isHealthy = true
     default:
@@ -226,6 +226,8 @@ public struct DatabaseActivity: Identifiable {
       return "xmark.circle.fill"
     case .databaseReset, .databaseReloaded:
       return "arrow.clockwise.circle.fill"
+    case .databaseBackup:
+      return "externaldrive.fill"
     case .queryExecuted:
       return "magnifyingglass.circle"
     case .debugAction:
@@ -237,7 +239,7 @@ public struct DatabaseActivity: Identifiable {
 
   public var statusColor: Color {
     switch type {
-    case .connectionEstablished, .databaseReloaded, .migrationCompleted:
+    case .connectionEstablished, .databaseReloaded, .migrationCompleted, .databaseBackup:
       return .green
     case .connectionLost, .error:
       return .red
@@ -254,6 +256,7 @@ public enum DatabaseActivityType: String, CaseIterable {
   case connectionLost = "Connection Lost"
   case databaseReset = "Database Reset"
   case databaseReloaded = "Database Reloaded"
+  case databaseBackup = "Database Backup"
   case queryExecuted = "Query Executed"
   case error = "Error"
   case migrationStarted = "Migration Started"

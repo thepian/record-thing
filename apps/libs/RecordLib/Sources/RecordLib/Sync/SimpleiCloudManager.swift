@@ -58,15 +58,32 @@ public class SimpleiCloudManager: ObservableObject {
   // MARK: - Setup
 
   private func checkiCloudAvailability() {
+    logger.info("🔍 Checking iCloud availability...")
+
     // Check if iCloud container is available
     iCloudContainerURL = fileManager.url(
       forUbiquityContainerIdentifier: "iCloud.com.thepia.recordthing")
     isAvailable = iCloudContainerURL != nil
 
+    // Also try with nil identifier (default container)
+    let defaultContainerURL = fileManager.url(forUbiquityContainerIdentifier: nil)
+
+    logger.info("📋 iCloud Diagnostics:")
+    logger.info("  - Requested container: iCloud.com.thepia.recordthing")
+    logger.info("  - Container URL: \(self.iCloudContainerURL?.path ?? "nil")")
+    logger.info("  - Default container URL: \(defaultContainerURL?.path ?? "nil")")
+    logger.info("  - Documents directory: \(self.documentsURL.path)")
+    logger.info("  - Available: \(self.isAvailable)")
+
     if self.isAvailable {
-      logger.info("iCloud container available at: \(self.iCloudContainerURL?.path ?? "Unknown")")
+      logger.info("✅ iCloud container available at: \(self.iCloudContainerURL?.path ?? "Unknown")")
     } else {
-      logger.warning("iCloud container not available - check entitlements and iCloud settings")
+      logger.warning("❌ iCloud container not available")
+      logger.warning("   Possible causes:")
+      logger.warning("   1. iCloud Drive not enabled in Settings")
+      logger.warning("   2. App not signed with proper provisioning profile")
+      logger.warning("   3. Container identifier not configured in Apple Developer account")
+      logger.warning("   4. Entitlements not properly configured")
     }
   }
 
@@ -302,5 +319,32 @@ extension SimpleiCloudManager {
   /// Get sync summary
   public func getSyncSummary() -> String {
     return "\(syncedDocuments)/\(totalDocuments) files synced (\(pendingDocuments) pending)"
+  }
+
+  /// Get detailed diagnostic information
+  public func getDiagnosticInfo() -> String {
+    var info = "📋 iCloud Diagnostics:\n"
+    info += "  - Available: \(isAvailable)\n"
+    info += "  - Enabled: \(isEnabled)\n"
+    info += "  - Container ID: iCloud.com.thepia.recordthing\n"
+    info += "  - Container URL: \(iCloudContainerURL?.path ?? "nil")\n"
+    info += "  - Documents URL: \(documentsURL.path)\n"
+
+    // Check default container
+    let defaultContainer = fileManager.url(forUbiquityContainerIdentifier: nil)
+    info += "  - Default container: \(defaultContainer?.path ?? "nil")\n"
+
+    // Check entitlements
+    let bundle = Bundle.main
+    let entitlements =
+      bundle.object(forInfoDictionaryKey: "com.apple.developer.icloud-services") as? [String]
+    info += "  - Entitlements: \(entitlements ?? [])\n"
+
+    let containers =
+      bundle.object(forInfoDictionaryKey: "com.apple.developer.icloud-container-identifiers")
+      as? [String]
+    info += "  - Container IDs: \(containers ?? [])\n"
+
+    return info
   }
 }

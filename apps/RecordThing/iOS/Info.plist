@@ -1,11 +1,125 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>UIApplicationSceneManifest</key>
 	<dict>
-		<key>UIApplicationSupportsMultipleScenes</key>
-		<true/>
+		<key>UIApplicationSceneManifest</key>
+		<dict>
+			<key>UIApplicationSupportsMultipleScenes</key>
+			<true />
+		</dict>
+
+		<!-- Document Types for iCloud Documents -->
+		<key>CFBundleDocumentTypes</key>
+		<array>
+			<!-- RecordThing Container Types -->
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>LSItemContentTypes</key>
+				<array>
+					<string>com.thepia.recordthing.evidence</string>
+					<string>com.thepia.recordthing.things</string>
+				</array>
+				<key>NSUbiquitousDocumentUserActivityType</key>
+				<string>$(PRODUCT_BUNDLE_IDENTIFIER).container</string>
+			</dict>
+			<!-- Database Files -->
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>LSItemContentTypes</key>
+				<array>
+					<string>public.sqlite3-database</string>
+				</array>
+				<key>NSUbiquitousDocumentUserActivityType</key>
+				<string>$(PRODUCT_BUNDLE_IDENTIFIER).database</string>
+			</dict>
+			<!-- Media Import -->
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Viewer</string>
+				<key>LSItemContentTypes</key>
+				<array>
+					<string>public.image</string>
+					<string>public.movie</string>
+					<string>public.audio</string>
+				</array>
+				<key>NSUbiquitousDocumentUserActivityType</key>
+				<string>$(PRODUCT_BUNDLE_IDENTIFIER).media</string>
+			</dict>
+			<!-- Email Import -->
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Viewer</string>
+				<key>LSItemContentTypes</key>
+				<array>
+					<string>com.apple.mail.email</string>
+					<string>public.email-message</string>
+				</array>
+				<key>NSUbiquitousDocumentUserActivityType</key>
+				<string>$(PRODUCT_BUNDLE_IDENTIFIER).email</string>
+			</dict>
+		</array>
+
+		<!-- Exported Type Declarations -->
+		<key>UTExportedTypeDeclarations</key>
+		<array>
+			<!-- Evidence Container Type -->
+			<dict>
+				<key>UTTypeConformsTo</key>
+				<array>
+					<string>public.composite-content</string>
+					<string>public.data</string>
+				</array>
+				<key>UTTypeDescription</key>
+				<string>Record Thing Evidence Container</string>
+				<key>UTTypeIdentifier</key>
+				<string>com.thepia.recordthing.evidence</string>
+				<key>UTTypeTagSpecification</key>
+				<dict>
+					<key>public.filename-extension</key>
+					<array>
+						<string>evidence</string>
+					</array>
+				</dict>
+			</dict>
+			<!-- Things Container Type -->
+			<dict>
+				<key>UTTypeConformsTo</key>
+				<array>
+					<string>public.composite-content</string>
+					<string>public.data</string>
+				</array>
+				<key>UTTypeDescription</key>
+				<string>Record Thing Things Container</string>
+				<key>UTTypeIdentifier</key>
+				<string>com.thepia.recordthing.things</string>
+				<key>UTTypeTagSpecification</key>
+				<dict>
+					<key>public.filename-extension</key>
+					<array>
+						<string>things</string>
+					</array>
+				</dict>
+			</dict>
+		</array>
+
+		<!-- Support for opening documents -->
+		<key>LSSupportsOpeningDocumentsInPlace</key>
+		<true />
+
+		<!-- Enable document browser -->
+		<key>UISupportsDocumentBrowser</key>
+		<true />
+
+		<!-- Privacy Usage Descriptions -->
+		<key>NSCameraUsageDescription</key>
+		<string>Record Thing needs camera access to scan and record your belongings.</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>Record Thing needs microphone access to record video with audio.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Record Thing needs access to your photo library to save and retrieve recordings.</string>
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>Record Thing needs access to save recordings to your photo library.</string>
 	</dict>
-</dict>
 </plist>

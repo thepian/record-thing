@@ -11,17 +11,89 @@ RecordThing leverages iOS's built-in iCloud Documents functionality to automatic
 iCloud Documents syncing happens **automatically** without custom sync logic:
 
 1. **Files in Documents folder sync automatically** across devices
-2. **Cross-device access is automatic** with same Apple ID  
+2. **Cross-device access is automatic** with same Apple ID
 3. **Conflict resolution is built-in** (iOS creates .icloud conflict files)
 4. **Download on demand** - files appear but download when accessed
 5. **Background optimization** - iOS handles timing and bandwidth
 
 ### What Gets Synced
 
-- **Database**: `record-thing.sqlite` - Main app database
+- **Database Backup**: `record-thing-backup.sqlite` - Copy-on-Write backup of working database
 - **Assets**: `assets/` folder - User recordings and media files
-- **Backups**: `record-thing-backup.sqlite` - Database backup copies
 - **User files**: Any files created in Documents directory
+
+**Note**: The working database (`record-thing.sqlite`) is stored in App Support folder and does NOT sync. Only the backup copy in Documents folder syncs to iCloud.
+
+### Supported Document Types
+
+RecordThing supports opening and importing various file types:
+
+#### Container Types (Future)
+
+- **`.evidence`** - Evidence container files (planned)
+- **`.things`** - Things container files (planned)
+
+#### Database Files
+
+- **`.sqlite`** - SQLite database files with schema validation
+- Opens in RecordThing for import/investigation
+- Requires RecordThing-compatible schema
+
+#### Media Import
+
+- **Images**: JPEG, PNG, HEIF, and other standard formats
+- **Videos**: MP4, MOV, and other standard formats
+- **Audio**: MP3, AAC, WAV, and other standard formats
+- Imported from Photos app or Files app
+
+#### Email Import (Planned)
+
+- **Email files**: `.eml` and Apple Mail formats
+- **Email backups**: For evidence collection
+
+### File Opening Behavior
+
+When users open files in RecordThing from the Files app:
+
+#### Database Files (`.sqlite`)
+
+1. **Schema Validation**: Checks if database has RecordThing-compatible schema
+2. **Import Options**:
+   - Add to existing topics/strategists
+   - Import as backup for investigation
+3. **Error Handling**: Clear message if schema is incompatible
+
+#### Media Files
+
+1. **Import to Evidence**: Add as evidence for existing Things
+2. **Create New Thing**: Start new item with imported media
+3. **Batch Import**: Support multiple file selection
+
+#### Container Files (Future)
+
+1. **Evidence Containers**: Import evidence bundles with metadata
+2. **Things Containers**: Import complete Thing definitions
+3. **Merge Options**: Handle conflicts with existing data
+
+### Primary Use Cases
+
+#### Device-to-Device Sync
+
+- **Automatic**: Files in Documents folder sync automatically
+- **Cross-Platform**: iPhone ↔ iPad ↔ Mac seamless access
+- **Offline Access**: Files available offline after initial download
+
+#### Support Investigation
+
+- **Database Sharing**: Export database for support analysis
+- **Directory Upload**: Share entire Documents folder to storage bucket
+- **Encrypted Transfer**: Optional encryption for sensitive data
+
+#### Content Import
+
+- **Photos Integration**: Import directly from Photos app
+- **Files Integration**: Drag & drop from Files app
+- **Email Processing**: Extract attachments and content for evidence
 
 ## Implementation
 
@@ -51,7 +123,7 @@ let documentsURL = SimpleiCloudManager.shared.getDocumentsURL()
 
 // Create files (will sync automatically)
 let fileURL = try SimpleiCloudManager.shared.createTextFile(
-    named: "example.txt", 
+    named: "example.txt",
     content: "This will sync automatically"
 )
 
@@ -139,13 +211,13 @@ func testAutomaticSyncSetup() async throws {
     guard iCloudManager.isAvailable else {
         throw XCTSkip("iCloud not available")
     }
-    
+
     // Create file - will sync automatically
     let fileURL = try iCloudManager.createTextFile(
-        named: "sync-test.txt", 
+        named: "sync-test.txt",
         content: "Auto sync test"
     )
-    
+
     // Verify sync status monitoring works
     let syncStatus = iCloudManager.getFileStatus("sync-test.txt")
     XCTAssertNotEqual(syncStatus, "Unknown")
@@ -172,17 +244,20 @@ func testAutomaticSyncSetup() async throws {
 ### Common Issues
 
 **iCloud Not Available**
+
 - Check iOS Settings → [Your Name] → iCloud
 - Ensure iCloud Drive is enabled
 - Verify sufficient iCloud storage
 
 **Files Not Syncing**
+
 - Check network connectivity
 - Verify app has CloudDocuments entitlement
 - Monitor sync status in debug view
 - Check for storage quota limits
 
 **Sync Conflicts**
+
 - Use debug view to identify conflicted files
 - Manually resolve by choosing preferred version
 - Consider implementing automatic conflict resolution
@@ -219,13 +294,22 @@ The debug view provides comprehensive information:
 
 ### Database Syncing
 
-The main SQLite database automatically syncs:
+RecordThing uses a two-tier database strategy:
 
 ```swift
-// Database is stored in Documents directory
-let dbURL = documentsURL.appendingPathComponent("record-thing.sqlite")
-// This file will sync automatically across devices
+// Working database (App Support - does NOT sync)
+let workingDB = appSupportURL.appendingPathComponent("record-thing.sqlite")
+
+// Backup database (Documents - syncs automatically)
+let backupDB = documentsURL.appendingPathComponent("record-thing-backup.sqlite")
 ```
+
+**APFS Copy-on-Write Backup Process:**
+
+1. App becomes inactive/background
+2. Working database copied to Documents folder using Copy-on-Write
+3. Backup file automatically syncs to iCloud
+4. Near-instantaneous operation (< 100ms per PRD)
 
 ### Asset Management
 
@@ -239,10 +323,11 @@ let assetsURL = documentsURL.appendingPathComponent("assets")
 
 ### Backup Strategy
 
-Multiple backup layers:
+Multiple backup layers per PRD:
 
-1. **Local backup**: `record-thing-backup.sqlite` in Documents
-2. **iCloud sync**: Automatic cloud backup via Documents syncing
-3. **Version history**: iOS maintains file versions automatically
+1. **Working Database**: `record-thing.sqlite` in App Support (local only, high performance)
+2. **APFS Copy-on-Write Backup**: `record-thing-backup.sqlite` in Documents (syncs to iCloud)
+3. **Automatic Triggers**: Backup created when app becomes inactive/background
+4. **Version History**: iOS maintains file versions automatically in iCloud
 
 This comprehensive iCloud integration ensures users have seamless access to their RecordThing data across all their Apple devices while maintaining the simplicity and reliability of iOS's built-in syncing infrastructure.

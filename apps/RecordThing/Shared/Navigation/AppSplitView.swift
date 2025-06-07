@@ -101,7 +101,10 @@ struct AppSplitView<DetailContent: View>: View {
           }
 
           NavigationLink {
-            ImprovedSettingsView()
+            ImprovedSettingsView(
+              captureService: captureService,
+              designSystem: designSystem
+            )
           } label: {
             Label("Settings", systemImage: "gear")
           }
@@ -132,13 +135,6 @@ struct AppSplitView<DetailContent: View>: View {
             }
           }
 
-          Section("Develop") {
-            CameraSwitcher(captureService: captureService, designSystem: designSystem)
-
-            CameraSubduedSwitcher(captureService: captureService, designSystem: designSystem)
-
-            CaptureServiceInfo(captureService: captureService)
-          }
         }
         .listStyle(.sidebar)
       }
@@ -153,23 +149,7 @@ struct AppSplitView<DetailContent: View>: View {
             Label("Record", systemImage: "camera")
           }
         }
-        #if os(macOS)
-          ToolbarItem {
-            DeveloperToolbar(
-              captureService: captureService,
-              cameraViewModel: cameraViewModel,
-              isCompact: true
-            )
-          }
-        #else
-          ToolbarItem(placement: .navigationBarTrailing) {
-            DeveloperToolbar(
-              captureService: captureService,
-              cameraViewModel: cameraViewModel,
-              isCompact: true
-            )
-          }
-        #endif
+
       }
       //        } content: {
       //            // blank content
@@ -339,11 +319,19 @@ struct AppSplitDetailView: View {
 // MARK: - Improved Settings View
 
 struct ImprovedSettingsView: View {
+  let captureService: CaptureService?
+  let designSystem: DesignSystemSetup?
+
   @State private var demoModeEnabled = false
   @State private var autoSyncEnabled = false
   @State private var contributeToAI = true
   @State private var showingUpgradeSheet = false
   @State private var showingDatabaseResetAlert = false
+
+  init(captureService: CaptureService? = nil, designSystem: DesignSystemSetup? = nil) {
+    self.captureService = captureService
+    self.designSystem = designSystem
+  }
 
   var body: some View {
     List {
@@ -462,12 +450,13 @@ struct ImprovedSettingsView: View {
 
       #if DEBUG
         Section {
-          Button("Database Debug") {
-            // Show database debug
+          // Database Controls
+          NavigationLink("Database Debug") {
+            DatabaseDebugView()
           }
 
           Button("Backup Database") {
-            // Trigger backup
+            AppDatasource.shared.triggerManualBackup()
           }
 
           Button("Reset Database") {
@@ -475,10 +464,33 @@ struct ImprovedSettingsView: View {
           }
           .foregroundColor(.red)
 
+          // Camera Controls
+          if let captureService = captureService, let designSystem = designSystem {
+            Group {
+              HStack {
+                Text("Camera Stream")
+                Spacer()
+                CameraSwitcher(captureService: captureService, designSystem: designSystem)
+              }
+
+              HStack {
+                Text("Power Mode")
+                Spacer()
+                CameraSubduedSwitcher(captureService: captureService, designSystem: designSystem)
+              }
+
+              VStack(alignment: .leading, spacing: 4) {
+                Text("Capture Service Info")
+                  .font(.headline)
+                CaptureServiceInfo(captureService: captureService)
+              }
+            }
+          }
+
         } header: {
           Text("Development")
         } footer: {
-          Text("Development tools for debugging and testing.")
+          Text("Development tools for debugging and testing. Camera controls moved from sidebar.")
         }
       #endif
 
@@ -579,6 +591,18 @@ struct SimpleUpgradeView: View {
       }
       .environment(\.assetsViewModel, assetsViewModel)
       .previewDisplayName("Detail Only")
+    }
+  }
+
+  struct ImprovedSettingsView_Previews: PreviewProvider {
+    static var previews: some View {
+      NavigationView {
+        ImprovedSettingsView(
+          captureService: CaptureService(),
+          designSystem: .light
+        )
+      }
+      .previewDisplayName("Settings")
     }
   }
 #endif

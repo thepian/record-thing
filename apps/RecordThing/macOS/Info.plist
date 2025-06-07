@@ -1,28 +1,115 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>LSMinimumSystemVersion</key>
-	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
-	<key>NSSupportsAutomaticTermination</key>
-	<true/>
-	<key>NSSupportsSuddenTermination</key>
-	<true/>
+    <dict>
+        <key>LSMinimumSystemVersion</key>
+        <string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+        <key>NSSupportsAutomaticTermination</key>
+        <true />
+        <key>NSSupportsSuddenTermination</key>
+        <true />
 
-    <!-- Required permissions -->
-    <key>NSCameraUsageDescription</key>
-    <string>Record Thing needs camera access to scan and record your belongings.</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>Record Thing needs microphone access to record video with audio.</string>
-    
-    <!-- macOS-specific permissions -->
-    <key>NSDesktopFolderUsageDescription</key>
-    <string>Record Thing needs access to save and retrieve files from your Desktop.</string>
-    <key>NSDocumentsFolderUsageDescription</key>
-    <string>Record Thing needs access to save and retrieve files from your Documents folder.</string>
-    <key>NSDownloadsFolderUsageDescription</key>
-    <string>Record Thing needs access to save and retrieve files from your Downloads folder.</string>
+        <!-- Required permissions -->
+        <key>NSCameraUsageDescription</key>
+        <string>Record Thing needs camera access to scan and record your belongings.</string>
+        <key>NSMicrophoneUsageDescription</key>
+        <string>Record Thing needs microphone access to record video with audio.</string>
 
+        <!-- macOS-specific permissions -->
+        <key>NSDesktopFolderUsageDescription</key>
+        <string>Record Thing needs access to save and retrieve files from your Desktop.</string>
+        <key>NSDocumentsFolderUsageDescription</key>
+        <string>Record Thing needs access to save and retrieve files from your Documents folder.</string>
+        <key>NSDownloadsFolderUsageDescription</key>
+        <string>Record Thing needs access to save and retrieve files from your Downloads folder.</string>
 
-</dict>
+        <!-- Document Types for iCloud Documents -->
+        <key>CFBundleDocumentTypes</key>
+        <array>
+            <!-- RecordThing Container Types -->
+            <dict>
+                <key>CFBundleTypeRole</key>
+                <string>Editor</string>
+                <key>LSItemContentTypes</key>
+                <array>
+                    <string>com.thepia.recordthing.evidence</string>
+                    <string>com.thepia.recordthing.things</string>
+                </array>
+                <key>NSUbiquitousDocumentUserActivityType</key>
+                <string>$(PRODUCT_BUNDLE_IDENTIFIER).container</string>
+            </dict>
+            <!-- Database Files -->
+            <dict>
+                <key>CFBundleTypeRole</key>
+                <string>Editor</string>
+                <key>LSItemContentTypes</key>
+                <array>
+                    <string>public.sqlite3-database</string>
+                </array>
+                <key>NSUbiquitousDocumentUserActivityType</key>
+                <string>$(PRODUCT_BUNDLE_IDENTIFIER).database</string>
+            </dict>
+            <!-- Media Import -->
+            <dict>
+                <key>CFBundleTypeRole</key>
+                <string>Viewer</string>
+                <key>LSItemContentTypes</key>
+                <array>
+                    <string>public.image</string>
+                    <string>public.movie</string>
+                    <string>public.audio</string>
+                </array>
+                <key>NSUbiquitousDocumentUserActivityType</key>
+                <string>$(PRODUCT_BUNDLE_IDENTIFIER).media</string>
+            </dict>
+        </array>
+
+        <!-- Exported Type Declarations -->
+        <key>UTExportedTypeDeclarations</key>
+        <array>
+            <!-- Evidence Container Type -->
+            <dict>
+                <key>UTTypeConformsTo</key>
+                <array>
+                    <string>public.composite-content</string>
+                    <string>public.data</string>
+                </array>
+                <key>UTTypeDescription</key>
+                <string>Record Thing Evidence Container</string>
+                <key>UTTypeIdentifier</key>
+                <string>com.thepia.recordthing.evidence</string>
+                <key>UTTypeTagSpecification</key>
+                <dict>
+                    <key>public.filename-extension</key>
+                    <array>
+                        <string>evidence</string>
+                    </array>
+                </dict>
+            </dict>
+            <!-- Things Container Type -->
+            <dict>
+                <key>UTTypeConformsTo</key>
+                <array>
+                    <string>public.composite-content</string>
+                    <string>public.data</string>
+                </array>
+                <key>UTTypeDescription</key>
+                <string>Record Thing Things Container</string>
+                <key>UTTypeIdentifier</key>
+                <string>com.thepia.recordthing.things</string>
+                <key>UTTypeTagSpecification</key>
+                <dict>
+                    <key>public.filename-extension</key>
+                    <array>
+                        <string>things</string>
+                    </array>
+                </dict>
+            </dict>
+        </array>
+
+        <!-- Support for opening documents -->
+        <key>LSSupportsOpeningDocumentsInPlace</key>
+        <true />
+
+    </dict>
 </plist>

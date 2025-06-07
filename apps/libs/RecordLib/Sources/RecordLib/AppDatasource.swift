@@ -55,6 +55,8 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
   @Published public private(set) var loadedLang: String?
 
   private var currentLocale: String = Locale.current.identifier
+  private var workingDatabasePath: URL?
+  private var backupDatabasePath: URL?
 
   public init(debugDb: Bool = false) {
     logger.info("🚀 Initializing AppDatasource with debugDb: \(debugDb)")
@@ -143,21 +145,60 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
       logger.info("ℹ️ Development database not found, falling back to production database")
     }
 
-    let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    // Working database should be in App Support folder per PRD
+    let appSupportPath = FileManager.default.urls(
+      for: .applicationSupportDirectory, in: .userDomainMask)[0]
       .appendingPathComponent("record-thing.sqlite")
 
-    logger.info("📁 Production database path: \(documentsPath.platformPath)")
+    // Backup database location in Documents folder (for iCloud sync)
+    let documentsBackupPath = FileManager.default.urls(
+      for: .documentDirectory, in: .userDomainMask)[0]
+      .appendingPathComponent("record-thing-backup.sqlite")
 
-    // Copy default database if needed
-    if !FileManager.default.fileExists(atPath: documentsPath.platformPath) {
-      logger.info("📋 Production database not found, copying from bundle...")
+    logger.info("📁 Working database path: \(appSupportPath.platformPath)")
+    logger.info("📁 Backup database path: \(documentsBackupPath.platformPath)")
 
-      if let bundleDbPath = Bundle.main.path(
+    // Ensure App Support directory exists
+    let appSupportDir = appSupportPath.deletingLastPathComponent()
+    if !FileManager.default.fileExists(atPath: appSupportDir.path) {
+      do {
+        try FileManager.default.createDirectory(
+          at: appSupportDir, withIntermediateDirectories: true)
+        logger.info("✅ Created App Support directory: \(appSupportDir.path)")
+      } catch {
+        logger.error("❌ Failed to create App Support directory: \(error)")
+      }
+    }
+
+    // Database initialization priority per PRD:
+    // 1. Copy from Documents folder backup (if exists)
+    // 2. Copy from Storage bucket (if user ID exists) - TODO: implement
+    // 3. Download demo database from cloud - TODO: implement
+    // 4. Fall back to Assets folder copy in App bundle
+
+    if !FileManager.default.fileExists(atPath: appSupportPath.platformPath) {
+      logger.info("📋 Working database not found, initializing...")
+
+      // Priority 1: Copy from Documents folder backup
+      if FileManager.default.fileExists(atPath: documentsBackupPath.platformPath) {
+        logger.info("📋 Found backup database, copying to working location...")
+        do {
+          try FileManager.default.copyItem(
+            atPath: documentsBackupPath.platformPath, toPath: appSupportPath.platformPath)
+          logger.info("✅ Successfully copied backup DB to working location")
+        } catch {
+          logger.error("❌ Failed to copy backup database: \(error)")
+        }
+      }
+      // Priority 4: Fall back to bundle database
+      else if let bundleDbPath = Bundle.main.path(
         forResource: "default-record-thing", ofType: "sqlite")
       {
+        logger.info("📋 Copying default database from bundle...")
         do {
-          try FileManager.default.copyItem(atPath: bundleDbPath, toPath: documentsPath.platformPath)
-          logger.info("✅ Successfully copied DB from bundle to: \(documentsPath.platformPath)")
+          try FileManager.default.copyItem(
+            atPath: bundleDbPath, toPath: appSupportPath.platformPath)
+          logger.info("✅ Successfully copied DB from bundle to: \(appSupportPath.platformPath)")
         } catch {
           logger.error("❌ Failed to copy database from bundle: \(error)")
         }
@@ -165,29 +206,37 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
         logger.error("❌ Bundle database 'default-record-thing.sqlite' not found")
       }
     } else {
-      logger.info("✅ Production database already exists at: \(documentsPath.platformPath)")
+      logger.info("✅ Working database already exists at: \(appSupportPath.platformPath)")
     }
 
-    // Connect to database
+    // Connect to working database in App Support folder
     do {
-      logger.info("🔗 Connecting to production database...")
-      db = try Blackbird.Database(path: documentsPath.platformPath)
-      logger.info("✅ Successfully opened production DB: \(documentsPath.platformPath)")
+      logger.info("🔗 Connecting to working database...")
+      db = try Blackbird.Database(path: appSupportPath.platformPath)
+      logger.info("✅ Successfully opened working DB: \(appSupportPath.platformPath)")
 
       // Update monitoring
       let connectionInfo = DatabaseConnectionInfo(
-        path: documentsPath.platformPath,
+        path: appSupportPath.platformPath,
         type: .production,
         connectedAt: Date(),
-        fileSize: try? FileManager.default.attributesOfItem(atPath: documentsPath.platformPath)[
+        fileSize: try? FileManager.default.attributesOfItem(atPath: appSupportPath.platformPath)[
           .size]
           as? Int64,
         isReadOnly: false
       )
       monitor.updateConnectionInfo(connectionInfo)
+
+      // Store paths for backup operations
+      workingDatabasePath = appSupportPath
+      backupDatabasePath = documentsBackupPath
+
+      // Set up app lifecycle observers for automatic backup
+      setupBackupObservers()
+
     } catch {
-      logger.error("❌ Production database connection error: \(error)")
-      monitor.logError(error, context: "Failed to open production database", query: nil)
+      logger.error("❌ Working database connection error: \(error)")
+      monitor.logError(error, context: "Failed to open working database", query: nil)
     }
 
     // Set up health monitoring with database
@@ -265,19 +314,27 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
       logger.debug("Resetting database")
       DatabaseMonitor.shared.logActivity(.databaseReset, details: "Database reset initiated")
 
-      let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+      // Reset working database in App Support folder
+      let appSupportPath = FileManager.default.urls(
+        for: .applicationSupportDirectory, in: .userDomainMask)[0]
         .appendingPathComponent("record-thing.sqlite")
 
-      // Remove existing database
-      try? FileManager.default.removeItem(atPath: documentsPath.platformPath)
+      // Also reset backup in Documents folder
+      let documentsBackupPath = FileManager.default.urls(
+        for: .documentDirectory, in: .userDomainMask)[0]
+        .appendingPathComponent("record-thing-backup.sqlite")
 
-      // Copy default database
+      // Remove existing databases
+      try? FileManager.default.removeItem(atPath: appSupportPath.platformPath)
+      try? FileManager.default.removeItem(atPath: documentsBackupPath.platformPath)
+
+      // Copy default database to working location
       if let bundleDbPath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite")
       {
-        try? FileManager.default.copyItem(atPath: bundleDbPath, toPath: documentsPath.platformPath)
-        logger.debug("Copied default DB to: \(documentsPath.platformPath)")
+        try? FileManager.default.copyItem(atPath: bundleDbPath, toPath: appSupportPath.platformPath)
+        logger.debug("Copied default DB to: \(appSupportPath.platformPath)")
         DatabaseMonitor.shared.logActivity(
-          .databaseReset, details: "Copied default database to documents")
+          .databaseReset, details: "Copied default database to App Support folder")
       }
 
       // Reload database
@@ -323,6 +380,109 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
         DatabaseMonitor.shared.logError(
           error, context: "Failed to update database", query: "UPDATE translations")
       }
+    }
+  }
+
+  // MARK: - Database Backup Implementation (PRD Requirement)
+
+  /// Set up app lifecycle observers for automatic database backup
+  private func setupBackupObservers() {
+    #if os(iOS)
+      NotificationCenter.default.addObserver(
+        forName: UIApplication.didEnterBackgroundNotification,
+        object: nil,
+        queue: .main
+      ) { [weak self] _ in
+        Task {
+          await self?.performDatabaseBackup()
+        }
+      }
+
+      NotificationCenter.default.addObserver(
+        forName: UIApplication.willResignActiveNotification,
+        object: nil,
+        queue: .main
+      ) { [weak self] _ in
+        Task {
+          await self?.performDatabaseBackup()
+        }
+      }
+    #elseif os(macOS)
+      NotificationCenter.default.addObserver(
+        forName: NSApplication.willResignActiveNotification,
+        object: nil,
+        queue: .main
+      ) { [weak self] _ in
+        Task {
+          await self?.performDatabaseBackup()
+        }
+      }
+    #endif
+
+    logger.info("✅ Database backup observers configured")
+  }
+
+  /// Perform APFS Copy-on-Write database backup per PRD
+  @MainActor
+  public func performDatabaseBackup() async {
+    guard let workingPath = workingDatabasePath,
+      let backupPath = backupDatabasePath
+    else {
+      logger.warning("⚠️ Database paths not configured for backup")
+      return
+    }
+
+    let startTime = CFAbsoluteTimeGetCurrent()
+
+    do {
+      // Close database connection temporarily for safe backup
+      await db?.close()
+
+      // Remove existing backup if it exists
+      if FileManager.default.fileExists(atPath: backupPath.path) {
+        try FileManager.default.removeItem(at: backupPath)
+      }
+
+      // Perform APFS Copy-on-Write backup
+      try FileManager.default.copyItem(at: workingPath, to: backupPath)
+
+      let duration = (CFAbsoluteTimeGetCurrent() - startTime) * 1000  // Convert to milliseconds
+
+      logger.info("✅ Database backup completed in \(String(format: "%.1f", duration))ms")
+      logger.info("   From: \(workingPath.path)")
+      logger.info("   To: \(backupPath.path)")
+
+      // Log backup activity
+      DatabaseMonitor.shared.logActivity(
+        .databaseBackup,
+        details: "APFS Copy-on-Write backup completed in \(String(format: "%.1f", duration))ms"
+      )
+
+      // Reconnect to working database
+      db = try Blackbird.Database(path: workingPath.platformPath)
+      logger.info("✅ Reconnected to working database after backup")
+
+    } catch {
+      logger.error("❌ Database backup failed: \(error)")
+      DatabaseMonitor.shared.logError(
+        error,
+        context: "APFS Copy-on-Write backup operation",
+        query: nil
+      )
+
+      // Ensure we reconnect even if backup fails
+      do {
+        db = try Blackbird.Database(path: workingPath.platformPath)
+      } catch {
+        logger.error("❌ Failed to reconnect to database after backup failure: \(error)")
+      }
+    }
+  }
+
+  /// Manual backup trigger for debug/testing purposes
+  public func triggerManualBackup() {
+    Task {
+      await performDatabaseBackup()
     }
   }
 }

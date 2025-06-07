@@ -125,6 +125,7 @@ To provide a robust, efficient framework for recording, organizing, and sharing 
 #### Database Backup Process
 
 - Triggered when app becomes inactive or goes to background
+- Can be triggered manually in the iCloud Debug view
 - Uses APFS Copy-on-Write for near-instantaneous copying
 - No need to check for changes due to the efficiency of Copy-on-Write
 - Ensures data safety with minimal performance impact
