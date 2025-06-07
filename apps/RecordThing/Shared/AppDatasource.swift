@@ -111,236 +111,42 @@ extension Bundle {
   }
 }
 
-// MARK: - App Datasource
-class AppDatasource: ObservableObject, AppDatasourceAPI {
-  static let shared = AppDatasource()  // (debugDb: true)
+// MARK: - App Datasource (extends RecordLib)
+class AppDatasource: RecordLib.AppDatasource {
+  private static let _shared = AppDatasource()  // (debugDb: true)
+  override class var shared: AppDatasource { _shared }
 
-  var db: Blackbird.Database?
-  @Published private(set) var translations: [String: String] = [:]
   private var currentLocale: String = Locale.current.identifier
-
-  @Published private(set) var loadedLang: String?
 
   //    init() {
   //        setupDatabase()
   //    }
-  init(debugDb: Bool = false) {
-    setupDatabase(debugDb: debugDb)
-    logger.info("Finished setup of AppDatasource.")
+  override init(debugDb: Bool = false) {
+    super.init(debugDb: debugDb)
+    logger.info("Finished setup of main app AppDatasource.")
   }
 
-  func forceLocalizeReload() {
-    loadedLang = nil
-  }
-
-  private func setupDatabase(debugDb: Bool = false) {
-    let monitor = DatabaseMonitor.shared
-
-    if debugDb {
-      let debugPath =
-        "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing-debug.sqlite"
-      if FileManager.default.fileExists(atPath: debugPath) {
-        logger.info("Using test database at \(debugPath)")
-        let url = URL(fileURLWithPath: debugPath)
-
-        do {
-          db = try Blackbird.Database(path: url.absoluteString)
-          logger.debug("Opened Debug DB: \(url.absoluteString)")
-
-          // Update monitoring
-          let connectionInfo = DatabaseConnectionInfo(
-            path: debugPath,
-            type: .debug,
-            connectedAt: Date(),
-            fileSize: try? FileManager.default.attributesOfItem(atPath: debugPath)[.size] as? Int64,
-            isReadOnly: false
-          )
-          monitor.updateConnectionInfo(connectionInfo)
-        } catch {
-          logger.error("\(url.absoluteString)\nDatabase connection error: \(error)")
-          monitor.logError(error, context: "Failed to open debug database", query: nil)
-        }
-        return
-      }
-    }
-    // First check for test database on external volume
-    let testPath = "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite"
-    if FileManager.default.fileExists(atPath: testPath) {
-      logger.info("Using test database at \(testPath)")
-      let url = URL(fileURLWithPath: testPath)
-
-      do {
-        db = try Blackbird.Database(path: url.absoluteString)
-        logger.debug("Opened Dev DB: \(url.absoluteString)")
-
-        // Update monitoring
-        let connectionInfo = DatabaseConnectionInfo(
-          path: testPath,
-          type: .development,
-          connectedAt: Date(),
-          fileSize: try? FileManager.default.attributesOfItem(atPath: testPath)[.size] as? Int64,
-          isReadOnly: false
-        )
-        monitor.updateConnectionInfo(connectionInfo)
-      } catch {
-        logger.error("\(url.absoluteString)\nDatabase connection error: \(error)")
-        monitor.logError(error, context: "Failed to open development database", query: nil)
-      }
-      return
-    }
-
-    let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-      .appendingPathComponent("record-thing.sqlite")
-
-    // Copy default database if needed
-    if !FileManager.default.fileExists(atPath: documentsPath.path) {
-      if let bundleDbPath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite")
-      {
-        try? FileManager.default.copyItem(atPath: bundleDbPath, toPath: documentsPath.path)
-        logger.debug("Copied DB from assets to: \(documentsPath.path)")
-      }
-    }
-
-    // Connect to database
-    do {
-      db = try Blackbird.Database(path: documentsPath.path)
-      logger.debug("Opened DB: \(documentsPath.path)")
-
-      // Update monitoring
-      let connectionInfo = DatabaseConnectionInfo(
-        path: documentsPath.path,
-        type: .production,
-        connectedAt: Date(),
-        fileSize: try? FileManager.default.attributesOfItem(atPath: documentsPath.path)[.size]
-          as? Int64,
-        isReadOnly: false
-      )
-      monitor.updateConnectionInfo(connectionInfo)
-    } catch {
-      logger.error("Database connection error: \(error)")
-      monitor.logError(error, context: "Failed to open production database", query: nil)
-    }
-  }
+  // Database setup is now handled by the parent RecordLib.AppDatasource class
 
   @MainActor
-  func loadTranslations(for locale: String?) async {
+  override func loadTranslations(for locale: String = Locale.current.identifier) async {
     if !Bundle._installedBlackbirdTranslations {
       Bundle._installedBlackbirdTranslations = true
       Bundle.installBlackbirdTranslations()
     }
-    do {
-      guard let db = db else { return }
-      let rows: [Dictionary] =
-        try await db
-        .query(
-          """
-              SELECT lang, key, value 
-              FROM `translations`
-              ORDER BY lang, key
-          """)
 
-      if let locale = locale {
-        currentLocale = locale
-      }
+    // Use the parent's loadTranslations method
+    await super.loadTranslations(for: locale)
 
-      // FIXME hacky fallback values that shouldn't occur
-      let keysWithValues = rows.compactMap {
-        ($0["key"]?.stringValue ?? "", $0["value"]?.stringValue ?? "")
-      }
-      translations = Dictionary(uniqueKeysWithValues: keysWithValues)
-      loadedLang = locale
-      //            logger.info
-      print("\(keysWithValues.count) Translations loaded from DB for \(locale ?? "en")")
-    } catch {
-      loadedLang = "failed"  // TODO fallback
-      logger.error("Error loading translations: \(error)")
-      DatabaseMonitor.shared.logError(
-        error, context: "Failed to load translations",
-        query: "SELECT lang, key, value FROM translations")
-    }
+    // Update current locale for this app-specific implementation
+    currentLocale = locale
   }
 
-  func translate(key: String, defaultValue: String? = nil) -> String {
-    return translations[key] ?? defaultValue ?? key
-  }
-
-  func updateLocale(_ newLocale: String) async {
-    translations.removeAll()
-    await loadTranslations(for: newLocale)
-  }
+  // translate method is inherited from RecordLib.AppDatasource
+  // updateLocale method is inherited from RecordLib.AppDatasource
 
   // MARK: - AppDatasourceAPI Implementation
-
-  func reloadDatabase() {
-    logger.debug("Reloading database")
-    DatabaseMonitor.shared.logActivity(.databaseReloaded, details: "Database reload initiated")
-    setupDatabase(debugDb: false)
-  }
-
-  func resetDatabase() {
-    Task {
-      await db?.close()
-      logger.debug("Resetting database")
-      DatabaseMonitor.shared.logActivity(.databaseReset, details: "Database reset initiated")
-
-      let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        .appendingPathComponent("record-thing.sqlite")
-
-      // Remove existing database
-      try? FileManager.default.removeItem(atPath: documentsPath.path)
-
-      // Copy default database
-      if let bundleDbPath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite")
-      {
-        try? FileManager.default.copyItem(atPath: bundleDbPath, toPath: documentsPath.path)
-        logger.debug("Copied default DB to: \(documentsPath.path)")
-        DatabaseMonitor.shared.logActivity(
-          .databaseReset, details: "Copied default database to documents")
-      }
-
-      // Reload database
-      reloadDatabase()
-    }
-  }
-
-  func updateDatabase() async {
-    logger.debug("Updating database")
-    guard let db = db else { return }
-
-    // Update translations table from default database
-    if let bundleDbPath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite") {
-      do {
-        let defaultDb = try Blackbird.Database(path: bundleDbPath)
-        let rows: [Dictionary] = try await defaultDb.query(
-          "SELECT lang, key, value FROM translations")
-
-        // Update translations in current database
-        for row in rows {
-          if let lang = row["lang"]?.stringValue,
-            let key = row["key"]?.stringValue,
-            let value = row["value"]?.stringValue
-          {
-            try await db.query(
-              """
-                  INSERT OR REPLACE INTO translations (lang, key, value)
-                  VALUES (?, ?, ?)
-              """, lang, key, value)
-          }
-        }
-
-        logger.debug("Updated translations from default database")
-
-        // Reload database to apply changes
-        await MainActor.run {
-          reloadDatabase()
-        }
-      } catch {
-        logger.error("Failed to update database: \(error)")
-        DatabaseMonitor.shared.logError(
-          error, context: "Failed to update database", query: "UPDATE translations")
-      }
-    }
-  }
+  // Database operations are now inherited from RecordLib.AppDatasource
 }
 
 // MARK: - App Delegate

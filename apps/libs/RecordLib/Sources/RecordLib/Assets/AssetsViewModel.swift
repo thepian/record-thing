@@ -87,7 +87,7 @@ public class AssetsViewModel: ObservableObject, Observable {
   )
 
   // Database reference
-  public private(set) var db: Blackbird.Database?
+  @Published public private(set) var db: Blackbird.Database?
 
   // Published properties
   @Published public private(set) var assetGroups: [AssetGroup] = []
@@ -156,12 +156,24 @@ public class AssetsViewModel: ObservableObject, Observable {
   // MARK: - Initialization
 
   public init(db: Blackbird.Database? = nil) {
+    logger.info("🚀 Initializing AssetsViewModel")
     self.db = db
+
+    if let db = db {
+      logger.info("✅ Database provided to AssetsViewModel: \(String(describing: db))")
+    } else {
+      logger.warning("⚠️ No database provided to AssetsViewModel")
+    }
+
+    logger.info("🔄 Starting initial loadDates call")
     self.loadDates()
 
     #if os(iOS)
+      logger.info("📱 Setting up orientation tracking")
       setupOrientationTracking()
     #endif
+
+    logger.info("✅ AssetsViewModel initialization complete")
   }
 
   deinit {
@@ -174,39 +186,76 @@ public class AssetsViewModel: ObservableObject, Observable {
 
   // MARK: - Public Methods
 
+  /// Updates the database reference and reloads data if database becomes available
+  public func updateDatabase(_ newDb: Blackbird.Database?) {
+    logger.info("🔄 Updating database reference")
+
+    let hadDatabase = db != nil
+    db = newDb
+
+    if let newDb = newDb {
+      logger.info("✅ Database updated successfully: \(String(describing: newDb))")
+
+      // If we didn't have a database before, or if we have an error, reload
+      if !hadDatabase || error != nil {
+        logger.info("🔄 Reloading data with new database")
+        loadDates()
+      }
+    } else {
+      logger.warning("⚠️ Database set to nil")
+    }
+  }
+
   /// Loads all assets from the database and groups them by time periods
   public func loadDates() {
+    logger.info("🔄 Starting loadDates")
+
     guard let db = db else {
-      logger.error("Database not available")
+      logger.error("❌ Database not available")
+      error = NSError(
+        domain: "AssetsViewModel", code: 1,
+        userInfo: [NSLocalizedDescriptionKey: "Database not available"])
       return
     }
 
+    logger.info("✅ Database available, starting load process")
     isLoading = true
     error = nil
 
     Task {
       do {
+        logger.info("📊 Querying Things table for creation dates...")
+
         // Fetch all dates from things
         let dates = try await Things.query(
           in: db, columns: [\.$created_at], matching: \.$created_at != nil)
-        logger.debug("Found \(dates.count) dates")
+        logger.info("✅ Successfully queried \(dates.count) Things from database")
 
         // Convert to Date objects and sort
         let sortedDates = dates.compactMap { $0[\.$created_at] }.sorted(by: >)
+        logger.info("📅 Extracted \(sortedDates.count) valid dates from Things")
 
+        logger.info("🔧 Calculating sorted groups...")
         let sortedGroups = calcSortedGroups(sortedDates: sortedDates)
+        logger.info("✅ Created \(sortedGroups.count) asset groups")
 
         await MainActor.run {
+          logger.info("🎯 Updating UI with \(sortedGroups.count) groups")
           self.assetGroups = sortedGroups
           self.isLoading = false
-          logger.debug("Created \(sortedGroups.count) asset groups")
+          logger.info("✅ Asset groups loading completed successfully")
         }
       } catch {
-        logger.error("Failed to load dates: \(error)")
+        logger.error("❌ Failed to load dates: \(error)")
+        logger.error("❌ Error details: \(error.localizedDescription)")
 
-        // Note: Database monitoring will be handled at the AppDatasource level
+        // Log to database monitor
+        DatabaseMonitor.shared.logError(
+          error, context: "AssetsViewModel failed to load dates",
+          query: "SELECT created_at FROM things")
 
         await MainActor.run {
+          logger.error("🎯 Setting error state in UI")
           self.error = error
           self.isLoading = false
         }
