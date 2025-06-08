@@ -56,26 +56,15 @@ struct AppSplitView<DetailContent: View>: View {
   #if os(macOS)
     var macosList: some View {
       List(selection: $lifecycleView) {
-        NavigationLink(value: LifecycleView.record) {
-          Label("Record", systemImage: "camera")
+        // Main sidebar views using enum properties
+        ForEach([LifecycleView.record, .assets, .actions, .settings], id: \.self) { view in
+          NavigationLink(value: view) {
+            Label(view.label, systemImage: view.imageName)
+          }
+          .accessibilityLabel(view.label)
         }
-        .accessibilityLabel("Record")
 
-        NavigationLink(value: LifecycleView.assets) {
-          Label("Assets", systemImage: "square.3.layers.3d")
-        }
-        .accessibilityLabel("Assets")
-
-        NavigationLink(value: LifecycleView.actions) {
-          Label("Actions", systemImage: "signature")
-        }
-        .accessibilityLabel("Actions")
-
-        NavigationLink(value: LifecycleView.settings) {
-          Label("Settings", systemImage: "gear")
-        }
-        .accessibilityLabel("Settings")
-
+        // Additional navigation items
         NavigationLink {
           ThingsMenu()
         } label: {
@@ -97,30 +86,21 @@ struct AppSplitView<DetailContent: View>: View {
         }
       }
       .listStyle(.sidebar)
+      #if os(macOS)
+        .accentColor(.red)
+      #endif
     }
   #endif
 
   var iosList: some View {
     List {
-      Button(action: { lifecycleView = .record }) {
-        Label("Record", systemImage: "camera")
+      // Main sidebar views using enum properties
+      ForEach([LifecycleView.record, .assets, .actions, .settings], id: \.self) { view in
+        Button(action: { lifecycleView = view }) {
+          Label(view.label, systemImage: view.imageName)
+        }
+        .accessibilityLabel(view.label)
       }
-      .accessibilityLabel("Record")
-
-      Button(action: { lifecycleView = .assets }) {
-        Label("Assets", systemImage: "square.3.layers.3d")
-      }
-      .accessibilityLabel("Assets")
-
-      Button(action: { lifecycleView = .actions }) {
-        Label("Actions", systemImage: "signature")
-      }
-      .accessibilityLabel("Actions")
-
-      Button(action: { lifecycleView = .settings }) {
-        Label("Settings", systemImage: "gear")
-      }
-      .accessibilityLabel("Settings")
 
       NavigationLink {
         ThingsMenu()

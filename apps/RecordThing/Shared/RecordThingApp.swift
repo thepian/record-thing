@@ -269,6 +269,26 @@ struct RecordThingApp: App {
       .commands {
         SidebarCommands()
 
+        // View switching commands
+        CommandGroup(after: .sidebar) {
+          Divider()
+
+          // Sidebar view switching section
+          ForEach([LifecycleView.record, .assets, .actions, .settings], id: \.self) { view in
+            Button(action: {
+              model.lifecycleView = view
+            }) {
+              HStack {
+                Text(view.label)
+                if model.lifecycleView == view {
+                  Image(systemName: "checkmark")
+                }
+              }
+            }
+            .keyboardShortcut(keyboardShortcutFor(view))
+          }
+        }
+
         CommandGroup(replacing: .newItem) {
           Button("New Window") {
             NSApplication.shared.requestUserAttention(.informationalRequest)
@@ -314,6 +334,24 @@ struct RecordThingApp: App {
         logger.debug("Updated app snapshot for task switcher")
       } else {
         logger.error("Failed to create snapshot view")
+      }
+    }
+  #endif
+
+  #if os(macOS)
+    /// Returns keyboard shortcuts for each view
+    private func keyboardShortcutFor(_ view: LifecycleView) -> KeyboardShortcut {
+      switch view {
+      case .record:
+        return KeyboardShortcut("1", modifiers: .command)
+      case .assets:
+        return KeyboardShortcut("2", modifiers: .command)
+      case .actions:
+        return KeyboardShortcut("3", modifiers: .command)
+      case .settings:
+        return KeyboardShortcut("4", modifiers: .command)
+      default:
+        return KeyboardShortcut("1", modifiers: .command)  // fallback
       }
     }
   #endif

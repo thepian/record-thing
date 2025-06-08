@@ -58,12 +58,12 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
   private var workingDatabasePath: URL?
   private var backupDatabasePath: URL?
 
-  public init(debugDb: Bool = false) {
-    logger.info("🚀 Initializing AppDatasource with debugDb: \(debugDb)")
-    setupDatabase(debugDb: debugDb)
+  public init() {
+    logger.info("🚀 Initializing AppDatasource")
+    setupDatabase()
 
     if let db = db {
-      logger.info("✅ AppDatasource initialized successfully with database")
+      logger.info("✅ AppDatasource initialized successfully with database: \(db.id)")
     } else {
       logger.error("❌ AppDatasource initialized but database is nil")
     }
@@ -77,73 +77,9 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
 
   // MARK: - Database Setup
 
-  private func setupDatabase(debugDb: Bool = false) {
-    logger.info("🔧 Setting up database with debugDb: \(debugDb)")
+  private func setupDatabase() {
+    logger.info("🔧 Setting up database")
     let monitor = DatabaseMonitor.shared
-
-    if debugDb {
-      let debugPath =
-        "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing-debug.sqlite"
-      logger.info("🔍 Checking for debug database at: \(debugPath)")
-
-      if FileManager.default.fileExists(atPath: debugPath) {
-        logger.info("✅ Debug database found, connecting...")
-        let url = URL(fileURLWithPath: debugPath)
-
-        do {
-          db = try Blackbird.Database(path: url.platformPath)
-          logger.info("✅ Successfully opened Debug DB: \(url.platformPath)")
-
-          // Update monitoring
-          let connectionInfo = DatabaseConnectionInfo(
-            path: debugPath,
-            type: .debug,
-            connectedAt: Date(),
-            fileSize: try? FileManager.default.attributesOfItem(atPath: debugPath)[.size]
-              as? Int64,
-            isReadOnly: false
-          )
-          monitor.updateConnectionInfo(connectionInfo)
-        } catch {
-          logger.error("❌ Debug database connection error: \(error)")
-          monitor.logError(error, context: "Failed to open debug database", query: nil)
-        }
-        return
-      } else {
-        logger.warning("⚠️ Debug database not found at \(debugPath)")
-      }
-    }
-
-    // First check for test database on external volume
-    let testPath =
-      "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite"
-    logger.info("🔍 Checking for development database at: \(testPath)")
-
-    if FileManager.default.fileExists(atPath: testPath) {
-      logger.info("✅ Development database found, connecting...")
-      let url = URL(fileURLWithPath: testPath)
-
-      do {
-        db = try Blackbird.Database(path: url.platformPath)
-        logger.info("✅ Successfully opened Dev DB: \(url.platformPath)")
-
-        // Update monitoring
-        let connectionInfo = DatabaseConnectionInfo(
-          path: testPath,
-          type: .development,
-          connectedAt: Date(),
-          fileSize: try? FileManager.default.attributesOfItem(atPath: testPath)[.size] as? Int64,
-          isReadOnly: false
-        )
-        monitor.updateConnectionInfo(connectionInfo)
-      } catch {
-        logger.error("❌ Development database connection error: \(error)")
-        monitor.logError(error, context: "Failed to open development database", query: nil)
-      }
-      return
-    } else {
-      logger.info("ℹ️ Development database not found, falling back to production database")
-    }
 
     // Working database should be in App Support folder per PRD
     let appSupportPath = FileManager.default.urls(
@@ -195,12 +131,22 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
         forResource: "default-record-thing", ofType: "sqlite")
       {
         logger.info("📋 Copying default database from bundle...")
+        logger.info("   Source: \(bundleDbPath)")
+        logger.info("   Destination: \(appSupportPath.platformPath)")
         do {
-          try FileManager.default.copyItem(
-            atPath: bundleDbPath, toPath: appSupportPath.platformPath)
+          // Use URL-based copy which is more robust
+          let sourceURL = URL(fileURLWithPath: bundleDbPath)
+          try FileManager.default.copyItem(at: sourceURL, to: appSupportPath)
+
+          // Database copied successfully from bundle
+
           logger.info("✅ Successfully copied DB from bundle to: \(appSupportPath.platformPath)")
         } catch {
           logger.error("❌ Failed to copy database from bundle: \(error)")
+          logger.error("   Source exists: \(FileManager.default.fileExists(atPath: bundleDbPath))")
+          logger.error(
+            "   Destination dir exists: \(FileManager.default.fileExists(atPath: appSupportPath.deletingLastPathComponent().path))"
+          )
         }
       } else {
         logger.error("❌ Bundle database 'default-record-thing.sqlite' not found")
@@ -305,7 +251,7 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
   public func reloadDatabase() {
     logger.debug("Reloading database")
     DatabaseMonitor.shared.logActivity(.databaseReloaded, details: "Database reload initiated")
-    setupDatabase(debugDb: false)
+    setupDatabase()
   }
 
   public func resetDatabase() {

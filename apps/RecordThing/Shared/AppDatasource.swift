@@ -121,8 +121,8 @@ class AppDatasource: RecordLib.AppDatasource {
   //    init() {
   //        setupDatabase()
   //    }
-  override init(debugDb: Bool = false) {
-    super.init(debugDb: debugDb)
+  override init() {
+    super.init()
     logger.info("Finished setup of main app AppDatasource.")
   }
 

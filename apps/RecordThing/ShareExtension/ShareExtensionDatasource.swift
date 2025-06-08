@@ -23,8 +23,8 @@ class ShareExtensionDatasource: RecordLib.AppDatasource {
   private let logger = Logger(
     subsystem: "com.thepia.recordthing", category: "shareextension-datasource")
 
-  override init(debugDb: Bool = false) {
-    super.init(debugDb: debugDb)
+  override init() {
+    super.init()
     logger.info("✅ ShareExtension datasource initialized")
   }
 

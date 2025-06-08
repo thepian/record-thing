@@ -16,7 +16,7 @@ struct ContentView: View {
   @StateObject public var captureService: CaptureService
   @StateObject public var cameraViewModel: CameraViewModel
   @StateObject private var evidenceViewModel: EvidenceViewModel
-  @State private var columnVisibility: NavigationSplitViewVisibility = .detailOnly
+  @State private var columnVisibility: NavigationSplitViewVisibility = .all
   var designSystem: DesignSystemSetup
   @Environment(\.scenePhase) private var scenePhase
   @Environment(\.assetsViewModel) private var assetsViewModel
@@ -156,12 +156,12 @@ struct ContentView: View {
 
         case .actions:
           actionsView
-            
+
         case .settings:
-            ImprovedSettingsView(
-              captureService: captureService,
-              designSystem: designSystem
-            )
+          ImprovedSettingsView(
+            captureService: captureService,
+            designSystem: designSystem
+          )
 
         case .loading:
           mountainBike
@@ -338,10 +338,10 @@ struct ContentView: View {
           .frame(width: 50, height: 50, alignment: .center)
           .scaleEffect(3)
       case .settings:
-          ImprovedSettingsView(
-            captureService: captureService,
-            designSystem: designSystem
-          )
+        ImprovedSettingsView(
+          captureService: captureService,
+          designSystem: designSystem
+        )
 
       }
     }

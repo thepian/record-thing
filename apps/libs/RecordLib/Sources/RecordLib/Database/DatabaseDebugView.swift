@@ -149,6 +149,55 @@ public struct DatabaseDebugView: View {
           }
         }
 
+        #if os(macOS)
+        // macOS-specific action to copy development database
+        if FileManager.default.fileExists(atPath: "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite") {
+          DatabaseActionButton(
+            title: "Copy Development Database",
+            subtitle: "Overwrite App Support DB with development DB",
+            icon: "doc.on.doc",
+            color: .purple,
+            isPerforming: isPerformingAction
+          ) {
+            performAction("Copy Development DB") {
+              copyDevelopmentDatabase()
+            }
+          }
+        }
+        #endif
+      }
+
+      // File System Section
+      Section("Database Files") {
+        Button(action: {
+          openAppSupportFolder()
+        }) {
+          HStack {
+            Image(systemName: "folder")
+              .foregroundColor(.blue)
+              .frame(width: 24)
+
+            VStack(alignment: .leading, spacing: 2) {
+              Text("Open App Support Folder")
+                .fontWeight(.medium)
+
+              Text("View database files in Finder")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            }
+
+            Spacer()
+
+            Image(systemName: "arrow.up.right.square")
+              .foregroundColor(.blue)
+              .font(.caption)
+          }
+        }
+        .buttonStyle(.plain)
+      }
+
+      // Monitoring Section
+      Section("Monitoring") {
         DatabaseActionButton(
           title: "Health Check",
           subtitle: "Perform database connectivity test",
@@ -249,6 +298,52 @@ public struct DatabaseDebugView: View {
         }
       }
     }
+  }
+
+  #if os(macOS)
+  private func copyDevelopmentDatabase() {
+    let testPath = "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite"
+    let appSupportPath = FileManager.default.urls(
+      for: .applicationSupportDirectory, in: .userDomainMask)[0]
+      .appendingPathComponent("record-thing.sqlite")
+
+    do {
+      // Close current database connection
+      Task {
+        await datasource.db?.close()
+      }
+
+      // Remove existing database
+      if FileManager.default.fileExists(atPath: appSupportPath.path) {
+        try FileManager.default.removeItem(at: appSupportPath)
+      }
+
+      // Copy development database
+      try FileManager.default.copyItem(
+        atPath: testPath,
+        toPath: appSupportPath.path
+      )
+
+      logger.info("✅ Successfully copied development database to App Support")
+
+      // Reload database
+      DispatchQueue.main.async {
+        self.datasource.reloadDatabase()
+      }
+
+    } catch {
+      logger.error("❌ Failed to copy development database: \(error)")
+    }
+  }
+  #endif
+
+  private func openAppSupportFolder() {
+    let appSupportPath = FileManager.default.urls(
+      for: .applicationSupportDirectory, in: .userDomainMask)[0]
+
+    #if os(macOS)
+    NSWorkspace.shared.open(appSupportPath)
+    #endif
   }
 }
 

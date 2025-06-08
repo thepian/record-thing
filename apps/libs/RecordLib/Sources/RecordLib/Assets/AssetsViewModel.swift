@@ -244,6 +244,12 @@ public class AssetsViewModel: ObservableObject, Observable {
           self.assetGroups = sortedGroups
           self.isLoading = false
           logger.info("✅ Asset groups loading completed successfully")
+
+          // Automatically start loading assets for each group
+          logger.info("🔄 Starting automatic asset loading for all groups")
+          for group in sortedGroups {
+            self.loadAssets(for: group)
+          }
         }
       } catch {
         logger.error("❌ Failed to load dates: \(error)")
