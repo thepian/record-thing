@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		3E1492EA2DF5D23100DC520D /* ShareExtension.appex in Shared Frameworks */ = {isa = PBXBuildFile; fileRef = 3E3B74732DF2389D0094122F /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		3E1492EB2DF5D23200DC520D /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 3E3B74732DF2389D0094122F /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		3E1494752DF5DD1A00DC520D /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 3E3B74732DF2389D0094122F /* ShareExtension.appex */; };
 		3E3B747D2DF2389E0094122F /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 3E3B74732DF2389D0094122F /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		3E3B74882DF239D30094122F /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3E3B74872DF239D30094122F /* RecordLib */; };
 		3E3B748A2DF239DC0094122F /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3E3B74892DF239DC0094122F /* Blackbird */; };
@@ -203,6 +205,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		3E1492ED2DF5D23400DC520D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5E6123F8244E8B32004DDFF7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3E3B74722DF2389D0094122F;
+			remoteInfo = ShareExtension;
+		};
 		3E3B747B2DF2389E0094122F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5E6123F8244E8B32004DDFF7 /* Project object */;
@@ -293,9 +302,10 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				3E1494752DF5DD1A00DC520D /* ShareExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		612F3D972615A2F600137D77 /* Embed App Clips */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -344,9 +354,10 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				3E1492EB2DF5D23200DC520D /* ShareExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -745,6 +756,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				3E1492EC2DF5D23300DC520D /* PBXTargetDependency */,
 			);
 			name = "RecordThing macOS All";
 			packageProductDependencies = (
@@ -1105,6 +1117,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		3E1492EC2DF5D23300DC520D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3E3B74722DF2389D0094122F /* ShareExtension */;
+			targetProxy = 3E1492ED2DF5D23400DC520D /* PBXContainerItemProxy */;
+		};
 		3E3B747C2DF2389E0094122F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 3E3B74722DF2389D0094122F /* ShareExtension */;
@@ -1176,7 +1193,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
+				INFOPLIST_KEY_CFBundleDisplayName = "Send to RecordThing";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025 Apple. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1214,7 +1231,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
+				INFOPLIST_KEY_CFBundleDisplayName = "Send to RecordThing";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025 Apple. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
 				LD_RUNPATH_SEARCH_PATHS = (

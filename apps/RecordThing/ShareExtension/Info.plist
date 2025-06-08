@@ -3,7 +3,7 @@
 <plist version="1.0">
 	<dict>
 		<key>CFBundleDisplayName</key>
-		<string>RecordThing</string>
+		<string>Send to RecordThing</string>
 		<key>CFBundleExecutable</key>
 		<string>$(EXECUTABLE_NAME)</string>
 		<key>CFBundleIdentifier</key>
@@ -38,7 +38,7 @@
 					<integer>0</integer>
 				</dict>
 				<key>NSExtensionServiceRoleType</key>
-				<string>NSExtensionServiceRoleTypeEditor</string>
+				<string>NSExtensionServiceRoleTypeViewer</string>
 			</dict>
 			<key>NSExtensionPrincipalClass</key>
 			<string>$(PRODUCT_MODULE_NAME).ShareViewController</string>
