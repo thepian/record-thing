@@ -118,6 +118,7 @@ To provide a robust, efficient framework for recording, organizing, and sharing 
 | `rt.buildNumber`           | String              | App Group UserDefaults    | ❌ No             | Device-specific build tracking                                     |
 | `rt.firstLaunchCompleted`  | Bool                | App Group UserDefaults    | ❌ No             | Device-specific onboarding state                                   |
 | `rt.lastDatabaseBackup`    | Date                | App Group UserDefaults    | ❌ No             | Device-specific backup tracking                                    |
+| `rt.useSourceTranslations` | Bool                | App Group UserDefaults    | ❌ No             | Development setting to read translations from source repository    |
 
 #### Device Identification
 
@@ -213,6 +214,45 @@ class SettingsManager: ObservableObject {
 3. Check iPad's `settingsChanged` property → should show iPhone's IDFV and timestamp
 4. Verify the actual setting value synced correctly on iPad
 
+#### Translation System Architecture
+
+**Independent Translation Database:**
+
+- **Separate SQLite Database**: Translations stored independently from main app database
+- **Read-Only Access**: Translation database accessed in read-only mode via RecordLib
+- **Fallback Strategy**: Bundled database → Downloaded database → Source repository database
+- **Co-existence**: Translation DB access works alongside main app database in App Support
+- **Development Toggle**: Setting to read directly from source code repository SQLite file
+
+**Translation Database Loading Priority:**
+
+1. **Downloaded Translations**: Latest translations from server (if available)
+2. **Bundled Translations**: Fallback to app bundle SQLite file
+3. **Source Repository**: Development mode reads from checked-in SQLite file (toggle enabled)
+
+**Translation Database Structure:**
+
+```sql
+CREATE TABLE translations (
+    key TEXT PRIMARY KEY,
+    language_code TEXT NOT NULL,
+    translation TEXT NOT NULL,
+    context TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_translations_language ON translations(language_code);
+CREATE INDEX idx_translations_key_lang ON translations(key, language_code);
+```
+
+**RecordLib Translation Manager:**
+
+- **TranslationManager**: Singleton class for translation database access
+- **Automatic Fallback**: Graceful degradation when translation DB unavailable
+- **Caching**: In-memory cache for frequently accessed translations
+- **Thread Safety**: Safe concurrent access from multiple threads
+- **Error Recovery**: Automatic fallback to bundled translations on database errors
+
 #### Cloud Storage Structure
 
 - **Storage Bucket Organization**:
@@ -242,11 +282,13 @@ class SettingsManager: ObservableObject {
 
 #### Database Backup Process
 
-- Triggered when app becomes inactive or goes to background
-- Can be triggered manually in the iCloud Debug view
-- Uses APFS Copy-on-Write for near-instantaneous copying
-- No need to check for changes due to the efficiency of Copy-on-Write
-- Ensures data safety with minimal performance impact
+- **Device-Specific Backups**: Each device creates backups with IDFV in filename to prevent overwrites
+- **Backup Naming**: `database_backup_{IDFV}_{timestamp}.sqlite` format ensures unique backups per device
+- **Triggered Events**: App becomes inactive/background, manual trigger in Settings
+- **Fast Copying**: Uses APFS Copy-on-Write for near-instantaneous copying on iOS/macOS
+- **No Overwrites**: Multiple devices can backup to same Documents folder without conflicts
+- **Backup Location**: App Documents folder for iCloud sync accessibility
+- **Retention**: Automatic cleanup of old backups (keep last 5 per device)
 
 #### Cloud Synchronization (Premium)
 

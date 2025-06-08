@@ -307,6 +307,21 @@ struct ImprovedSettingsView: View {
           }
           .foregroundColor(.red)
 
+          // Translation Source Toggle
+          HStack {
+            Label("Use Source Translations", systemImage: "doc.text")
+            Spacer()
+            Toggle("", isOn: $settingsManager.useSourceTranslations)
+          }
+
+          NavigationLink("Database Debug") {
+            DatabaseDebugView()
+          }
+
+          NavigationLink("Memory Monitor") {
+            MemoryMonitorView()
+          }
+
           // Camera Controls
           if let captureService = captureService, let designSystem = designSystem {
             Group {
@@ -451,6 +466,7 @@ class MockSettingsManager: ObservableObject {
   @Published var isReloading: Bool = false
   @Published var appVersion: String = "1.0.0"
   @Published var buildNumber: String = "1"
+  @Published var useSourceTranslations: Bool = false
 
   func loadSettings() {
     // Mock implementation

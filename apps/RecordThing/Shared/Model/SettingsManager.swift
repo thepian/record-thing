@@ -44,6 +44,7 @@ class SettingsManager: ObservableObject {
   // Development
   @Published var isBackingUp: Bool = false
   @Published var isReloading: Bool = false
+  @Published var useSourceTranslations: Bool = false
 
   // App Info
   @Published var appVersion: String = "1.0.0"
@@ -105,6 +106,9 @@ class SettingsManager: ObservableObject {
 
     // Load demo mode from App Group (local per device)
     demoModeEnabled = appGroupDefaults.bool(forKey: "rt.demo_mode_enabled")
+
+    // Load translation setting from App Group (local per device)
+    useSourceTranslations = appGroupDefaults.bool(forKey: "rt.use_source_translations")
 
     logger.info("Settings loaded successfully")
   }
@@ -184,6 +188,16 @@ class SettingsManager: ObservableObject {
       .sink { [weak self] value in
         self?.appGroupDefaults.set(value, forKey: "rt.demo_mode_enabled")
         self?.handleDemoModeChange(value)
+      }
+      .store(in: &cancellables)
+
+    $useSourceTranslations
+      .dropFirst()
+      .sink { [weak self] value in
+        self?.appGroupDefaults.set(value, forKey: "rt.use_source_translations")
+        self?.logger.info(
+          "Translation source setting changed: \(value ? "source repository" : "bundled/downloaded")"
+        )
       }
       .store(in: &cancellables)
   }
@@ -287,7 +301,7 @@ class SettingsManager: ObservableObject {
     defer { isBackingUp = false }
 
     do {
-      // Fast database backup using file system copy
+      // Fast database backup using file system copy with IDFV naming
       let fileManager = FileManager.default
 
       // Get App Support and Documents directories
@@ -301,14 +315,14 @@ class SettingsManager: ObservableObject {
       }
 
       let sourceDBURL = appSupportURL.appendingPathComponent("database.sqlite")
-      let backupDBURL = documentsURL.appendingPathComponent("database_backup.sqlite")
 
-      // Remove existing backup if it exists
-      if fileManager.fileExists(atPath: backupDBURL.path) {
-        try fileManager.removeItem(at: backupDBURL)
-      }
+      // Create unique backup filename with IDFV and timestamp
+      let timestamp = ISO8601DateFormatter().string(from: Date()).replacingOccurrences(
+        of: ":", with: "-")
+      let backupFilename = "database_backup_\(deviceIDFV)_\(timestamp).sqlite"
+      let backupDBURL = documentsURL.appendingPathComponent(backupFilename)
 
-      // Copy database from App Support to Documents
+      // Copy database from App Support to Documents (no overwrite risk)
       #if os(macOS)
         // On macOS, use copyfile for fast copying
         try fileManager.copyItem(at: sourceDBURL, to: backupDBURL)
@@ -317,10 +331,47 @@ class SettingsManager: ObservableObject {
         try fileManager.copyItem(at: sourceDBURL, to: backupDBURL)
       #endif
 
-      logger.info("Database backup completed successfully")
+      // Clean up old backups (keep last 5 per device)
+      try await cleanupOldBackups(in: documentsURL, for: deviceIDFV)
+
+      // Update last backup time
+      appGroupDefaults.set(Date(), forKey: "rt.last_database_backup")
+
+      logger.info("Database backup completed successfully: \(backupFilename)")
 
     } catch {
       logger.error("Database backup failed: \(error.localizedDescription)")
+    }
+  }
+
+  // MARK: - Backup Cleanup
+
+  private func cleanupOldBackups(in documentsURL: URL, for deviceID: String) async throws {
+    let fileManager = FileManager.default
+
+    // Get all backup files for this device
+    let backupPrefix = "database_backup_\(deviceID)_"
+    let contents = try fileManager.contentsOfDirectory(
+      at: documentsURL, includingPropertiesForKeys: [.creationDateKey], options: [])
+
+    let deviceBackups =
+      contents
+      .filter { $0.lastPathComponent.hasPrefix(backupPrefix) && $0.pathExtension == "sqlite" }
+      .compactMap { url -> (URL, Date)? in
+        guard let creationDate = try? url.resourceValues(forKeys: [.creationDateKey]).creationDate
+        else {
+          return nil
+        }
+        return (url, creationDate)
+      }
+      .sorted { $0.1 > $1.1 }  // Sort by creation date, newest first
+
+    // Keep only the 5 most recent backups for this device
+    let backupsToDelete = deviceBackups.dropFirst(5)
+
+    for (backupURL, _) in backupsToDelete {
+      try fileManager.removeItem(at: backupURL)
+      logger.info("Cleaned up old backup: \(backupURL.lastPathComponent)")
     }
   }
 
