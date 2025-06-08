@@ -17,9 +17,8 @@ struct ImprovedSettingsView: View {
   let captureService: CaptureService?
   let designSystem: DesignSystemSetup?
 
-  @State private var demoModeEnabled = false
-  @State private var autoSyncEnabled = false
-  @State private var contributeToAI = true
+  // @StateObject private var settingsManager = SettingsManager()
+  @State private var settingsManager = MockSettingsManager()
   @State private var showingUpgradeSheet = false
   @State private var showingDatabaseResetAlert = false
 
@@ -37,9 +36,9 @@ struct ImprovedSettingsView: View {
             .foregroundColor(.accentColor)
 
           VStack(alignment: .leading) {
-            Text("Demo User")
+            Text(settingsManager.accountName)
               .font(.headline)
-            Text("demo@thepia.com")
+            Text(settingsManager.accountEmail)
               .font(.caption)
               .foregroundColor(.secondary)
           }
@@ -60,37 +59,109 @@ struct ImprovedSettingsView: View {
         HStack {
           VStack(alignment: .leading) {
             HStack {
-              Text("Free Plan")
+              Text(settingsManager.currentPlan.displayName)
                 .font(.headline)
+
+              if settingsManager.currentPlan == .premium {
+                Image(systemName: "crown.fill")
+                  .foregroundColor(.yellow)
+                  .font(.caption)
+              }
+
               Spacer()
             }
-            Text("Basic recording and local storage")
+            Text(settingsManager.currentPlan.description)
               .font(.caption)
               .foregroundColor(.secondary)
           }
 
-          Button("Upgrade") {
-            showingUpgradeSheet = true
+          if settingsManager.currentPlan == .free {
+            Button("Upgrade") {
+              showingUpgradeSheet = true
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.small)
+          } else {
+            Text("Active")
+              .font(.caption)
+              .foregroundColor(.green)
+              .padding(.horizontal, 8)
+              .padding(.vertical, 4)
+              .background(Color.green.opacity(0.1))
+              .clipShape(Capsule())
           }
-          .buttonStyle(.borderedProminent)
-          .controlSize(.small)
         }
       } header: {
         Text("Plan & Billing")
       }
 
       Section {
+        // Auto Sync Toggle
         HStack {
-          Label("iCloud Sync", systemImage: "icloud.and.arrow.up")
+          Label("Auto Sync", systemImage: "arrow.triangle.2.circlepath")
           Spacer()
-          Toggle("", isOn: $autoSyncEnabled)
-            .disabled(true)  // Disabled for free tier
+          Toggle("", isOn: $settingsManager.autoSyncEnabled)
+            .disabled(settingsManager.currentPlan == .free)
         }
 
-        Button("Sync Now") {
-          // Manual sync
+        if settingsManager.currentPlan == .premium {
+          // Selective Sync Toggle
+          HStack {
+            Label("Selective Sync", systemImage: "checkmark.circle")
+            Spacer()
+            Toggle("", isOn: $settingsManager.selectiveSyncEnabled)
+          }
+
+          // iCloud Backup Toggle
+          HStack {
+            Label("iCloud Backup", systemImage: "icloud")
+            Spacer()
+            Toggle("", isOn: $settingsManager.iCloudBackupEnabled)
+          }
         }
-        .disabled(true)
+
+        // iCloud Documents Sync (available for all users)
+        Button(action: {
+          Task {
+            await settingsManager.triggeriCloudDocumentsSync()
+          }
+        }) {
+          HStack {
+            Label("Sync iCloud Documents", systemImage: "icloud.and.arrow.up")
+            Spacer()
+            if settingsManager.isSyncing {
+              ProgressView()
+                .controlSize(.small)
+            }
+          }
+        }
+        .disabled(settingsManager.isSyncing || !SimpleiCloudManager.shared.isAvailable)
+
+        // Manual Sync Button (Premium only)
+        Button(action: {
+          Task {
+            await settingsManager.triggerManualSync()
+          }
+        }) {
+          HStack {
+            Label("Sync Now", systemImage: "arrow.clockwise")
+            Spacer()
+            if settingsManager.isSyncing {
+              ProgressView()
+                .controlSize(.small)
+            }
+          }
+        }
+        .disabled(settingsManager.isSyncing || settingsManager.currentPlan == .free)
+
+        // Last Sync Status
+        HStack {
+          Label("Last Sync", systemImage: "clock")
+          Spacer()
+          Text(settingsManager.lastSyncStatus)
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
 
         NavigationLink("iCloud Debug") {
           SimpleiCloudDebugView()
@@ -99,15 +170,31 @@ struct ImprovedSettingsView: View {
       } header: {
         Text("Sync & Backup")
       } footer: {
-        Text("iCloud sync is available with Premium plan. Debug view shows sync status and logs.")
+        if settingsManager.currentPlan == .free {
+          Text(
+            "iCloud Documents sync is available for all users. Advanced sync features require Premium plan."
+          )
+        } else {
+          Text(
+            "Your data is automatically synced across all your devices with full Premium features.")
+        }
       }
 
       Section {
         HStack {
           Label("Contribute to AI Training", systemImage: "brain")
           Spacer()
-          Toggle("", isOn: $contributeToAI)
-            .disabled(true)  // Free tier always contributes
+          Toggle("", isOn: $settingsManager.contributeToAI)
+            .disabled(settingsManager.currentPlan == .free)  // Free tier always contributes
+        }
+
+        // Private Recordings (Premium only)
+        if settingsManager.currentPlan == .premium {
+          HStack {
+            Label("Mark New Recordings Private", systemImage: "lock")
+            Spacer()
+            Toggle("", isOn: $settingsManager.defaultPrivateRecordings)
+          }
         }
 
         Button("Privacy Policy") {
@@ -117,27 +204,60 @@ struct ImprovedSettingsView: View {
       } header: {
         Text("Privacy & Data")
       } footer: {
-        Text("Free tier recordings help improve our AI. Upgrade to Premium for privacy controls.")
+        if settingsManager.currentPlan == .free {
+          Text("Free tier recordings help improve our AI. Upgrade to Premium for privacy controls.")
+        } else {
+          Text("You have full control over your data privacy and AI training contributions.")
+        }
       }
 
       Section {
         HStack {
           Label("Demo Mode", systemImage: "play.circle")
           Spacer()
-          Toggle("", isOn: $demoModeEnabled)
+          Toggle("", isOn: $settingsManager.demoModeEnabled)
         }
 
-        if demoModeEnabled {
-          Button("Reset Demo Data") {
-            // Reset demo data
+        if settingsManager.demoModeEnabled {
+          Button(action: {
+            Task {
+              await settingsManager.resetDemoData()
+            }
+          }) {
+            HStack {
+              Label("Reset Demo Data", systemImage: "arrow.clockwise")
+              Spacer()
+              if settingsManager.isResettingDemo {
+                ProgressView()
+                  .controlSize(.small)
+              }
+            }
           }
+          .disabled(settingsManager.isResettingDemo)
+
+          Button(action: {
+            Task {
+              await settingsManager.updateDemoData()
+            }
+          }) {
+            HStack {
+              Label("Update Demo Data", systemImage: "arrow.down.circle")
+              Spacer()
+              if settingsManager.isUpdatingDemo {
+                ProgressView()
+                  .controlSize(.small)
+              }
+            }
+          }
+          .disabled(settingsManager.isUpdatingDemo)
         }
 
       } header: {
         Text("Demo Mode")
       } footer: {
-        if demoModeEnabled {
-          Text("Demo mode limits database modifications and disables cloud sync.")
+        if settingsManager.demoModeEnabled {
+          Text(
+            "Demo mode limits database modifications and disables cloud sync to protect demo data.")
         } else {
           Text("Enable demo mode to explore the app with sample data.")
         }
@@ -150,9 +270,37 @@ struct ImprovedSettingsView: View {
             DatabaseDebugView()
           }
 
-          Button("Backup Database") {
-            AppDatasource.shared.triggerManualBackup()
+          Button(action: {
+            Task {
+              await settingsManager.triggerDatabaseBackup()
+            }
+          }) {
+            HStack {
+              Label("Backup Database", systemImage: "externaldrive")
+              Spacer()
+              if settingsManager.isBackingUp {
+                ProgressView()
+                  .controlSize(.small)
+              }
+            }
           }
+          .disabled(settingsManager.isBackingUp)
+
+          Button(action: {
+            Task {
+              await settingsManager.reloadDatabase()
+            }
+          }) {
+            HStack {
+              Label("Reload Database", systemImage: "arrow.clockwise")
+              Spacer()
+              if settingsManager.isReloading {
+                ProgressView()
+                  .controlSize(.small)
+              }
+            }
+          }
+          .disabled(settingsManager.isReloading)
 
           Button("Reset Database") {
             showingDatabaseResetAlert = true
@@ -193,7 +341,14 @@ struct ImprovedSettingsView: View {
         HStack {
           Text("Version")
           Spacer()
-          Text("1.0.0")
+          Text(settingsManager.appVersion)
+            .foregroundColor(.secondary)
+        }
+
+        HStack {
+          Text("Build")
+          Spacer()
+          Text(settingsManager.buildNumber)
             .foregroundColor(.secondary)
         }
 
@@ -215,10 +370,17 @@ struct ImprovedSettingsView: View {
     .alert("Reset Database", isPresented: $showingDatabaseResetAlert) {
       Button("Cancel", role: .cancel) {}
       Button("Reset", role: .destructive) {
-        // Reset database
+        Task {
+          await settingsManager.resetDatabase()
+        }
       }
     } message: {
-      Text("This will permanently delete all your data and reset the app to its initial state.")
+      Text(
+        "This will permanently delete all your data and reset the app to its initial state. This action cannot be undone."
+      )
+    }
+    .onAppear {
+      settingsManager.loadSettings()
     }
   }
 }
@@ -269,15 +431,99 @@ struct SimpleUpgradeView: View {
   }
 }
 
+// MARK: - Mock Settings Manager (Temporary)
+
+class MockSettingsManager: ObservableObject {
+  @Published var accountName: String = "Demo User"
+  @Published var accountEmail: String = "demo@thepia.com"
+  @Published var currentPlan: UserPlan = .free
+  @Published var autoSyncEnabled: Bool = false
+  @Published var selectiveSyncEnabled: Bool = false
+  @Published var iCloudBackupEnabled: Bool = false
+  @Published var isSyncing: Bool = false
+  @Published var lastSyncStatus: String = "Never"
+  @Published var contributeToAI: Bool = true
+  @Published var defaultPrivateRecordings: Bool = false
+  @Published var demoModeEnabled: Bool = false
+  @Published var isResettingDemo: Bool = false
+  @Published var isUpdatingDemo: Bool = false
+  @Published var isBackingUp: Bool = false
+  @Published var isReloading: Bool = false
+  @Published var appVersion: String = "1.0.0"
+  @Published var buildNumber: String = "1"
+
+  func loadSettings() {
+    // Mock implementation
+  }
+
+  func triggerManualSync() async {
+    isSyncing = true
+    try? await Task.sleep(nanoseconds: 1_000_000_000)
+    isSyncing = false
+    lastSyncStatus = "Just now"
+  }
+
+  func triggeriCloudDocumentsSync() async {
+    isSyncing = true
+    try? await Task.sleep(nanoseconds: 1_000_000_000)
+    isSyncing = false
+  }
+
+  func resetDemoData() async {
+    isResettingDemo = true
+    try? await Task.sleep(nanoseconds: 1_500_000_000)
+    isResettingDemo = false
+  }
+
+  func updateDemoData() async {
+    isUpdatingDemo = true
+    try? await Task.sleep(nanoseconds: 2_000_000_000)
+    isUpdatingDemo = false
+  }
+
+  func triggerDatabaseBackup() async {
+    isBackingUp = true
+    try? await Task.sleep(nanoseconds: 1_000_000_000)
+    isBackingUp = false
+  }
+
+  func reloadDatabase() async {
+    isReloading = true
+    try? await Task.sleep(nanoseconds: 1_500_000_000)
+    isReloading = false
+  }
+
+  func resetDatabase() async {
+    try? await Task.sleep(nanoseconds: 2_000_000_000)
+  }
+}
+
+enum UserPlan: String, CaseIterable {
+  case free = "free"
+  case premium = "premium"
+
+  var displayName: String {
+    switch self {
+    case .free: return "Free"
+    case .premium: return "Premium"
+    }
+  }
+
+  var description: String {
+    switch self {
+    case .free: return "Basic recording and local storage"
+    case .premium: return "Advanced features with cloud sync"
+    }
+  }
+}
 
 #if DEBUG
-struct ImprovedSettingsView_Previews: PreviewProvider {
-  static var previews: some View {
+  struct ImprovedSettingsView_Previews: PreviewProvider {
+    static var previews: some View {
       ImprovedSettingsView(
         captureService: CaptureService(),
         designSystem: .light
       )
+    }
   }
-}
 #endif
-
