@@ -92,7 +92,6 @@
 		3ECA684B2D96B08F0003CB58 /* NavigationDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECA68472D96B0860003CB58 /* NavigationDestination.swift */; };
 		3ECD50BF2C974E4500755E83 /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50BE2C974E4500755E83 /* RecordLib */; };
 		3ECD50C12C974E5000755E83 /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50C02C974E5000755E83 /* RecordLib */; };
-		3ECD50C32C974E5600755E83 /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECD50C22C974E5600755E83 /* RecordLib */; };
 		3ECD50D32C9759EF00755E83 /* MLModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50D22C9759EF00755E83 /* MLModel.swift */; };
 		3ECD50D42C9759EF00755E83 /* MLModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50D22C9759EF00755E83 /* MLModel.swift */; };
 		3ECD50D62C9759EF00755E83 /* MLModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ECD50D22C9759EF00755E83 /* MLModel.swift */; };
@@ -133,6 +132,15 @@
 		3EE0BDDB2D56599E00AD1085 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EE0BDD92D56599500AD1085 /* Account.swift */; };
 		3EE0BDDC2D56599E00AD1085 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EE0BDD92D56599500AD1085 /* Account.swift */; };
 		3EE0BDDD2D56599E00AD1085 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EE0BDD92D56599500AD1085 /* Account.swift */; };
+		3EE200DA2DF57F610066A87E /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3EE200D92DF57F610066A87E /* RecordLib */; };
+		3EE200DC2DF58ADE0066A87E /* ActionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EE200DB2DF58ADE0066A87E /* ActionsView.swift */; };
+		3EE200DD2DF58ADE0066A87E /* ActionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EE200DB2DF58ADE0066A87E /* ActionsView.swift */; };
+		3EE200DE2DF58ADE0066A87E /* ActionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EE200DB2DF58ADE0066A87E /* ActionsView.swift */; };
+		3EE200DF2DF58ADE0066A87E /* ActionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EE200DB2DF58ADE0066A87E /* ActionsView.swift */; };
+		3EE200E22DF595650066A87E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EE200E12DF595600066A87E /* SettingsView.swift */; };
+		3EE200E32DF595650066A87E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EE200E12DF595600066A87E /* SettingsView.swift */; };
+		3EE200E42DF595650066A87E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EE200E12DF595600066A87E /* SettingsView.swift */; };
+		3EE200E52DF595650066A87E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EE200E12DF595600066A87E /* SettingsView.swift */; };
 		610F54C926158DDB001D3AA0 /* CountButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1CD26157D870046AAA9 /* CountButton.swift */; };
 		610F54CB26158DDB001D3AA0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6111A1E026157D870046AAA9 /* ContentView.swift */; };
 		610F54D626158DDB001D3AA0 /* RecordThingApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6123FD244E8B32004DDFF7 /* RecordThingApp.swift */; };
@@ -361,6 +369,8 @@
 		3EE0BDC22D5611D300AD1085 /* ThingsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThingsRow.swift; sourceTree = "<group>"; };
 		3EE0BDC32D5611D300AD1085 /* ThingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThingsView.swift; sourceTree = "<group>"; };
 		3EE0BDD92D56599500AD1085 /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
+		3EE200DB2DF58ADE0066A87E /* ActionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionsView.swift; sourceTree = "<group>"; };
+		3EE200E12DF595600066A87E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		5E6123FD244E8B32004DDFF7 /* RecordThingApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordThingApp.swift; sourceTree = "<group>"; };
 		5E6123FF244E8B32004DDFF7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		610F550626158DDB001D3AA0 /* RecordThing iOS All.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RecordThing iOS All.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -388,7 +398,6 @@
 		A3C268FD262FE0060093B9DF /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		A3C2690E262FE1020093B9DF /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A3DC6E3A2657241A008724A1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Evidence.strings; sourceTree = "<group>"; };
-		A594677E73BEF8AA1F7A859F /* ACKNOWLEDGMENTS.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = ACKNOWLEDGMENTS.txt; sourceTree = "<group>"; };
 		C640196161A8E05832EA149C /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
 		E036C2ED2633B2B200E15D26 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		E0DC7FE327B72FDC00A6417B /* RecordThing iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RecordThing iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -434,8 +443,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				3E53739F2D7F163E0082BF62 /* SwiftUIIntrospect in Frameworks */,
-				3ECD50C32C974E5600755E83 /* RecordLib in Frameworks */,
 				3E5A35C52D75F06000069A95 /* Blackbird in Frameworks */,
+				3EE200DA2DF57F610066A87E /* RecordLib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -467,7 +476,6 @@
 			isa = PBXGroup;
 			children = (
 				33BFC6A1DCA101BFABE069E5 /* LICENSE.txt */,
-				A594677E73BEF8AA1F7A859F /* ACKNOWLEDGMENTS.txt */,
 			);
 			path = LICENSE;
 			sourceTree = "<group>";
@@ -513,6 +521,14 @@
 			path = Evidence;
 			sourceTree = "<group>";
 		};
+		3EE200E02DF595210066A87E /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				3EE200E12DF595600066A87E /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
 		5E6123F7244E8B32004DDFF7 = {
 			isa = PBXGroup;
 			children = (
@@ -535,6 +551,7 @@
 		5E6123FC244E8B32004DDFF7 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				3EE200E02DF595210066A87E /* Settings */,
 				3E53735C2D7E2A490082BF62 /* AppDatasource.swift */,
 				5E6123FD244E8B32004DDFF7 /* RecordThingApp.swift */,
 				6111A1C826157D870046AAA9 /* Components */,
@@ -605,6 +622,7 @@
 		6111A1DE26157D870046AAA9 /* Navigation */ = {
 			isa = PBXGroup;
 			children = (
+				3EE200DB2DF58ADE0066A87E /* ActionsView.swift */,
 				3E78498D2DA7D0270030C91D /* AppSplitView.swift */,
 				3ECA68472D96B0860003CB58 /* NavigationDestination.swift */,
 				3E5373A02D7F295E0082BF62 /* BrowseTabNavigation.swift */,
@@ -717,9 +735,9 @@
 			);
 			name = "RecordThing macOS All";
 			packageProductDependencies = (
-				3ECD50C22C974E5600755E83 /* RecordLib */,
 				3E5A35C42D75F06000069A95 /* Blackbird */,
 				3E53739E2D7F163E0082BF62 /* SwiftUIIntrospect */,
+				3EE200D92DF57F610066A87E /* RecordLib */,
 			);
 			productName = "Smoothies macOS";
 			productReference = 610F554926158DE2001D3AA0 /* RecordThing.app */;
@@ -923,6 +941,7 @@
 				3ED6C48D2D593E9E00FF632C /* RequestsRow.swift in Sources */,
 				61A8CB8A26166F2A002845E4 /* Model.swift in Sources */,
 				610F54EE26158DDB001D3AA0 /* AppTabNavigation.swift in Sources */,
+				3EE200DE2DF58ADE0066A87E /* ActionsView.swift in Sources */,
 				3E78498F2DA7D0270030C91D /* AppSplitView.swift in Sources */,
 				3EE0BDB92D560C2A00AD1085 /* ThingsMenu.swift in Sources */,
 				3ECA684B2D96B08F0003CB58 /* NavigationDestination.swift in Sources */,
@@ -933,6 +952,7 @@
 				3E5373722D7E2A740082BF62 /* EvidenceTypeList.swift in Sources */,
 				3E5373732D7E2A740082BF62 /* EvidenceTypeView.swift in Sources */,
 				610F54FB26158DDB001D3AA0 /* AnimatableFontModifier.swift in Sources */,
+				3EE200E42DF595650066A87E /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -944,7 +964,9 @@
 				610F550C26158DE2001D3AA0 /* CountButton.swift in Sources */,
 				3E5373742D7E2A740082BF62 /* TestList.swift in Sources */,
 				3E5373762D7E2A740082BF62 /* EvidenceTypeRow.swift in Sources */,
+				3EE200DC2DF58ADE0066A87E /* ActionsView.swift in Sources */,
 				3ECA68482D96B08E0003CB58 /* NavigationDestination.swift in Sources */,
+				3EE200E52DF595650066A87E /* SettingsView.swift in Sources */,
 				3E5373792D7E2A740082BF62 /* SimpleEvidenceTypeList.swift in Sources */,
 				3E53737A2D7E2A740082BF62 /* EvidenceTypeMenu.swift in Sources */,
 				3E53737B2D7E2A740082BF62 /* EvidenceTypeList.swift in Sources */,
@@ -1008,6 +1030,7 @@
 				3ED6C48C2D593E9E00FF632C /* RequestsRow.swift in Sources */,
 				E0DC7FC227B72FDC00A6417B /* Model.swift in Sources */,
 				E0DC7FC427B72FDC00A6417B /* AppTabNavigation.swift in Sources */,
+				3EE200DF2DF58ADE0066A87E /* ActionsView.swift in Sources */,
 				3E7849902DA7D0270030C91D /* AppSplitView.swift in Sources */,
 				3EE0BDBC2D560C2A00AD1085 /* ThingsMenu.swift in Sources */,
 				3ECA684A2D96B08F0003CB58 /* NavigationDestination.swift in Sources */,
@@ -1018,6 +1041,7 @@
 				3E5373842D7E2A740082BF62 /* EvidenceTypeList.swift in Sources */,
 				3E5373852D7E2A740082BF62 /* EvidenceTypeView.swift in Sources */,
 				E0DC7FD027B72FDC00A6417B /* AnimatableFontModifier.swift in Sources */,
+				3EE200E32DF595650066A87E /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1029,7 +1053,9 @@
 				E0DC7FEA27B7307600A6417B /* CountButton.swift in Sources */,
 				3E5373862D7E2A740082BF62 /* TestList.swift in Sources */,
 				3E5373882D7E2A740082BF62 /* EvidenceTypeRow.swift in Sources */,
+				3EE200DD2DF58ADE0066A87E /* ActionsView.swift in Sources */,
 				3ECA68492D96B08E0003CB58 /* NavigationDestination.swift in Sources */,
+				3EE200E22DF595650066A87E /* SettingsView.swift in Sources */,
 				3E53738B2D7E2A740082BF62 /* SimpleEvidenceTypeList.swift in Sources */,
 				3E53738C2D7E2A740082BF62 /* EvidenceTypeMenu.swift in Sources */,
 				3E53738D2D7E2A740082BF62 /* EvidenceTypeList.swift in Sources */,
@@ -1763,9 +1789,8 @@
 			package = 3E5373AB2D8605C10082BF62 /* XCLocalSwiftPackageReference "../libs/RecordLib" */;
 			productName = RecordLib;
 		};
-		3ECD50C22C974E5600755E83 /* RecordLib */ = {
+		3EE200D92DF57F610066A87E /* RecordLib */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 3E5373AB2D8605C10082BF62 /* XCLocalSwiftPackageReference "../libs/RecordLib" */;
 			productName = RecordLib;
 		};
 /* End XCSwiftPackageProductDependency section */

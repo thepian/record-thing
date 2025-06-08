@@ -156,6 +156,12 @@ struct ContentView: View {
 
         case .actions:
           actionsView
+            
+        case .settings:
+            ImprovedSettingsView(
+              captureService: captureService,
+              designSystem: designSystem
+            )
 
         case .loading:
           mountainBike
@@ -204,11 +210,11 @@ struct ContentView: View {
         .navigationBarTitleDisplayMode(.large)
       #endif
       .toolbar {
-        ToolbarItem(placement: .navigationBarTrailing) {
+        ToolbarItem {
           Button {
             model.lifecycleView = .record
           } label: {
-            Image(systemName: "camera.fill")
+            Image(systemName: "camera")
               .font(.system(size: 20))
           }
           .accessibilityLabel("Record")
@@ -295,7 +301,7 @@ struct ContentView: View {
         .navigationBarTitleDisplayMode(.large)
       #endif
       .toolbar {
-        ToolbarItem(placement: .navigationBarTrailing) {
+        ToolbarItem {
           Button {
             model.lifecycleView = .record
           } label: {
@@ -331,6 +337,12 @@ struct ContentView: View {
           .progressViewStyle(CircularProgressViewStyle(tint: Color.yellow))
           .frame(width: 50, height: 50, alignment: .center)
           .scaleEffect(3)
+      case .settings:
+          ImprovedSettingsView(
+            captureService: captureService,
+            designSystem: designSystem
+          )
+
       }
     }
     .onChange(of: scenePhase) { _, newPhase in
@@ -350,73 +362,6 @@ struct ContentView: View {
     #else
       withSidebarView
     #endif
-  }
-}
-
-// MARK: - Supporting Views for Actions
-
-struct ActionItemView: View {
-  let icon: String
-  let title: String
-  let subtitle: String
-  let priority: ActionPriority
-  let showChevron: Bool
-
-  init(
-    icon: String, title: String, subtitle: String, priority: ActionPriority,
-    showChevron: Bool = true
-  ) {
-    self.icon = icon
-    self.title = title
-    self.subtitle = subtitle
-    self.priority = priority
-    self.showChevron = showChevron
-  }
-
-  var body: some View {
-    HStack {
-      Image(systemName: icon)
-        .font(.title2)
-        .foregroundColor(priority.color)
-        .frame(width: 24)
-
-      VStack(alignment: .leading, spacing: 2) {
-        Text(title)
-          .font(.headline)
-        Text(subtitle)
-          .font(.caption)
-          .foregroundColor(.secondary)
-      }
-
-      Spacer()
-
-      if priority == .urgent {
-        Image(systemName: "exclamationmark.circle.fill")
-          .foregroundColor(.red)
-          .font(.caption)
-      }
-
-      if showChevron {
-        Image(systemName: "chevron.right")
-          .font(.caption)
-          .foregroundColor(.secondary)
-      }
-    }
-    .padding(.vertical, 2)
-  }
-}
-
-enum ActionPriority {
-  case normal
-  case high
-  case urgent
-
-  var color: Color {
-    switch self {
-    case .normal: return .accentColor
-    case .high: return .orange
-    case .urgent: return .red
-    }
   }
 }
 

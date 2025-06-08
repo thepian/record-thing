@@ -179,7 +179,7 @@ struct ActionsView: View {
       #endif
       .toolbar {
         if let onRecordTapped = onRecordTapped {
-          ToolbarItem(placement: .navigationBarTrailing) {
+          ToolbarItem {
             Button {
               onRecordTapped()
             } label: {
@@ -201,6 +201,7 @@ struct ActionsView: View {
 }
 
 // MARK: - Supporting Views
+// MARK: - Supporting Views for Actions
 
 struct ActionItemView: View {
   let icon: String
@@ -358,7 +359,9 @@ struct AgreementDetailView: View {
       .padding()
     }
     .navigationTitle(title)
+      #if !os(macOS)
     .navigationBarTitleDisplayMode(.inline)
+      #endif
   }
 
   private var title: String {
@@ -382,7 +385,9 @@ struct AccountEditView: View {
     NavigationStack {
       Text("Edit Account")
         .navigationTitle("Edit Account")
+#if !os(macOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
     }
   }
 }

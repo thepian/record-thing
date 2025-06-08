@@ -25,6 +25,7 @@ public enum LifecycleView {
     case record
     case assets
     case actions
+    case settings
 }
 
 
