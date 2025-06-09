@@ -6,6 +6,7 @@
 //  Copyright © 2025 Thepia. All rights reserved.
 //
 
+import RecordLib
 import SwiftUI
 import os
 
@@ -267,6 +268,26 @@ public struct DatabaseDebugMenu: View {
             }
           }
           .buttonStyle(.plain)
+
+          NavigationLink(destination: DatabaseConnectivityDebugView().environmentObject(datasource))
+          {
+            HStack {
+              Image(systemName: "network")
+                .foregroundColor(.orange)
+                .frame(width: 24)
+
+              VStack(alignment: .leading, spacing: 2) {
+                Text("Connectivity Debug")
+                  .fontWeight(.medium)
+
+                Text("macOS database connection diagnostics")
+                  .font(.caption)
+                  .foregroundColor(.secondary)
+              }
+
+              Spacer()
+            }
+          }
 
           Button(action: {
             monitor.clearActivities()

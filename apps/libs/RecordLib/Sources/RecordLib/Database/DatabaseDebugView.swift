@@ -11,11 +11,12 @@ import os
 
 /// Simple database debug view for RecordLib
 public struct DatabaseDebugView: View {
-  @EnvironmentObject private var datasource: AppDatasource
+  @Environment(\.appDatasource) private var datasource
   @StateObject private var monitor = DatabaseMonitor.shared
 
   @State private var isPerformingAction = false
   @State private var lastActionResult: String?
+  @State private var showingErrorDetails = false
 
   private let logger = Logger(subsystem: "com.record-thing", category: "debug-menu")
 
@@ -89,9 +90,15 @@ public struct DatabaseDebugView: View {
 
         StatisticRow(
           title: "Total Activities", value: "\(stats.totalActivities)", icon: "list.bullet")
-        StatisticRow(
-          title: "Errors", value: "\(stats.errorCount)", icon: "exclamationmark.triangle",
-          color: stats.errorCount > 0 ? .red : .green)
+        Button(action: {
+          showingErrorDetails = true
+        }) {
+          StatisticRow(
+            title: "Errors", value: "\(stats.errorCount)", icon: "exclamationmark.triangle",
+            color: stats.errorCount > 0 ? .red : .green)
+        }
+        .buttonStyle(.plain)
+        .disabled(stats.errorCount == 0)
         StatisticRow(
           title: "Connections", value: "\(stats.connectionCount)", icon: "link", color: .blue)
         StatisticRow(
@@ -119,7 +126,7 @@ public struct DatabaseDebugView: View {
           isPerforming: isPerformingAction
         ) {
           performAction("Reload") {
-            datasource.reloadDatabase()
+            datasource?.reloadDatabase()
           }
         }
 
@@ -131,7 +138,7 @@ public struct DatabaseDebugView: View {
           isPerforming: isPerformingAction
         ) {
           performAction("Reset") {
-            datasource.resetDatabase()
+            datasource?.resetDatabase()
           }
         }
 
@@ -144,26 +151,28 @@ public struct DatabaseDebugView: View {
         ) {
           performAction("Update") {
             Task {
-              await datasource.updateDatabase()
+              await datasource?.updateDatabase()
             }
           }
         }
 
         #if os(macOS)
-        // macOS-specific action to copy development database
-        if FileManager.default.fileExists(atPath: "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite") {
-          DatabaseActionButton(
-            title: "Copy Development Database",
-            subtitle: "Overwrite App Support DB with development DB",
-            icon: "doc.on.doc",
-            color: .purple,
-            isPerforming: isPerformingAction
+          // macOS-specific action to copy development database
+          if FileManager.default.fileExists(
+            atPath: "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite"
           ) {
-            performAction("Copy Development DB") {
-              copyDevelopmentDatabase()
+            DatabaseActionButton(
+              title: "Copy Development Database",
+              subtitle: "Overwrite App Support DB with development DB",
+              icon: "doc.on.doc",
+              color: .purple,
+              isPerforming: isPerformingAction
+            ) {
+              performAction("Copy Development DB") {
+                copyDevelopmentDatabase()
+              }
             }
           }
-        }
         #endif
       }
 
@@ -207,6 +216,25 @@ public struct DatabaseDebugView: View {
         ) {
           performAction("Health Check") {
             monitor.checkHealth()
+          }
+        }
+
+        NavigationLink(destination: ConnectivityDebugWrapper(datasource: datasource)) {
+          HStack {
+            Image(systemName: "network")
+              .foregroundColor(.orange)
+              .frame(width: 24)
+
+            VStack(alignment: .leading, spacing: 2) {
+              Text("Connectivity Debug")
+                .fontWeight(.medium)
+
+              Text("macOS database connection diagnostics")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            }
+
+            Spacer()
           }
         }
       }
@@ -273,6 +301,9 @@ public struct DatabaseDebugView: View {
     .refreshable {
       monitor.checkHealth()
     }
+    .sheet(isPresented: $showingErrorDetails) {
+      DatabaseErrorDetailsView()
+    }
   }
 
   // MARK: - Helper Methods
@@ -301,40 +332,41 @@ public struct DatabaseDebugView: View {
   }
 
   #if os(macOS)
-  private func copyDevelopmentDatabase() {
-    let testPath = "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite"
-    let appSupportPath = FileManager.default.urls(
-      for: .applicationSupportDirectory, in: .userDomainMask)[0]
-      .appendingPathComponent("record-thing.sqlite")
+    private func copyDevelopmentDatabase() {
+      let testPath =
+        "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite"
+      let appSupportPath = FileManager.default.urls(
+        for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        .appendingPathComponent("record-thing.sqlite")
 
-    do {
-      // Close current database connection
-      Task {
-        await datasource.db?.close()
+      do {
+        // Close current database connection
+        Task {
+          await datasource?.db?.close()
+        }
+
+        // Remove existing database
+        if FileManager.default.fileExists(atPath: appSupportPath.path) {
+          try FileManager.default.removeItem(at: appSupportPath)
+        }
+
+        // Copy development database
+        try FileManager.default.copyItem(
+          atPath: testPath,
+          toPath: appSupportPath.path
+        )
+
+        logger.info("✅ Successfully copied development database to App Support")
+
+        // Reload database
+        DispatchQueue.main.async {
+          self.datasource?.reloadDatabase()
+        }
+
+      } catch {
+        logger.error("❌ Failed to copy development database: \(error)")
       }
-
-      // Remove existing database
-      if FileManager.default.fileExists(atPath: appSupportPath.path) {
-        try FileManager.default.removeItem(at: appSupportPath)
-      }
-
-      // Copy development database
-      try FileManager.default.copyItem(
-        atPath: testPath,
-        toPath: appSupportPath.path
-      )
-
-      logger.info("✅ Successfully copied development database to App Support")
-
-      // Reload database
-      DispatchQueue.main.async {
-        self.datasource.reloadDatabase()
-      }
-
-    } catch {
-      logger.error("❌ Failed to copy development database: \(error)")
     }
-  }
   #endif
 
   private func openAppSupportFolder() {
@@ -342,7 +374,7 @@ public struct DatabaseDebugView: View {
       for: .applicationSupportDirectory, in: .userDomainMask)[0]
 
     #if os(macOS)
-    NSWorkspace.shared.open(appSupportPath)
+      NSWorkspace.shared.open(appSupportPath)
     #endif
   }
 }
@@ -417,13 +449,154 @@ struct DatabaseActionButton: View {
   }
 }
 
+// MARK: - Helper Views
+
+private struct DatabaseErrorDetailsView: View {
+  @Environment(\.dismiss) private var dismiss
+  @StateObject private var monitor = DatabaseMonitor.shared
+
+  var body: some View {
+    NavigationView {
+      errorsList
+        .navigationTitle("Database Errors")
+        #if os(iOS)
+          .navigationBarTitleDisplayMode(.inline)
+        #endif
+        .toolbar {
+          ToolbarItem(placement: .primaryAction) {
+            Button("Done") {
+              dismiss()
+            }
+          }
+        }
+    }
+  }
+
+  private var errorsList: some View {
+    List {
+      let recentErrors = monitor.recentErrors()
+      if recentErrors.isEmpty {
+        noErrorsView
+      } else {
+        ForEach(Array(recentErrors.enumerated()), id: \.offset) { index, activity in
+          ErrorRowView(activity: activity, index: index)
+        }
+      }
+    }
+  }
+
+  private var noErrorsView: some View {
+    VStack(spacing: 16) {
+      Image(systemName: "checkmark.circle.fill")
+        .font(.system(size: 48))
+        .foregroundColor(.green)
+
+      Text("No Errors")
+        .font(.title2)
+        .fontWeight(.medium)
+
+      Text("The database is operating without any recorded errors.")
+        .font(.subheadline)
+        .foregroundColor(.secondary)
+        .multilineTextAlignment(.center)
+    }
+    .frame(maxWidth: .infinity)
+    .padding()
+  }
+}
+
+private struct ErrorRowView: View {
+  let activity: DatabaseActivity
+  let index: Int
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 12) {
+      HStack {
+        Image(systemName: "exclamationmark.triangle.fill")
+          .foregroundColor(.red)
+
+        Text("Error #\(index + 1)")
+          .font(.headline)
+          .foregroundColor(.red)
+
+        Spacer()
+
+        Text(activity.timestamp, style: .time)
+          .font(.caption)
+          .foregroundColor(.secondary)
+      }
+
+      if let error = activity.error {
+        Text(error.localizedDescription)
+          .font(.subheadline)
+          .foregroundColor(.primary)
+      }
+
+      if let details = activity.details {
+        VStack(alignment: .leading, spacing: 4) {
+          Text("Details:")
+            .font(.caption)
+            .fontWeight(.medium)
+            .foregroundColor(.secondary)
+
+          Text(details)
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+      }
+
+      VStack(alignment: .leading, spacing: 4) {
+        Text("Activity Type:")
+          .font(.caption)
+          .fontWeight(.medium)
+          .foregroundColor(.secondary)
+
+        Text(activity.type.rawValue)
+          .font(.caption)
+          .foregroundColor(.secondary)
+      }
+    }
+    .padding()
+    .background(Color.gray.opacity(0.1))
+    .cornerRadius(8)
+  }
+}
+
+private struct ConnectivityDebugWrapper: View {
+  let datasource: (any AppDatasourceAPI)?
+
+  var body: some View {
+    if let datasource = datasource {
+      DatabaseConnectivityDebugView()
+        .environmentObject(datasource as! AppDatasource)
+    } else {
+      VStack {
+        Image(systemName: "exclamationmark.triangle")
+          .foregroundColor(.orange)
+          .font(.largeTitle)
+
+        Text("Database not available")
+          .foregroundColor(.red)
+          .font(.headline)
+
+        Text("The database connection is not available. Please try restarting the app.")
+          .foregroundColor(.secondary)
+          .multilineTextAlignment(.center)
+          .padding()
+      }
+      .padding()
+      .navigationTitle("Database Connectivity")
+    }
+  }
+}
+
 // MARK: - Preview
 
 struct DatabaseDebugView_Previews: PreviewProvider {
   static var previews: some View {
     NavigationView {
       DatabaseDebugView()
-        .environmentObject(AppDatasource.shared)
+        .environment(\.appDatasource, AppDatasource.shared)
     }
   }
 }

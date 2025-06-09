@@ -78,13 +78,41 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
   // MARK: - Database Setup
 
   private func setupDatabase() {
-    logger.info("🔧 Setting up database")
+    logger.info("🔧 Setting up database with enhanced connectivity management")
+    let connectivityManager = DatabaseConnectivityManager.shared
+
+    // Try enhanced connection with fallback strategy
+    Task.detached { [weak self] in
+      // Ensure any existing translation loading is complete before connecting Blackbird
+      await self?.waitForTranslationManagerToComplete()
+
+      let (database, mode) = await connectivityManager.connectWithFallback()
+
+      await MainActor.run {
+        guard let self = self else { return }
+        if let db = database {
+          self.db = db
+          self.updateConnectionInfo(for: mode)
+          self.setupBackupObservers()
+          self.logger.info(
+            "✅ Database connected successfully in \(self.getModeDisplayName(mode)) mode")
+        } else {
+          self.logger.error("❌ All database connection attempts failed")
+          Task {
+            await self.setupFallbackDatabase()
+          }
+        }
+      }
+    }
+  }
+
+  private func setupFallbackDatabase() async {
+    logger.info("🔧 Setting up fallback database connection")
     let monitor = DatabaseMonitor.shared
 
     // Working database should be in App Support folder per PRD
-    let appSupportPath = FileManager.default.urls(
-      for: .applicationSupportDirectory, in: .userDomainMask)[0]
-      .appendingPathComponent("record-thing.sqlite")
+    // Use the robust path resolution method
+    let appSupportPath = URL(fileURLWithPath: getProductionDatabasePath())
 
     // Backup database location in Documents folder (for iCloud sync)
     let documentsBackupPath = FileManager.default.urls(
@@ -93,6 +121,11 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
 
     logger.info("📁 Working database path: \(appSupportPath.platformPath)")
     logger.info("📁 Backup database path: \(documentsBackupPath.platformPath)")
+
+    // Check for legacy database migration before proceeding
+    logger.info("🔄 Starting legacy database migration check...")
+    migrateLegacyDatabaseIfNeeded()
+    logger.info("🔄 Legacy database migration check completed")
 
     // Ensure App Support directory exists
     let appSupportDir = appSupportPath.deletingLastPathComponent()
@@ -112,7 +145,11 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
     // 3. Download demo database from cloud - TODO: implement
     // 4. Fall back to Assets folder copy in App bundle
 
-    if !FileManager.default.fileExists(atPath: appSupportPath.platformPath) {
+    logger.info("🔍 Checking if database exists at: \(appSupportPath.platformPath)")
+    let databaseExists = FileManager.default.fileExists(atPath: appSupportPath.platformPath)
+    logger.info("🔍 Database exists: \(databaseExists)")
+
+    if !databaseExists {
       logger.info("📋 Working database not found, initializing...")
 
       // Priority 1: Copy from Documents folder backup
@@ -158,7 +195,14 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
     // Connect to working database in App Support folder
     do {
       logger.info("🔗 Connecting to working database...")
-      db = try Blackbird.Database(path: appSupportPath.platformPath)
+
+      #if os(macOS)
+        // Remove quarantine attributes that prevent Blackbird from opening the database
+        removeQuarantineAttributes(from: appSupportPath.platformPath)
+      #endif
+
+      // Attempt database connection with retry logic
+      db = try await connectToDatabase(at: appSupportPath.platformPath)
       logger.info("✅ Successfully opened working DB: \(appSupportPath.platformPath)")
 
       // Update monitoring
@@ -431,4 +475,271 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
       await performDatabaseBackup()
     }
   }
+
+  // MARK: - Enhanced Database Management
+
+  /// Update database connection with new database and mode
+  public func updateDatabase(
+    _ database: Blackbird.Database, mode: DatabaseConnectivityManager.DatabaseMode
+  ) {
+    self.db = database
+    updateConnectionInfo(for: mode)
+    logger.info("✅ Database updated to \(self.getModeDisplayName(mode)) mode")
+  }
+
+  /// Update connection info for monitoring
+  private func updateConnectionInfo(for mode: DatabaseConnectivityManager.DatabaseMode) {
+    let monitor = DatabaseMonitor.shared
+
+    let connectionType: DatabaseConnectionInfo.DatabaseType
+    switch mode {
+    case .production:
+      connectionType = .production
+    case .development:
+      connectionType = .development
+    case .debug:
+      connectionType = .debug
+    case .inMemory:
+      connectionType = .debug  // Treat in-memory as debug mode
+    case .bundled:
+      connectionType = .bundled
+    }
+
+    let path = getDatabasePath(for: mode)
+    let connectionInfo = DatabaseConnectionInfo(
+      path: path,
+      type: connectionType,
+      connectedAt: Date(),
+      fileSize: getFileSize(at: path),
+      isReadOnly: mode == .bundled
+    )
+
+    monitor.updateConnectionInfo(connectionInfo)
+  }
+
+  /// Get database path for specific mode with robust containerization support
+  private func getDatabasePath(for mode: DatabaseConnectivityManager.DatabaseMode) -> String {
+    switch mode {
+    case .production:
+      return getProductionDatabasePath()
+    case .development:
+      return "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite"
+    case .debug:
+      return NSHomeDirectory() + "/Desktop/record-thing-debug.sqlite"
+    case .inMemory:
+      return ":memory:"
+    case .bundled:
+      return Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite") ?? ""
+    }
+  }
+
+  /// Get the production database path with proper containerization support
+  private func getProductionDatabasePath() -> String {
+    let fileManager = FileManager.default
+
+    // Always use the runtime-determined App Support directory
+    // This automatically handles containerization correctly
+    let appSupportURL = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+    let databaseURL = appSupportURL.appendingPathComponent("record-thing.sqlite")
+
+    logger.info("📁 Production database path: \(databaseURL.platformPath)")
+
+    #if os(macOS)
+      // Additional logging for macOS containerization
+      if let bundleId = Bundle.main.bundleIdentifier {
+        logger.info("📱 Using bundle ID: \(bundleId)")
+
+        // Verify we're in the correct container
+        let actualPath = appSupportURL.platformPath
+        if actualPath.contains(bundleId) {
+          logger.info("✅ Database correctly located in bundle ID container")
+        } else {
+          logger.warning("⚠️ Database path may not be in expected container")
+          logger.warning("   Expected to contain: \(bundleId)")
+          logger.warning("   Actual path: \(actualPath)")
+        }
+      }
+    #endif
+
+    return databaseURL.platformPath
+  }
+
+  /// Get file size for path
+  private func getFileSize(at path: String) -> Int64? {
+    guard path != ":memory:" else { return nil }
+    return try? FileManager.default.attributesOfItem(atPath: path)[.size] as? Int64
+  }
+
+  /// Get display name for database mode
+  private func getModeDisplayName(_ mode: DatabaseConnectivityManager.DatabaseMode) -> String {
+    switch mode {
+    case .production: return "Production"
+    case .development: return "Development"
+    case .debug: return "Debug"
+    case .inMemory: return "In-Memory"
+    case .bundled: return "Bundled"
+    }
+  }
+
+  /// Migrate database from legacy locations if needed
+  private func migrateLegacyDatabaseIfNeeded() {
+    let fileManager = FileManager.default
+    let currentPath = URL(fileURLWithPath: getProductionDatabasePath())
+
+    logger.info("🔍 Migration check - Current path: \(currentPath.platformPath)")
+    logger.info(
+      "🔍 Migration check - File exists: \(fileManager.fileExists(atPath: currentPath.platformPath))"
+    )
+
+    // If current database already exists, no migration needed
+    if fileManager.fileExists(atPath: currentPath.platformPath) {
+      logger.info("✅ Database already exists at current location - skipping migration")
+      return
+    }
+
+    logger.info("🔍 Checking for legacy database locations...")
+
+    #if os(macOS)
+      // Check for potential legacy locations
+      let homeDir = NSHomeDirectory()
+      let legacyPaths = [
+        // Potential legacy container with display name
+        "\(homeDir)/Library/Containers/Record Thing/Data/Library/Application Support/record-thing.sqlite",
+        // Other potential legacy paths
+        "\(homeDir)/Library/Application Support/RecordThing/record-thing.sqlite",
+        "\(homeDir)/Library/Application Support/Record Thing/record-thing.sqlite",
+      ]
+
+      for legacyPath in legacyPaths {
+        if fileManager.fileExists(atPath: legacyPath) {
+          logger.info("📦 Found legacy database at: \(legacyPath)")
+
+          do {
+            // Ensure the target directory exists
+            let targetDir = currentPath.deletingLastPathComponent()
+            try fileManager.createDirectory(at: targetDir, withIntermediateDirectories: true)
+
+            // Copy the legacy database to the current location
+            try fileManager.copyItem(atPath: legacyPath, toPath: currentPath.platformPath)
+            logger.info("✅ Successfully migrated database from legacy location")
+
+            // Optionally, you could remove the legacy database here
+            // try fileManager.removeItem(atPath: legacyPath)
+
+            return
+          } catch {
+            logger.error("❌ Failed to migrate legacy database: \(error)")
+          }
+        }
+      }
+    #endif
+
+    logger.info("ℹ️ No legacy database found, will use bundled database")
+  }
+
+  /// Wait for TranslationManager to complete any ongoing operations to prevent concurrent access
+  private func waitForTranslationManagerToComplete() async {
+    logger.info("🔄 Waiting for TranslationManager to complete operations...")
+
+    // Give TranslationManager a moment to complete any ongoing operations
+    // This prevents concurrent access to the same SQLite file
+    try? await Task.sleep(nanoseconds: 100_000_000)  // 100ms
+
+    logger.info("✅ TranslationManager wait completed")
+  }
+
+  /// Connect to database with retry logic to handle potential conflicts
+  private func connectToDatabase(at path: String, maxRetries: Int = 3) async throws
+    -> Blackbird.Database
+  {
+    var lastError: Error?
+
+    for attempt in 1...maxRetries {
+      do {
+        logger.info("🔗 Database connection attempt \(attempt)/\(maxRetries)")
+
+        // Small delay between attempts to allow any concurrent operations to complete
+        if attempt > 1 {
+          try await Task.sleep(nanoseconds: 200_000_000)  // 200ms
+        }
+
+        let database = try Blackbird.Database(path: path)
+        logger.info("✅ Database connection successful on attempt \(attempt)")
+        return database
+
+      } catch {
+        lastError = error
+        logger.warning("⚠️ Database connection attempt \(attempt) failed: \(error)")
+
+        // If this is a file locking issue, wait a bit longer
+        if error.localizedDescription.contains("database is locked")
+          || error.localizedDescription.contains("SQLITE_BUSY")
+        {
+          logger.info("🔒 Database appears to be locked, waiting longer...")
+          try? await Task.sleep(nanoseconds: 500_000_000)  // 500ms
+        }
+      }
+    }
+
+    // All attempts failed
+    logger.error("❌ All database connection attempts failed")
+    throw lastError
+      ?? NSError(
+        domain: "DatabaseError",
+        code: 1,
+        userInfo: [
+          NSLocalizedDescriptionKey: "Failed to connect to database after \(maxRetries) attempts"
+        ]
+      )
+  }
+
+  #if os(macOS)
+    /// Remove quarantine attributes from database file to allow Blackbird access
+    private func removeQuarantineAttributes(from path: String) {
+      let fileManager = FileManager.default
+
+      guard fileManager.fileExists(atPath: path) else {
+        logger.warning("⚠️ Cannot remove quarantine attributes - file doesn't exist: \(path)")
+        return
+      }
+
+      do {
+        let url = URL(fileURLWithPath: path)
+
+        // Remove com.apple.quarantine attribute
+        try url.removeExtendedAttribute(forName: "com.apple.quarantine")
+        logger.info("✅ Removed com.apple.quarantine attribute from database")
+      } catch {
+        // This is expected if the attribute doesn't exist
+        logger.debug("ℹ️ No com.apple.quarantine attribute to remove (this is normal)")
+      }
+
+      do {
+        let url = URL(fileURLWithPath: path)
+
+        // Remove com.apple.provenance attribute
+        try url.removeExtendedAttribute(forName: "com.apple.provenance")
+        logger.info("✅ Removed com.apple.provenance attribute from database")
+      } catch {
+        // This is expected if the attribute doesn't exist
+        logger.debug("ℹ️ No com.apple.provenance attribute to remove (this is normal)")
+      }
+    }
+  #endif
 }
+
+#if os(macOS)
+  extension URL {
+    /// Remove an extended attribute from the file
+    func removeExtendedAttribute(forName name: String) throws {
+      let result = removexattr(self.path, name, 0)
+      if result != 0 {
+        throw NSError(
+          domain: NSPOSIXErrorDomain,
+          code: Int(errno),
+          userInfo: [NSLocalizedDescriptionKey: "Failed to remove extended attribute \(name)"]
+        )
+      }
+    }
+  }
+#endif

@@ -21,6 +21,8 @@ struct ImprovedSettingsView: View {
   @State private var settingsManager = MockSettingsManager()
   @State private var showingUpgradeSheet = false
   @State private var showingDatabaseResetAlert = false
+  @State private var showingTranslationSourceInfo = false
+  @State private var translationStats = TranslationStats()
 
   init(captureService: CaptureService? = nil, designSystem: DesignSystemSetup? = nil) {
     self.captureService = captureService
@@ -310,12 +312,36 @@ struct ImprovedSettingsView: View {
           // Translation Source Toggle
           HStack {
             Label("Use Source Translations", systemImage: "doc.text")
+
+            Button(action: {
+              showingTranslationSourceInfo = true
+            }) {
+              Image(systemName: "info.circle")
+                .foregroundColor(.blue)
+            }
+            .buttonStyle(.plain)
+
             Spacer()
             Toggle("", isOn: $settingsManager.useSourceTranslations)
           }
 
-          NavigationLink("Database Debug") {
-            DatabaseDebugView()
+          // Translations Management
+          NavigationLink(destination: TranslationsManagementView()) {
+            HStack {
+              Label("Translations", systemImage: "globe")
+              Spacer()
+              VStack(alignment: .trailing, spacing: 2) {
+                Text("\(translationStats.dbCount) in DB")
+                  .font(.caption)
+                  .foregroundColor(.secondary)
+                Text("\(translationStats.hardcodedCount) hardcoded")
+                  .font(.caption)
+                  .foregroundColor(.secondary)
+              }
+              Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            }
           }
 
           NavigationLink("Memory Monitor") {
@@ -394,8 +420,25 @@ struct ImprovedSettingsView: View {
         "This will permanently delete all your data and reset the app to its initial state. This action cannot be undone."
       )
     }
+    .alert("Use Source Translations", isPresented: $showingTranslationSourceInfo) {
+      Button("OK") {}
+    } message: {
+      Text(
+        "When enabled, translations are loaded from the source repository SQLite file instead of the bundled database. This is useful for development and testing new translations before they are included in the app bundle."
+      )
+    }
     .onAppear {
       settingsManager.loadSettings()
+      loadTranslationStats()
+    }
+  }
+
+  private func loadTranslationStats() {
+    Task {
+      let stats = await TranslationStatsLoader.loadStats()
+      await MainActor.run {
+        self.translationStats = stats
+      }
     }
   }
 }
@@ -443,6 +486,413 @@ struct SimpleUpgradeView: View {
         }
       }
     }
+  }
+}
+
+// MARK: - Translations Management View
+
+struct TranslationsManagementView: View {
+  @State private var translations: [TranslationItem] = []
+  @State private var isLoading = false
+  @State private var searchText = ""
+  @State private var selectedContext = "All"
+  @State private var stats = TranslationStats()
+
+  private let contexts = [
+    "All", "ui", "database", "settings", "error", "navigation", "premium", "demo",
+  ]
+
+  var filteredTranslations: [TranslationItem] {
+    var filtered = translations
+
+    // Filter by context
+    if selectedContext != "All" {
+      filtered = filtered.filter { $0.context == selectedContext }
+    }
+
+    // Filter by search text
+    if !searchText.isEmpty {
+      filtered = filtered.filter { translation in
+        translation.key.localizedCaseInsensitiveContains(searchText)
+          || translation.value.localizedCaseInsensitiveContains(searchText)
+      }
+    }
+
+    return filtered.sorted { $0.key < $1.key }
+  }
+
+  var body: some View {
+    VStack(spacing: 0) {
+      // Stats Header
+      statsHeader
+
+      // Filters
+      filtersSection
+
+      // Translations List
+      translationsListView
+    }
+    .navigationTitle("Translations")
+    .toolbar {
+      ToolbarItem(placement: .primaryAction) {
+        Button("Refresh") {
+          loadTranslations()
+        }
+        .disabled(isLoading)
+      }
+    }
+    .onAppear {
+      loadTranslations()
+    }
+  }
+
+  private var translationsListView: some View {
+    Group {
+      if isLoading {
+        Spacer()
+        ProgressView("Loading translations...")
+        Spacer()
+      } else if filteredTranslations.isEmpty {
+        emptyStateView
+      } else {
+        translationsList
+      }
+    }
+  }
+
+  private var emptyStateView: some View {
+    VStack(spacing: 16) {
+      Spacer()
+
+      Image(systemName: "globe.badge.chevron.backward")
+        .font(.system(size: 48))
+        .foregroundColor(.secondary)
+
+      Text("No translations found")
+        .font(.title2)
+        .fontWeight(.medium)
+
+      if !searchText.isEmpty {
+        Text("Try adjusting your search or filter")
+          .font(.subheadline)
+          .foregroundColor(.secondary)
+      }
+
+      Spacer()
+    }
+  }
+
+  private var translationsList: some View {
+    List {
+      ForEach(0..<filteredTranslations.count, id: \.self) { index in
+        let translation = filteredTranslations[index]
+        HStack {
+          Text("#\(index + 1)")
+            .font(.caption2)
+            .foregroundColor(.secondary)
+            .frame(width: 30, alignment: .leading)
+
+          TranslationRowView(translation: translation)
+        }
+      }
+    }
+  }
+
+  private var statsHeader: some View {
+    VStack(spacing: 12) {
+      HStack(spacing: 20) {
+        StatCard(title: "Current DB", value: "\(stats.dbCount)", color: .blue)
+        StatCard(title: "Default DB", value: "\(stats.defaultDbCount)", color: .green)
+        StatCard(title: "Hardcoded", value: "\(stats.hardcodedCount)", color: .orange)
+      }
+
+      HStack {
+        Text("Total: \(translations.count) translations")
+          .font(.caption)
+          .foregroundColor(.secondary)
+
+        Spacer()
+
+        if !searchText.isEmpty || selectedContext != "All" {
+          Text("Filtered: \(filteredTranslations.count)")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+      }
+    }
+    .padding()
+    .background(Color.gray.opacity(0.1))
+  }
+
+  private var filtersSection: some View {
+    VStack(spacing: 8) {
+      // Search
+      HStack {
+        Image(systemName: "magnifyingglass")
+          .foregroundColor(.secondary)
+
+        TextField("Search translations...", text: $searchText)
+          .textFieldStyle(.plain)
+      }
+      .padding(.horizontal, 12)
+      .padding(.vertical, 8)
+      .background(Color.gray.opacity(0.05))
+      .cornerRadius(8)
+
+      // Context Filter
+      ScrollView(.horizontal, showsIndicators: false) {
+        HStack(spacing: 8) {
+          ForEach(contexts, id: \.self) { context in
+            Button(context) {
+              selectedContext = context
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+            .foregroundColor(selectedContext == context ? .white : .primary)
+            .background(selectedContext == context ? Color.accentColor : Color.clear)
+            .cornerRadius(6)
+          }
+        }
+        .padding(.horizontal)
+      }
+    }
+    .padding()
+  }
+
+  private func loadTranslations() {
+    isLoading = true
+
+    Task {
+      let loadedTranslations = await TranslationLoader.loadAllTranslations()
+      let loadedStats = await TranslationStatsLoader.loadStats()
+
+      await MainActor.run {
+        self.translations = loadedTranslations
+        self.stats = loadedStats
+        self.isLoading = false
+
+        // Debug logging
+        print("🔍 UI: Loaded \(loadedTranslations.count) translations")
+        if loadedTranslations.count > 0 {
+          print(
+            "🔍 UI: First translation: \(loadedTranslations[0].key) = \(loadedTranslations[0].value)"
+          )
+          if loadedTranslations.count > 1 {
+            print(
+              "🔍 UI: Second translation: \(loadedTranslations[1].key) = \(loadedTranslations[1].value)"
+            )
+          }
+        }
+        print("🔍 UI: Filtered count: \(self.filteredTranslations.count)")
+      }
+    }
+  }
+}
+
+// MARK: - Translation Stats
+
+struct TranslationStats {
+  var dbCount: Int = 0
+  var defaultDbCount: Int = 0
+  var hardcodedCount: Int = 0
+}
+
+class TranslationStatsLoader {
+  static func loadStats() async -> TranslationStats {
+    var stats = TranslationStats()
+
+    print("🔍 Loading translation statistics...")
+
+    // Count translations in current database
+    if let datasource = AppDatasource.shared.db {
+      do {
+        let dbRows: [Dictionary] = try await datasource.query(
+          "SELECT COUNT(*) as count FROM translations WHERE lang = 'en'")
+        if let count = dbRows.first?["count"]?.intValue {
+          stats.dbCount = count
+          print("📊 Current DB: \(count) translations")
+        }
+      } catch {
+        print("❌ Error counting database translations: \(error)")
+      }
+    } else {
+      print("⚠️ No current database connection for stats")
+    }
+
+    // Count translations in default database
+    if let bundleDbPath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite") {
+      do {
+        let defaultDb = try Blackbird.Database(path: bundleDbPath)
+        let defaultRows: [Dictionary] = try await defaultDb.query(
+          "SELECT COUNT(*) as count FROM translations WHERE lang = 'en'")
+        if let count = defaultRows.first?["count"]?.intValue {
+          stats.defaultDbCount = count
+          print("📊 Default DB: \(count) translations")
+        }
+      } catch {
+        print("❌ Error counting default database translations: \(error)")
+      }
+    } else {
+      print("❌ Could not find bundled database for stats")
+    }
+
+    // TODO: Scan Swift files for hardcoded strings
+    // For now, use a placeholder count
+    stats.hardcodedCount = 42
+
+    print(
+      "✅ Translation stats loaded: DB=\(stats.dbCount), Default=\(stats.defaultDbCount), Hardcoded=\(stats.hardcodedCount)"
+    )
+    return stats
+  }
+}
+
+struct TranslationItem: Identifiable {
+  let id = UUID()
+  let key: String
+  let value: String
+  let context: String
+  let language: String
+}
+
+struct TranslationRowView: View {
+  let translation: TranslationItem
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 8) {
+      HStack {
+        Text(translation.key)
+          .font(.headline)
+          .foregroundColor(.primary)
+          .lineLimit(2)
+
+        Spacer()
+
+        Text(translation.context)
+          .font(.caption)
+          .padding(.horizontal, 8)
+          .padding(.vertical, 2)
+          .background(contextColor.opacity(0.2))
+          .foregroundColor(contextColor)
+          .cornerRadius(4)
+      }
+
+      Text(translation.value)
+        .font(.subheadline)
+        .foregroundColor(.secondary)
+        .multilineTextAlignment(.leading)
+        .lineLimit(3)
+    }
+    .padding(.vertical, 4)
+  }
+
+  private var contextColor: Color {
+    switch translation.context {
+    case "ui": return .blue
+    case "database": return .purple
+    case "settings": return .green
+    case "error": return .red
+    case "navigation": return .orange
+    case "premium": return .yellow
+    case "demo": return .pink
+    default: return .gray
+    }
+  }
+}
+
+struct StatCard: View {
+  let title: String
+  let value: String
+  let color: Color
+
+  var body: some View {
+    VStack(spacing: 4) {
+      Text(value)
+        .font(.title2)
+        .fontWeight(.bold)
+        .foregroundColor(color)
+
+      Text(title)
+        .font(.caption)
+        .foregroundColor(.secondary)
+    }
+    .frame(maxWidth: .infinity)
+  }
+}
+
+class TranslationLoader {
+  static func loadAllTranslations() async -> [TranslationItem] {
+    var translations: [TranslationItem] = []
+
+    // Try to load from current database first
+    if let datasource = AppDatasource.shared.db {
+      do {
+        let rows: [Dictionary] = try await datasource.query(
+          "SELECT key, value, COALESCE(context, 'unknown') as context, lang FROM translations WHERE lang = 'en' ORDER BY key"
+        )
+
+        print("📊 Loaded \(rows.count) translations from current database")
+
+        for row in rows {
+          if let key = row["key"]?.stringValue,
+            let value = row["value"]?.stringValue,
+            let context = row["context"]?.stringValue,
+            let lang = row["lang"]?.stringValue
+          {
+            translations.append(
+              TranslationItem(
+                key: key,
+                value: value,
+                context: context,
+                language: lang
+              ))
+          }
+        }
+      } catch {
+        print("❌ Error loading translations from current database: \(error)")
+      }
+    } else {
+      print("⚠️ No current database connection available")
+    }
+
+    // If no translations found, try loading from bundled database
+    if translations.isEmpty {
+      print("🔄 Attempting to load from bundled database...")
+      if let bundleDbPath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite")
+      {
+        do {
+          let bundleDb = try Blackbird.Database(path: bundleDbPath)
+          let rows: [Dictionary] = try await bundleDb.query(
+            "SELECT key, value, COALESCE(context, 'unknown') as context, lang FROM translations WHERE lang = 'en' ORDER BY key"
+          )
+
+          print("📊 Loaded \(rows.count) translations from bundled database")
+
+          for row in rows {
+            if let key = row["key"]?.stringValue,
+              let value = row["value"]?.stringValue,
+              let context = row["context"]?.stringValue,
+              let lang = row["lang"]?.stringValue
+            {
+              translations.append(
+                TranslationItem(
+                  key: key,
+                  value: value,
+                  context: context,
+                  language: lang
+                ))
+            }
+          }
+        } catch {
+          print("❌ Error loading translations from bundled database: \(error)")
+        }
+      } else {
+        print("❌ Could not find bundled database")
+      }
+    }
+
+    print("✅ Final translation count: \(translations.count)")
+    return translations
   }
 }
 
