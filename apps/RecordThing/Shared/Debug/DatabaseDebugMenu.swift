@@ -11,6 +11,9 @@ import SwiftUI
 import os
 
 /// Debug menu for database operations and monitoring
+
+// @DEVELOPMENT_ONLY
+// This view is used only during development and doesn't need translation
 public struct DatabaseDebugMenu: View {
   @EnvironmentObject private var datasource: AppDatasource
   @StateObject private var monitor = DatabaseMonitor.shared
