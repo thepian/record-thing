@@ -132,9 +132,6 @@ struct RecordThingApp: App {
     debugShareExtension()
 
     #if os(macOS)
-      // Initialize window state observer
-      windowStateObserver = WindowStateObserver(captureService: captureService)
-
       // Configure window management
       NSApplication.shared.windowsMenu = NSMenu(title: "Window")
       let showAllWindowsItem = NSMenuItem(
@@ -236,6 +233,15 @@ struct RecordThingApp: App {
         .onReceive(datasource.$db) { newDb in
           logger.info("🔄 Database changed in app, updating AssetsViewModel")
           assetsViewModel.updateDatabase(newDb)
+        }
+        .onAppear {
+          #if os(macOS)
+            // Initialize window state observer after StateObject is properly installed
+            if windowStateObserver == nil {
+              windowStateObserver = WindowStateObserver(captureService: captureService)
+              logger.debug("WindowStateObserver initialized")
+            }
+          #endif
         }
         .onChange(of: scenePhase) { oldPhase, newPhase in
           switch newPhase {
