@@ -1542,7 +1542,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Record Thing needs camera access to scan and record your belongings for cataloging purposes.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Record Thing uses your local network to process data efficiently.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record Thing needs microphone access to record video with audio of your belongings.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record Thing needs microphone access to take spoken instructions from you and record activity progress of your belongings.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Record Thing needs permission to save images to your photo library.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Record Thing needs access to your photo library to import images of your belongings and save captured photos.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -1582,7 +1582,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Record Thing needs camera access to scan and record your belongings for cataloging purposes.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Record Thing uses your local network to process data efficiently.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record Thing needs microphone access to record video with audio of your belongings.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record Thing needs microphone access to take spoken instructions from you and record activity progress of your belongings.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Record Thing needs permission to save images to your photo library.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Record Thing needs access to your photo library to import images of your belongings and save captured photos.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

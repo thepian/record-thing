@@ -116,7 +116,7 @@
 		<key>NSCameraUsageDescription</key>
 		<string>Record Thing needs camera access to scan and record your belongings.</string>
 		<key>NSMicrophoneUsageDescription</key>
-		<string>Record Thing needs microphone access to record video with audio.</string>
+		<string>Record Thing needs microphone access to take spoken instructions from you and record activity progress.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>Record Thing needs access to your photo library to save and retrieve recordings.</string>
 		<key>NSPhotoLibraryAddUsageDescription</key>

@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict/>
+	<dict>
+		<key>NSCameraUsageDescription</key>
+		<string>Record Thing needs camera access to scan and record your belongings.</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>Record Thing needs microphone access to take spoken instructions from you and record activity progress.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Record Thing needs access to your photo library to save and retrieve recordings.</string>
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>Record Thing needs access to save recordings to your photo library.</string>
+	</dict>
 </plist>

@@ -13,7 +13,7 @@
         <key>NSCameraUsageDescription</key>
         <string>Record Thing needs camera access to scan and record your belongings.</string>
         <key>NSMicrophoneUsageDescription</key>
-        <string>Record Thing needs microphone access to record video with audio.</string>
+        <string>Record Thing needs microphone access to take spoken instructions from you and record activity progress.</string>
 
         <!-- macOS-specific permissions -->
         <key>NSDesktopFolderUsageDescription</key>
