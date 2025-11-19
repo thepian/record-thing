@@ -9,6 +9,8 @@
 import SwiftUI
 import os
 
+// @DEVELOPMENT_ONLY
+// This view is used only during development and doesn't need translation
 struct ShareExtensionDebugView: View {
     @State private var debugInfo: [String] = []
     @State private var isLoading = false

@@ -22,9 +22,9 @@ struct Step {
 }
 
 let adviceSteps: [Step] = [
-    Step("camera", text: "Treasure uses the camera to record your belongings."),
+    Step("camera", text: "Use the camera to record your belongings."),
     Step("doc.viewfinder", text: "Show the full sales receipt in the view finder"),
-    Step("camera", text: "Treasure uses the camera to record your belongings. Please Enable the Camera in the Settings"),
+    Step("camera", text: "Use the camera to record your belongings. Please Enable the Camera in the Settings"),
 ]
 
 public struct Captured {

@@ -14,6 +14,7 @@ Record Thing helps users:
 - Make a recording based on a pre-defined workflow
 - Share content from other apps (YouTube, web pages) into strategic focus areas
 - Organize knowledge around strategic interests through the Thepia Strategist system
+- Sync data automatically across devices using iCloud Documents
 
 ## Project Structure
 
@@ -57,6 +58,10 @@ uv run -m record_thing.cli test-db -v
 ```
 
 For more detailed CLI commands, see [CLI Documentation](docs/CLI.md).
+
+### iCloud Syncing
+
+The iOS/macOS app automatically syncs data across devices using iCloud Documents. See [iCloud Sync Documentation](docs/ICLOUD_SYNC.md) for details on setup, monitoring, and troubleshooting.
 
 Alternatively, open the Jupyter notebook: `docs/record-thing.ipynb`
 

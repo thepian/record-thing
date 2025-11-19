@@ -85,15 +85,173 @@ To provide a robust, efficient framework for recording, organizing, and sharing 
   - Database backup copy (when app is backgrounded)
   - Synchronized files for Premium tier users (iCloud accessible)
 
-- **App Group Shared Data**:
+- **Settings Storage (Hybrid Approach)**:
 
-  - User settings including User ID
-  - Shared across Thepia apps (`group.com.thepia.recordthing`)
-  - **Persistence**: Settings persist beyond app uninstallation, enabling consistent user experience across reinstalls
+  - **App Group UserDefaults** (`group.com.thepia.recordthing`): Local settings shared across Thepia apps
+  - **NSUbiquitousKeyValueStore**: User preferences that sync across devices via iCloud
+  - **Keychain with iCloud Sync**: Secure credentials and sensitive data that syncs across devices
+  - **Persistence**: All settings persist beyond app uninstallation and provide consistent user experience
 
-- **Keychain**:
-  - Passkeys and tokens
-  - Configured for iCloud sharing
+#### Settings Properties Storage Table
+
+| Property Name              | Type                | Storage Method            | Cross-Device Sync | Notes                                                              |
+| -------------------------- | ------------------- | ------------------------- | ----------------- | ------------------------------------------------------------------ |
+| `userId`                   | String              | Keychain (iCloud)         | ✅ Yes            | Secure user identifier, syncs across devices                       |
+| `authTokens`               | String              | Keychain (iCloud)         | ✅ Yes            | Authentication credentials, secure storage                         |
+| `passkeys`                 | Data                | Keychain (iCloud)         | ✅ Yes            | Biometric authentication data                                      |
+| `userPlan`                 | Enum (free/premium) | NSUbiquitousKeyValueStore | ✅ Yes            | User's subscription tier, syncs for seamless experience            |
+| `accountName`              | String              | NSUbiquitousKeyValueStore | ✅ Yes            | Display name, syncs across devices                                 |
+| `accountEmail`             | String              | NSUbiquitousKeyValueStore | ✅ Yes            | User email, syncs across devices                                   |
+| `autoSyncEnabled`          | Bool                | NSUbiquitousKeyValueStore | ✅ Yes            | Sync preference, should be consistent across devices               |
+| `selectiveSyncEnabled`     | Bool                | NSUbiquitousKeyValueStore | ✅ Yes            | Sync preference, should be consistent across devices               |
+| `iCloudBackupEnabled`      | Bool                | NSUbiquitousKeyValueStore | ✅ Yes            | Backup preference, should be consistent across devices             |
+| `contributeToAI`           | Bool                | NSUbiquitousKeyValueStore | ✅ Yes            | Privacy preference, should be consistent across devices            |
+| `defaultPrivateRecordings` | Bool                | NSUbiquitousKeyValueStore | ✅ Yes            | Privacy preference, should be consistent across devices            |
+| `lastSyncDate`             | Date                | NSUbiquitousKeyValueStore | ✅ Yes            | Sync status, useful across devices                                 |
+| `settingsChanged`          | String              | NSUbiquitousKeyValueStore | ✅ Yes            | IDFV:timestamp of last settings change, read-only for sync testing |
+| `rt.demoModeEnabled`       | Bool                | App Group UserDefaults    | ❌ No             | Development/testing setting, local per device                      |
+| `rt.debugSettingsEnabled`  | Bool                | App Group UserDefaults    | ❌ No             | Development setting, local per device                              |
+| `rt.cameraStreamEnabled`   | Bool                | App Group UserDefaults    | ❌ No             | Device-specific camera setting                                     |
+| `rt.powerSavingMode`       | Bool                | App Group UserDefaults    | ❌ No             | Device-specific performance setting                                |
+| `rt.orientationLock`       | Bool                | App Group UserDefaults    | ❌ No             | Device-specific UI setting                                         |
+| `rt.appVersion`            | String              | App Group UserDefaults    | ❌ No             | Device-specific app version tracking                               |
+| `rt.buildNumber`           | String              | App Group UserDefaults    | ❌ No             | Device-specific build tracking                                     |
+| `rt.firstLaunchCompleted`  | Bool                | App Group UserDefaults    | ❌ No             | Device-specific onboarding state                                   |
+| `rt.lastDatabaseBackup`    | Date                | App Group UserDefaults    | ❌ No             | Device-specific backup tracking                                    |
+| `rt.useSourceTranslations` | Bool                | App Group UserDefaults    | ❌ No             | Development setting to read translations from source repository    |
+
+#### Device Identification
+
+**IDFV (Identifier for Vendor) Usage:**
+
+- **Device Tracking**: Each device running RecordThing is identified using `UIDevice.current.identifierForVendor`
+- **Settings Change Tracking**: When settings are modified, the `settingsChanged` property stores `IDFV:timestamp` format
+- **Sync Testing**: Allows verification that settings changes propagate across devices via iCloud
+- **Privacy Compliant**: IDFV is reset when all Thepia apps are uninstalled, maintaining user privacy
+- **Persistence**: IDFV remains consistent across app updates and reinstalls (as long as one Thepia app remains)
+
+**Example `settingsChanged` values:**
+
+```text
+"12345678-1234-1234-1234-123456789ABC:2024-01-15T10:30:45Z"  // iPhone
+"87654321-4321-4321-4321-CBA987654321:2024-01-15T10:31:02Z"  // iPad
+```
+
+#### Settings Storage Implementation
+
+**Hybrid Storage Strategy Benefits:**
+
+- **Cross-Device Consistency**: User preferences and account data sync automatically via iCloud
+- **App Ecosystem Integration**: Development and device-specific settings shared across Thepia apps
+- **Security**: Sensitive authentication data stored securely in Keychain with iCloud sync
+- **Persistence**: All settings survive app uninstallation and device restoration
+- **Performance**: Local App Group storage for frequently accessed device-specific settings
+
+**Technical Implementation:**
+
+```swift
+class SettingsManager: ObservableObject {
+    // App Group UserDefaults (shared across Thepia apps, local only)
+    private let appGroupDefaults = UserDefaults(suiteName: "group.com.thepia.recordthing") ?? .standard
+
+    // iCloud Key-Value Store (syncs across devices, 1MB limit)
+    private let iCloudStore = NSUbiquitousKeyValueStore.default
+
+    // Keychain (secure + iCloud sync for sensitive data)
+    private let keychain = KeychainManager(iCloudSync: true)
+
+    // Device identifier for tracking settings changes
+    private let deviceIDFV = UIDevice.current.identifierForVendor?.uuidString ?? "unknown"
+
+    // Read-only property for sync testing
+    var settingsChanged: String {
+        return iCloudStore.string(forKey: "settings_changed") ?? ""
+    }
+
+    // Example: User plan syncs across devices
+    @Published var userPlan: UserPlan {
+        didSet {
+            iCloudStore.set(userPlan.rawValue, forKey: "user_plan")
+            updateSettingsChanged()
+        }
+    }
+
+    // Example: Demo mode stays local per device
+    @Published var demoModeEnabled: Bool {
+        didSet { appGroupDefaults.set(demoModeEnabled, forKey: "rt.demo_mode_enabled") }
+    }
+
+    // Update settings changed tracker whenever iCloud settings change
+    private func updateSettingsChanged() {
+        let timestamp = ISO8601DateFormatter().string(from: Date())
+        let changeRecord = "\(deviceIDFV):\(timestamp)"
+        iCloudStore.set(changeRecord, forKey: "settings_changed")
+        iCloudStore.synchronize()
+    }
+}
+```
+
+**Storage Limits and Considerations:**
+
+- **NSUbiquitousKeyValueStore**: 1MB total storage, 1024 keys maximum, 1MB per key maximum
+- **App Group UserDefaults**: No practical limits for typical settings usage
+- **Keychain**: No practical limits, but should be used only for sensitive data
+- **Sync Timing**: iCloud sync is automatic but may have delays depending on network conditions
+- **Manual iCloud Documents Sync**: Available for all users (Free and Premium) via Settings → Sync & Backup
+
+**Settings Sync Testing and Debugging:**
+
+- **`settingsChanged` Property**: Read-only string containing `IDFV:timestamp` of last settings modification
+- **Cross-Device Verification**: Check if settings changes from one device appear on other devices
+- **Sync Delay Monitoring**: Compare timestamps to measure iCloud sync propagation time
+- **Device Identification**: IDFV allows tracking which device made the last settings change
+- **Debug Interface**: Settings debug view can display `settingsChanged` value for troubleshooting
+
+**Example Testing Workflow:**
+
+1. Change a setting on iPhone → `settingsChanged` updates with iPhone's IDFV
+2. Wait for iCloud sync (typically 5-30 seconds)
+3. Check iPad's `settingsChanged` property → should show iPhone's IDFV and timestamp
+4. Verify the actual setting value synced correctly on iPad
+
+#### Translation System Architecture
+
+**Independent Translation Database:**
+
+- **Separate SQLite Database**: Translations stored independently from main app database
+- **Read-Only Access**: Translation database accessed in read-only mode via RecordLib
+- **Fallback Strategy**: Bundled database → Downloaded database → Source repository database
+- **Co-existence**: Translation DB access works alongside main app database in App Support
+- **Development Toggle**: Setting to read directly from source code repository SQLite file
+
+**Translation Database Loading Priority:**
+
+1. **Downloaded Translations**: Latest translations from server (if available)
+2. **Bundled Translations**: Fallback to app bundle SQLite file
+3. **Source Repository**: Development mode reads from checked-in SQLite file (toggle enabled)
+
+**Translation Database Structure:**
+
+```sql
+CREATE TABLE translations (
+    key TEXT PRIMARY KEY,
+    language_code TEXT NOT NULL,
+    translation TEXT NOT NULL,
+    context TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_translations_language ON translations(language_code);
+CREATE INDEX idx_translations_key_lang ON translations(key, language_code);
+```
+
+**RecordLib Translation Manager:**
+
+- **TranslationManager**: Singleton class for translation database access
+- **Automatic Fallback**: Graceful degradation when translation DB unavailable
+- **Caching**: In-memory cache for frequently accessed translations
+- **Thread Safety**: Safe concurrent access from multiple threads
+- **Error Recovery**: Automatic fallback to bundled translations on database errors
 
 #### Cloud Storage Structure
 
@@ -124,10 +282,13 @@ To provide a robust, efficient framework for recording, organizing, and sharing 
 
 #### Database Backup Process
 
-- Triggered when app becomes inactive or goes to background
-- Uses APFS Copy-on-Write for near-instantaneous copying
-- No need to check for changes due to the efficiency of Copy-on-Write
-- Ensures data safety with minimal performance impact
+- **Device-Specific Backups**: Each device creates backups with IDFV in filename to prevent overwrites
+- **Backup Naming**: `database_backup_{IDFV}_{timestamp}.sqlite` format ensures unique backups per device
+- **Triggered Events**: App becomes inactive/background, manual trigger in Settings
+- **Fast Copying**: Uses APFS Copy-on-Write for near-instantaneous copying on iOS/macOS
+- **No Overwrites**: Multiple devices can backup to same Documents folder without conflicts
+- **Backup Location**: App Documents folder for iCloud sync accessibility
+- **Retention**: Automatic cleanup of old backups (keep last 5 per device)
 
 #### Cloud Synchronization (Premium)
 
@@ -364,10 +525,10 @@ To provide a robust, efficient framework for recording, organizing, and sharing 
 
 #### AuthenticationManager
 
-- User identity handling
-- Secure credential storage
-- Demo mode management
-- Settings persistence management
+- User identity handling with Keychain (iCloud sync)
+- Secure credential storage across devices
+- Demo mode management (local per device)
+- Hybrid settings persistence management (App Group + iCloud + Keychain)
 
 #### SharingManager
 
@@ -385,14 +546,31 @@ To provide a robust, efficient framework for recording, organizing, and sharing 
 ### 7.2 Sample API Usage
 
 ```swift
-// Initialize the client with configuration
+// Initialize the client with hybrid settings configuration
 let config = RecordThingConfig(
     appGroup: "group.com.thepia.recordthing",
     tierLevel: .premium,
     syncEnabled: true,
-    selectiveSyncEnabled: true
+    selectiveSyncEnabled: true,
+    useHybridSettings: true  // Enable App Group + iCloud + Keychain storage
 )
 let client = RecordThingClient(config: config)
+
+// Settings management with hybrid storage
+let settingsManager = client.settingsManager
+
+// User plan syncs across devices via iCloud (triggers settingsChanged update)
+settingsManager.userPlan = .premium
+
+// Demo mode stays local per device via App Group (no settingsChanged update)
+settingsManager.demoModeEnabled = false
+
+// Check sync status for testing
+print("Settings last changed: \(settingsManager.settingsChanged)")
+// Output: "12345678-1234-1234-1234-123456789ABC:2024-01-15T10:30:45Z"
+
+// Device identification
+print("This device IDFV: \(UIDevice.current.identifierForVendor?.uuidString ?? "unknown")")
 
 // Database operations
 let dbManager = client.databaseManager
@@ -565,6 +743,7 @@ try await pairingManager.pairWithDevice(id: macDeviceId)
 - Camera usage: "This app requires camera access to scan and record physical objects"
 - Photo library access: "Optional access to import existing photos of your items"
 - Location access: "Optional to tag items with location information"
+- Device identification: "Uses device identifier (IDFV) for settings sync tracking across your devices. This identifier is reset when all Thepia apps are uninstalled."
 
 ### 13.2 Required Notices
 

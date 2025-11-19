@@ -1,2 +1,7 @@
 *.sqlite-shm
 *.sqlite-wal
+*.json
+translations.yaml
+test_sample.swift
+__pycache__/
+.DS_Store

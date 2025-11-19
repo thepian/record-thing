@@ -198,3 +198,6 @@ analyzer_rules:
   - explicit_self
   - unused_declaration
   - unused_import
+
+# Add this to your existing SwiftLint configuration
+indentation: 4  # Set to match Xcode's default

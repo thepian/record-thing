@@ -44,7 +44,7 @@ public struct PermitRequiredView: View {
                                 .font(.system(size: 50))
                                 .foregroundColor(.white)
                         }
-                        Text(LocalizedStringKey("security.camera_notDetermined"))
+                        Text(translated: "security.camera_notDetermined", bundle: .module)
                             .font(.system(size: 18))
                             .foregroundColor(.white)
                             .padding()
@@ -75,7 +75,7 @@ public struct PermitRequiredView: View {
                                 .font(.system(size: 50))
                                 .foregroundColor(.white)
                         }
-                        Text(LocalizedStringKey("security.camera_denied"))
+                        Text(translated: "security.camera_denied", bundle: .module)
                             .font(.system(size: 18))
                             .foregroundColor(.white)
                             .padding()

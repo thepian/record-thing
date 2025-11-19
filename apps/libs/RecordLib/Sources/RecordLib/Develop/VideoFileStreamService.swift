@@ -1,6 +1,7 @@
 import AVFoundation
 import CoreGraphics
 import CoreImage
+import VideoToolbox
 import os
 
 #if os(iOS)
@@ -155,10 +156,10 @@ public class VideoFileStreamService: VideoStreamService, ObservableObject {
         }
         
         // Convert pixel buffer to CGImage
-        let ciImage = CIImage(cvPixelBuffer: imageBuffer)
-        let context = CIContext()
+        var cgImage: CGImage?
+        VTCreateCGImageFromCVPixelBuffer(imageBuffer, options: nil, imageOut: &cgImage)
         
-        if let cgImage = context.createCGImage(ciImage, from: ciImage.extent) {
+        if let cgImage = cgImage {
             if cropToDevice {
                 currentFrame = cropImageToDeviceAspectRatio(cgImage)
             } else {
