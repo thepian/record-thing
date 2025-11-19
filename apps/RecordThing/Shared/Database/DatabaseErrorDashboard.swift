@@ -362,7 +362,7 @@ public struct DatabaseErrorDashboard: View {
             .appendingPathComponent("record-thing.sqlite").path)
         DatabaseFileRow(
           title: "Bundle DB",
-          path: Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite")
+          path: Bundle.main.path(forResource: "default-db", ofType: "sqlite")
             ?? "Not found")
       }
 

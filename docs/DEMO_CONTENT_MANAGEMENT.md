@@ -199,7 +199,7 @@ For new app releases, update the bundled database:
 1. Copy the validated database to the app's resource directory:
 
 ```bash
-cp ./working/record-thing.sqlite apps/RecordThing/Shared/Resources/default-record-thing.sqlite
+cp ./working/record-thing.sqlite apps/RecordThing/Shared/Resources/default-db.sqlite
 ```
 
 2. Rebuild the app to include the updated database file.
@@ -208,7 +208,7 @@ cp ./working/record-thing.sqlite apps/RecordThing/Shared/Resources/default-recor
 
 The Record Thing app handles database updates as follows:
 
-1. **Initial Installation**: The app is bundled with a default database file located at `default-record-thing.sqlite`.
+1. **Initial Installation**: The app is bundled with a default database file located at `default-db.sqlite`.
 
 2. **First Launch**: The app:
 

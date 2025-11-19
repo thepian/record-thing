@@ -127,9 +127,9 @@ Create protocol AppDatasourceAPI and make AppDatasource an implementation. Refer
 `reloadDatabase` will recreate the Blackbird database object instance and refresh the application with the new instance.
 
 `resetDatabase` will replace the `record-thing.sqlite` in the documentsPath with the 
-`default-record-thing.sqlite` from the App Resource Bundle. It will then reloadDatabase.
+`default-db.sqlite` from the App Resource Bundle. It will then reloadDatabase.
 
-`updateDatabase` will refresh the translations table in  `record-thing.sqlite` in the documentsPath to overwrite with records from `default-record-thing.sqlite` from the App Resource Bundle. It will then reloadDatabase.
+`updateDatabase` will refresh the translations table in  `record-thing.sqlite` in the documentsPath to overwrite with records from `default-db.sqlite` from the App Resource Bundle. It will then reloadDatabase.
 Make updateDatabase async and call it in a task.
 
 Create a MockAppDatasource: AppDatasourceAPI and use it for BrowseNavigationView previews.

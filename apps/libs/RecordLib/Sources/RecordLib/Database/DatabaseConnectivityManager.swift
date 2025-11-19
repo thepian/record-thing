@@ -294,7 +294,7 @@ public class DatabaseConnectivityManager: ObservableObject {
   public func createInMemoryClone() async -> Blackbird.Database? {
     logger.info("🧠 Creating in-memory database clone")
 
-    guard let bundlePath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite")
+    guard let bundlePath = Bundle.main.path(forResource: "default-db", ofType: "sqlite")
     else {
       logger.error("❌ Bundled database not found")
       return nil
@@ -399,7 +399,7 @@ public class DatabaseConnectivityManager: ObservableObject {
   private func connectToBundled(_ issues: inout [ConnectivityIssue]) async throws -> Blackbird
     .Database?
   {
-    guard let bundlePath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite")
+    guard let bundlePath = Bundle.main.path(forResource: "default-db", ofType: "sqlite")
     else {
       issues.append(.fileNotFound)
       throw NSError(
@@ -432,7 +432,7 @@ public class DatabaseConnectivityManager: ObservableObject {
     case .inMemory:
       return ":memory:"
     case .bundled:
-      return Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite") ?? ""
+      return Bundle.main.path(forResource: "default-db", ofType: "sqlite") ?? ""
     }
   }
 
@@ -538,7 +538,7 @@ public class DatabaseConnectivityManager: ObservableObject {
   }
 
   private func copyBundledDatabase(to destination: URL) async throws {
-    guard let bundlePath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite")
+    guard let bundlePath = Bundle.main.path(forResource: "default-db", ofType: "sqlite")
     else {
       throw NSError(
         domain: "DatabaseError", code: 1,

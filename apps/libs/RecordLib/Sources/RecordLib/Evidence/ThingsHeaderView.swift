@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import RecordLib
 
 public struct ThingsHeaderView: View {
     public var thing: Things

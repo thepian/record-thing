@@ -165,7 +165,7 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
       }
       // Priority 4: Fall back to bundle database
       else if let bundleDbPath = Bundle.main.path(
-        forResource: "default-record-thing", ofType: "sqlite")
+        forResource: "default-db", ofType: "sqlite")
       {
         logger.info("📋 Copying default database from bundle...")
         logger.info("   Source: \(bundleDbPath)")
@@ -186,7 +186,7 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
           )
         }
       } else {
-        logger.error("❌ Bundle database 'default-record-thing.sqlite' not found")
+        logger.error("❌ Bundle database 'default-db.sqlite' not found")
       }
     } else {
       logger.info("✅ Working database already exists at: \(appSupportPath.platformPath)")
@@ -319,7 +319,7 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
       try? FileManager.default.removeItem(atPath: documentsBackupPath.platformPath)
 
       // Copy default database to working location
-      if let bundleDbPath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite")
+      if let bundleDbPath = Bundle.main.path(forResource: "default-db", ofType: "sqlite")
       {
         try? FileManager.default.copyItem(atPath: bundleDbPath, toPath: appSupportPath.platformPath)
         logger.debug("Copied default DB to: \(appSupportPath.platformPath)")
@@ -338,7 +338,7 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
     guard let db = db else { return }
 
     // Update translations table from default database
-    if let bundleDbPath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite") {
+    if let bundleDbPath = Bundle.main.path(forResource: "default-db", ofType: "sqlite") {
       do {
         let defaultDb = try Blackbird.Database(path: bundleDbPath)
         let rows: [Dictionary] = try await defaultDb.query(
@@ -529,7 +529,7 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
     case .inMemory:
       return ":memory:"
     case .bundled:
-      return Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite") ?? ""
+      return Bundle.main.path(forResource: "default-db", ofType: "sqlite") ?? ""
     }
   }
 

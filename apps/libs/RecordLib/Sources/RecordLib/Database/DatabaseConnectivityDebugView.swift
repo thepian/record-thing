@@ -355,7 +355,7 @@ public struct DatabaseConnectivityDebugView: View {
 
       Task {
         guard
-          let bundlePath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite")
+          let bundlePath = Bundle.main.path(forResource: "default-db", ofType: "sqlite")
         else {
           await MainActor.run {
             testConnectionResult = "❌ Bundled database not found"

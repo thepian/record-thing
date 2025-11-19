@@ -1,0 +1,18 @@
+/*
+See LICENSE folder for this sample’s licensing information.
+
+Abstract:
+TODO
+*/
+
+/*
+  Localizable.strings
+ ThepiaApp
+
+  Note: Development language strings are automatically extracted from code.
+  
+*/
+
+"nav.things" = "Things";
+//"nav.requests" = "Requests (1)";
+

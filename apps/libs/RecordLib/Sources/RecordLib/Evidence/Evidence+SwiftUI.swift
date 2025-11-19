@@ -6,7 +6,6 @@ Definition of how the ingredients should appear in their thumbnail and card appe
 */
 
 import SwiftUI
-import RecordLib
 
 
 // MARK: - SwiftUI

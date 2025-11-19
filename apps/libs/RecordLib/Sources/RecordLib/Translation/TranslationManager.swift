@@ -70,11 +70,26 @@ public class TranslationManager {
     logger.warning("Translation not found in DB for key: \(key), language: \(language). Falling back to bundle.")
       
     // Fallback to Bundle lookup
+    let fallbackValue: String
     if let bundle = bundle {
-        return bundle.localizedString(forKey: key, value: nil, table: nil)
+        fallbackValue = bundle.localizedString(forKey: key, value: nil, table: nil)
     } else {
-        return NSLocalizedString(key, comment: "")
+        fallbackValue = NSLocalizedString(key, comment: "")
     }
+    
+    // Cache the fallback value so we don't query DB again for this missing key
+    setCachedTranslation(key: key, language: language, translation: fallbackValue)
+    
+    return fallbackValue
+  }
+
+  /// Update the cache with a specific value (e.g. after a DB update)
+  /// - Parameters:
+  ///   - key: Translation key
+  ///   - language: Language code
+  ///   - value: New translation value
+  public func updateCache(key: String, language: String, value: String) {
+    setCachedTranslation(key: key, language: language, translation: value)
   }
 
   /// Reload translation database (useful when settings change)

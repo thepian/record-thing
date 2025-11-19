@@ -6,7 +6,6 @@ A graphic that displays an Evidence as a thumbnail, a card highlighting its imag
 */
 
 import SwiftUI
-import RecordLib
 
 public struct EvidenceGraphic: View {
     public var evidence: Evidence

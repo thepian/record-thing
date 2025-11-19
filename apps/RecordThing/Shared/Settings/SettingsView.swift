@@ -720,7 +720,7 @@ class TranslationStatsLoader {
     }
 
     // Count translations in default database
-    if let bundleDbPath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite") {
+    if let bundleDbPath = Bundle.main.path(forResource: "default-db", ofType: "sqlite") {
       do {
         let defaultDb = try Blackbird.Database(path: bundleDbPath)
         let defaultRows: [Dictionary] = try await defaultDb.query(
@@ -858,7 +858,7 @@ class TranslationLoader {
     // If no translations found, try loading from bundled database
     if translations.isEmpty {
       print("🔄 Attempting to load from bundled database...")
-      if let bundleDbPath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite")
+      if let bundleDbPath = Bundle.main.path(forResource: "default-db", ofType: "sqlite")
       {
         do {
           let bundleDb = try Blackbird.Database(path: bundleDbPath)
