@@ -381,7 +381,7 @@
 		3E8853652DAD6C1600F97843 /* default-record-thing.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = "default-record-thing.sqlite"; sourceTree = "<group>"; };
 		3E88536A2DAE917900F97843 /* ThingsGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThingsGridView.swift; sourceTree = "<group>"; };
 		3ECA68472D96B0860003CB58 /* NavigationDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationDestination.swift; sourceTree = "<group>"; };
-		3ECD50AD2C96E3E000755E83 /* RecordLib */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = RecordLib; path = ../libs/RecordLib; sourceTree = "<group>"; };
+		3ECD50AD2C96E3E000755E83 /* RecordLib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RecordLib; path = ../libs/RecordLib; sourceTree = "<group>"; };
 		3ECD50D22C9759EF00755E83 /* MLModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MLModel.swift; sourceTree = "<group>"; };
 		3ED6C48B2D593E9E00FF632C /* RequestsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestsRow.swift; sourceTree = "<group>"; };
 		3ED6C4902D59545700FF632C /* RequestsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestsView.swift; sourceTree = "<group>"; };

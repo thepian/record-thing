@@ -14,3 +14,15 @@ App bundle localization file.
 /* Copyright (human-readable) */
 "NSHumanReadableCopyright" = "© 2020–2021 Apple. Все права защищены.";
 
+/* Privacy - Camera Usage Description */
+"NSCameraUsageDescription" = "Record Thing требуется доступ к камере для записи видео.";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "Record Thing требуется доступ к микрофону для записи звука.";
+
+/* Privacy - Photo Library Usage Description */
+"NSPhotoLibraryUsageDescription" = "Record Thing требуется доступ к фотопленке для сохранения видео.";
+
+/* Privacy - Photo Library Additions Usage Description */
+"NSPhotoLibraryAddUsageDescription" = "Record Thing требуется доступ для сохранения видео в фотопленку.";
+

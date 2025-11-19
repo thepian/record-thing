@@ -5,9 +5,9 @@
   Created by Cline on 16.03.2025.
 */
 
-"security.camera_denied" = "Treasure uses the camera to record your belongings.";
-"security.camera_notDetermined" = "Treasure uses the camera to record your belongings.";
-"security.camera_restricted" = "Treasure uses the camera to record your belongings.";
+"security.camera_denied" = "Use the camera to record your belongings.";
+"security.camera_notDetermined" = "Use the camera to record your belongings.";
+"security.camera_restricted" = "Use the camera to record your belongings.";
 
 // General
 "yes" = "Yes";

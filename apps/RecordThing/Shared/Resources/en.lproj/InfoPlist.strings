@@ -18,3 +18,15 @@ TODO
 
 /* Copyright (human-readable) */
 "NSHumanReadableCopyright" = "Copyright © 2024 Thepia. All rights reserved.";
+
+/* Privacy - Camera Usage Description */
+"NSCameraUsageDescription" = "Record Thing needs camera access to record video.";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "Record Thing needs microphone access to record audio.";
+
+/* Privacy - Photo Library Usage Description */
+"NSPhotoLibraryUsageDescription" = "Record Thing needs access to your photo library to save videos.";
+
+/* Privacy - Photo Library Additions Usage Description */
+"NSPhotoLibraryAddUsageDescription" = "Record Thing needs access to save videos to your photo library.";

@@ -42,32 +42,39 @@ public class TranslationManager {
 
   /// Get translation for a key in the current language
   /// - Parameter key: Translation key
+  /// - Parameter bundle: Optional bundle to fallback to
   /// - Returns: Translated string or key if translation not found
-  public func translate(_ key: String) -> String {
-    return translate(key, language: currentLanguage)
+  public func translate(_ key: String, bundle: Bundle? = nil) -> String {
+    return translate(key, language: currentLanguage, bundle: bundle)
   }
 
   /// Get translation for a key in a specific language
   /// - Parameters:
   ///   - key: Translation key
   ///   - language: Language code
+  ///   - bundle: Optional bundle to fallback to if translation is missing in DB
   /// - Returns: Translated string or key if translation not found
-  public func translate(_ key: String, language: String) -> String {
+  public func translate(_ key: String, language: String, bundle: Bundle? = nil) -> String {
     // Check cache first
     if let cachedTranslation = getCachedTranslation(key: key, language: language) {
       return cachedTranslation
     }
 
     // Query database
-    guard let translation = queryDatabase(key: key, language: language) else {
-      logger.warning("Translation not found for key: \(key), language: \(language)")
-      return key  // Fallback to key itself
+    if let translation = queryDatabase(key: key, language: language) {
+        // Cache the result
+        setCachedTranslation(key: key, language: language, translation: translation)
+        return translation
     }
-
-    // Cache the result
-    setCachedTranslation(key: key, language: language, translation: translation)
-
-    return translation
+    
+    logger.warning("Translation not found in DB for key: \(key), language: \(language). Falling back to bundle.")
+      
+    // Fallback to Bundle lookup
+    if let bundle = bundle {
+        return bundle.localizedString(forKey: key, value: nil, table: nil)
+    } else {
+        return NSLocalizedString(key, comment: "")
+    }
   }
 
   /// Reload translation database (useful when settings change)

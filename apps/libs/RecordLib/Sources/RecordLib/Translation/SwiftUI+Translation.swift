@@ -6,35 +6,65 @@ public extension Text {
     
     /// Create a Text view with a translated string
     /// - Parameter key: Translation key
+    /// - Parameter bundle: Optional bundle for fallback
     /// - Returns: Text view with translated content
-    init(translated key: String) {
-        self.init(TranslationManager.shared.translate(key))
+    init(translated key: String, bundle: Bundle? = nil) {
+        self.init(TranslationManager.shared.translate(key, bundle: bundle))
     }
     
     /// Create a Text view with a translated string and arguments
     /// - Parameters:
     ///   - key: Translation key
+    ///   - bundle: Optional bundle for fallback
     ///   - arguments: Arguments for string interpolation
     /// - Returns: Text view with translated and interpolated content
-    init(translated key: String, arguments: CVarArg...) {
-        let template = TranslationManager.shared.translate(key)
+    init(translated key: String, bundle: Bundle? = nil, arguments: CVarArg...) {
+        let template = TranslationManager.shared.translate(key, bundle: bundle)
         self.init(String(format: template, arguments: arguments))
+    }
+
+    /// Create a Text view with a translated LocalizedStringKey
+    /// - Parameter key: The LocalizedStringKey to resolve
+    /// - Parameter bundle: Optional bundle for fallback
+    /// - Returns: Text view with translated content
+    init(translated key: LocalizedStringKey, bundle: Bundle? = nil) {
+        if let stringKey = key.stringKey {
+            self.init(TranslationManager.shared.translate(stringKey, bundle: bundle))
+        } else {
+            // Fallback to standard SwiftUI behavior if extraction fails
+            self.init(key, bundle: bundle)
+        }
     }
 }
 
 public extension String {
     
     /// Get translated version of this string (treating it as a key)
-    var translated: String {
-        return TranslationManager.shared.translate(self)
+    func translated(bundle: Bundle? = nil) -> String {
+        return TranslationManager.shared.translate(self, bundle: bundle)
     }
     
     /// Get translated version with arguments
     /// - Parameter arguments: Arguments for string interpolation
     /// - Returns: Translated and interpolated string
-    func translated(arguments: CVarArg...) -> String {
-        let template = TranslationManager.shared.translate(self)
+    func translated(bundle: Bundle? = nil, arguments: CVarArg...) -> String {
+        let template = TranslationManager.shared.translate(self, bundle: bundle)
         return String(format: template, arguments: arguments)
+    }
+}
+
+// MARK: - LocalizedStringKey Extraction
+
+extension LocalizedStringKey {
+    /// Extract the string key from LocalizedStringKey using reflection
+    var stringKey: String? {
+        let mirror = Mirror(reflecting: self)
+        for child in mirror.children {
+            if let value = child.value as? String {
+                return value
+            }
+        }
+        return nil
     }
 }
 

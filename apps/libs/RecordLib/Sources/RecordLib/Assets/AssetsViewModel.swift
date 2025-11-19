@@ -161,12 +161,11 @@ public class AssetsViewModel: ObservableObject, Observable {
 
     if let db = db {
       logger.info("✅ Database provided to AssetsViewModel: \(String(describing: db))")
+      logger.info("🔄 Starting initial loadDates call")
+      self.loadDates()
     } else {
-      logger.warning("⚠️ No database provided to AssetsViewModel")
+      logger.warning("⚠️ No database provided to AssetsViewModel - skipping initial load")
     }
-
-    logger.info("🔄 Starting initial loadDates call")
-    self.loadDates()
 
     #if os(iOS)
       logger.info("📱 Setting up orientation tracking")
