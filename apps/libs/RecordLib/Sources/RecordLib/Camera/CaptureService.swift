@@ -9,6 +9,7 @@ import AVFoundation
 import CoreImage
 import CoreMotion
 import Foundation
+import VideoToolbox
 import os
 
 #if os(macOS)
@@ -37,7 +38,6 @@ public class CaptureService: NSObject, ObservableObject {
   @Published public var frame: CGImage?  // For streaming to view via CoreImage
   public let session = AVCaptureSession()  // Should be possible to reuse the capture session
   let sessionQueue = DispatchQueue(label: "sessionQueue")
-  private let context = CIContext()
 
   var delegate: AVCapturePhotoCaptureDelegate?
 
@@ -401,10 +401,18 @@ public class CaptureService: NSObject, ObservableObject {
   func startSessionIfAuthorized(completion: @escaping (Error?) -> Void) {
     if permissionGranted {
       sessionQueue.async { [unowned self] in
-        self.setupCaptureSession(completion: completion)
-        self.session.startRunning()
-        logger.debug("Started session running. (startSessionIfAuthorized)")
-        completion(nil)
+        self.setupCaptureSession { error in
+          if let error = error {
+            completion(error)
+            return
+          }
+          
+          if !self.session.isRunning {
+            self.session.startRunning()
+            self.logger.debug("Started session running. (startSessionIfAuthorized)")
+          }
+          completion(nil)
+        }
       }
     } else {
       completion(
@@ -945,9 +953,10 @@ extension CaptureService: AVCaptureVideoDataOutputSampleBufferDelegate {
 
   private func imageFromSampleBuffer(sampleBuffer: CMSampleBuffer) -> CGImage? {
     guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return nil }
-    let ciImage = CIImage(cvPixelBuffer: imageBuffer)
-    guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return nil }
-
+    
+    var cgImage: CGImage?
+    VTCreateCGImageFromCVPixelBuffer(imageBuffer, options: nil, imageOut: &cgImage)
+    
     return cgImage
   }
 }

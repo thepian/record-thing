@@ -8,6 +8,7 @@
 import Foundation
 import AVFoundation
 import CoreImage
+import VideoToolbox
 import Vision
 import UIKit
 
@@ -34,7 +35,9 @@ extension VisionService: AVCaptureVideoDataOutputSampleBufferDelegate {
         } else if nextRenderTime < Date.now {
             // TODO this is to avoid leaking (ideally detectOrTrack wouldn't leak when run in global DispatchQueue !?
 //            let cgFrame = annotateFrame(ciImage: CIImage(cvPixelBuffer: pixelBuffer))
-            let cgFrame = ciToCgImage(ciImage: CIImage(cvPixelBuffer: pixelBuffer), ciContext: ciContext)
+            
+            var cgFrame: CGImage?
+            VTCreateCGImageFromCVPixelBuffer(pixelBuffer, options: nil, imageOut: &cgFrame)
             
             // All UI updates should be/ must be performed on the main queue.
             DispatchQueue.main.async { [unowned self] in
@@ -54,7 +57,8 @@ extension VisionService: AVCaptureVideoDataOutputSampleBufferDelegate {
     
     func detectOrTrack(_ pixelBuffer: CVImageBuffer) {
         // All UI updates should be/ must be performed on the main queue.
-        let cgFrame = ciToCgImage(ciImage: CIImage(cvPixelBuffer: pixelBuffer), ciContext: ciContext)
+        var cgFrame: CGImage?
+        VTCreateCGImageFromCVPixelBuffer(pixelBuffer, options: nil, imageOut: &cgFrame)
         DispatchQueue.main.async { [unowned self] in
             if let model = self.model {
                 if let frame = cgFrame {
