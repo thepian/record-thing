@@ -344,7 +344,7 @@ public class DatabaseConnectivityManager: ObservableObject {
   {
     let appSupportPath = FileManager.default.urls(
       for: .applicationSupportDirectory, in: .userDomainMask)[0]
-      .appendingPathComponent("record-thing.sqlite")
+      .appendingPathComponent("app-db.sqlite")
 
     // Ensure App Support directory exists
     let appSupportDir = appSupportPath.deletingLastPathComponent()
@@ -443,7 +443,7 @@ public class DatabaseConnectivityManager: ObservableObject {
     // Always use the runtime-determined App Support directory
     // This automatically handles containerization correctly
     let appSupportURL = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-    let databaseURL = appSupportURL.appendingPathComponent("record-thing.sqlite")
+    let databaseURL = appSupportURL.appendingPathComponent("app-db.sqlite")
 
     logger.info("📁 Production database path: \(databaseURL.platformPath)")
     logger.info("📁 App Support directory: \(appSupportURL.platformPath)")

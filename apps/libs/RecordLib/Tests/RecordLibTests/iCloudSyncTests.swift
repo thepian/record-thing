@@ -140,7 +140,7 @@ final class iCloudSyncTests: XCTestCase {
     }
 
     // Create a mock database file
-    let localDatabaseURL = testDocumentsURL.appendingPathComponent("record-thing.sqlite")
+    let localDatabaseURL = testDocumentsURL.appendingPathComponent("app-db.sqlite")
     let testDatabaseContent = "Mock SQLite database content"
 
     try testDatabaseContent.write(to: localDatabaseURL, atomically: true, encoding: .utf8)
@@ -161,7 +161,7 @@ final class iCloudSyncTests: XCTestCase {
       return
     }
 
-    let iCloudDatabaseURL = iCloudURL.appendingPathComponent("record-thing.sqlite")
+    let iCloudDatabaseURL = iCloudURL.appendingPathComponent("app-db.sqlite")
 
     // Wait for file to appear in iCloud
     try await waitForFileToExist(at: iCloudDatabaseURL, timeout: 30.0)

@@ -165,22 +165,6 @@ struct AppSplitView<DetailContent: View>: View {
     #else
       .toolbar(.visible, for: .navigationBar, .tabBar)
     #endif
-    #if os(iOS)
-      // https://github.com/davdroman/NavigationSplitViewRemoveBackgrounds/blob/main/NavigationSplitViewRemoveBackgrounds.swiftpm/MyApp.swift
-      .introspect(.navigationSplitView, on: .iOS(.v16, .v17, .v18)) { split in
-        let removeBackgrounds = {
-          split.viewControllers.forEach { controller in
-            controller.parent?.view.backgroundColor = .clear
-            controller.view.clearBackgrounds()
-          }
-        }
-        /* We need to restrain the bits being made transparent
-        
-        removeBackgrounds() // run now...
-        DispatchQueue.main.async(execute: removeBackgrounds) // ... and on the next run loop pass
-         */
-      }
-    #endif
   }
 }
 

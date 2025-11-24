@@ -2,7 +2,14 @@
 
 ## Overview
 
-ThepiaApp now includes **iCloud Documents folder sync** functionality that allows users to manually trigger synchronization of their Documents folder across devices. This feature is available to all users (both Free and Premium tiers) and leverages iOS's built-in iCloud Documents syncing capabilities.
+ThepiaApp includes **iCloud Documents folder sync** functionality that allows users to manually trigger synchronization of their Documents folder across devices. This feature is available to all users (both Free and Premium tiers) and leverages iOS's built-in iCloud Documents syncing capabilities.
+
+> **⚠️ IMPORTANT**: The live database (`app-db.sqlite`) is stored in **Application Support** and is **NOT automatically synced** to prevent corruption. iCloud Documents sync is for:
+> - Optional database copies/exports for sharing
+> - User-created files and assets
+> - Manual backups
+> 
+> The live database is backed up by iOS/iCloud Backup but does not sync in real-time.
 
 ## Features
 

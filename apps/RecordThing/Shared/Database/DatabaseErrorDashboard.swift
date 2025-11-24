@@ -358,8 +358,8 @@ public struct DatabaseErrorDashboard: View {
             "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing-debug.sqlite")
         DatabaseFileRow(
           title: "Documents DB",
-          path: FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("record-thing.sqlite").path)
+          path: FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("app-db.sqlite").path)
         DatabaseFileRow(
           title: "Bundle DB",
           path: Bundle.main.path(forResource: "default-db", ofType: "sqlite")

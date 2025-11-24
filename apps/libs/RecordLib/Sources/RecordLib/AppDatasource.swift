@@ -307,12 +307,12 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
       // Reset working database in App Support folder
       let appSupportPath = FileManager.default.urls(
         for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        .appendingPathComponent("record-thing.sqlite")
+        .appendingPathComponent("app-db.sqlite")
 
       // Also reset backup in Documents folder
       let documentsBackupPath = FileManager.default.urls(
         for: .documentDirectory, in: .userDomainMask)[0]
-        .appendingPathComponent("record-thing-backup.sqlite")
+        .appendingPathComponent("app-db.sqlite")
 
       // Remove existing databases
       try? FileManager.default.removeItem(atPath: appSupportPath.platformPath)
@@ -540,7 +540,7 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
     // Always use the runtime-determined App Support directory
     // This automatically handles containerization correctly
     let appSupportURL = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-    let databaseURL = appSupportURL.appendingPathComponent("record-thing.sqlite")
+    let databaseURL = appSupportURL.appendingPathComponent("app-db.sqlite")
 
     logger.info("📁 Production database path: \(databaseURL.platformPath)")
 
@@ -604,10 +604,10 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
       let homeDir = NSHomeDirectory()
       let legacyPaths = [
         // Potential legacy container with display name
-        "\(homeDir)/Library/Containers/Record Thing/Data/Library/Application Support/record-thing.sqlite",
+        "\(homeDir)/Library/Containers/Record Thing/Data/Library/Application Support/app-db.sqlite",
         // Other potential legacy paths
-        "\(homeDir)/Library/Application Support/RecordThing/record-thing.sqlite",
-        "\(homeDir)/Library/Application Support/Record Thing/record-thing.sqlite",
+        "\(homeDir)/Library/Application Support/RecordThing/app-db.sqlite",
+        "\(homeDir)/Library/Application Support/Record Thing/app-db.sqlite",
       ]
 
       for legacyPath in legacyPaths {

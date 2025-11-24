@@ -82,9 +82,13 @@ The app leverages SwiftUI's cross-platform capabilities to provide a consistent 
 
 ThepiaApp uses SQLite with Blackbird for database operations:
 
+- **Bundled Database** (`default-db.sqlite`): Read-only database included in app bundle
+- **Live Database** (`app-db.sqlite`): Active database stored in Application Support directory
+  - Backed up by iOS/iCloud Backup
+  - NOT automatically synced (prevents corruption)
+  - Copied from bundled database on first launch
 - **Development Database**: Automatically used when available in the project directory
-- **Production Database**: Copied from app bundle to Documents directory
-- **iCloud Sync**: Documents directory automatically syncs across devices
+- **iCloud Sync**: Optional manual copies to Documents directory for cross-device sharing
 - **Debug Tools**: Comprehensive database monitoring and debugging interface
 
 ### ShareExtension Integration
@@ -193,10 +197,16 @@ The debug view provides:
 
 ### What Gets Synced
 
-- **Database**: `record-thing.sqlite` - Main app database
+**Automatically Synced (Documents Directory):**
+- **Database Copies**: Optional manual copies of `app-db.sqlite` for cross-device sharing
 - **Assets**: `assets/` folder - User recordings and media files
-- **Backups**: Database backup copies
-- **User files**: Any files created in Documents directory
+- **Exports**: Database exports and backups created by user
+- **User files**: Any files explicitly saved to Documents directory
+
+**NOT Synced (Application Support Directory):**
+- **Live Database**: `app-db.sqlite` - Active database (backed up by iOS, not synced)
+- **Cache**: Temporary files and cached data
+- **Internal State**: App configuration and runtime data
 
 ### Production Monitoring
 
@@ -207,7 +217,7 @@ Monitor sync health in production code:
 let summary = SimpleiCloudManager.shared.getSyncSummary()
 
 // Monitor specific files
-let dbStatus = SimpleiCloudManager.shared.getFileStatus("record-thing.sqlite")
+let dbStatus = SimpleiCloudManager.shared.getFileStatus("app-db.sqlite")
 
 // Get detailed sync states
 let allStates = SimpleiCloudManager.shared.documentStates

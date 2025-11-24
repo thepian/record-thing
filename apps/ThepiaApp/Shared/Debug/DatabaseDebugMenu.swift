@@ -416,7 +416,7 @@ public struct DatabaseDebugMenu: View {
         "/Volumes/Projects/Evidently/record-thing/libs/record_thing/record-thing.sqlite"
       let appSupportPath = FileManager.default.urls(
         for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        .appendingPathComponent("record-thing.sqlite")
+        .appendingPathComponent("app-db.sqlite")
 
       do {
         // Close current database connection

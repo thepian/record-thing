@@ -251,7 +251,7 @@ struct iCloudSyncTestConfig {
     static let maxRetries: Int = 3
     
     static let testFilePrefix = "icloud-test"
-    static let testDatabaseName = "test-record-thing.sqlite"
+    static let testDatabaseName = "test-app-db.sqlite"
     
     /// Returns configuration appropriate for the current environment
     static func forCurrentEnvironment() -> iCloudSyncTestConfig {
