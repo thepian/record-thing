@@ -8,8 +8,10 @@ The primary entry point for the app's user interface. Can change between tab-bas
 import AVFoundation
 import Blackbird
 import RecordLib
+import FlowsLib
 import SwiftUI
 import SwiftUIIntrospect
+
 
 struct ContentView: View {
   @EnvironmentObject private var model: Model
@@ -144,7 +146,7 @@ struct ContentView: View {
       ZStack {
         switch model.lifecycleView {
         case .development:
-          EmptyView()
+          developmentView
 
         case .record:
           NavigationStack(path: $path) {
@@ -164,11 +166,12 @@ struct ContentView: View {
           )
 
         case .loading:
-          mountainBike
+          AppIdentityView()
           ProgressView()
             .progressViewStyle(CircularProgressViewStyle(tint: Color.yellow))
             .frame(width: 50, height: 50, alignment: .center)
             .scaleEffect(3)
+            .navigationBarBackButtonHidden(true)
         }
       }
     }
@@ -178,18 +181,6 @@ struct ContentView: View {
   }
 
   // MARK: - Supporting Views
-
-  var mountainBike: some View {
-    // Background content (would be the camera in the real app)
-    GeometryReader { geometry in
-      Image("thepia_a_high-end_electric_mountain_bike_1")
-        .resizable()
-        .aspectRatio(contentMode: .fill)
-        .frame(width: geometry.size.width, height: geometry.size.height)
-        .clipped()  // This prevents the image from overflowing
-    }
-    .ignoresSafeArea()
-  }
 
   // Assets browsing view
   var assetsBrowsingView: some View {
@@ -313,12 +304,35 @@ struct ContentView: View {
       }
     }
   }
+    
+    var developmentView: some View {
+//        ZStack {
+//            AppIdentityView()
+//            WebAppView(config: WebAppConfig()
+//                .startURL(URL(string: "https://dev.thepia.net:5173/"))
+//                .initialPageHeight(.full),
+//                initialReadiness: .loading
+//            )
+//            .presentationBackground(.clear)
+//        }
+//        EmptyView()
+          AppIdentityView()
+              .fullScreenCover(isPresented: .constant(true)) {
+                  WebAppView(config: WebAppConfig()
+                      .startURL(URL(string: "https://dev.thepia.net:5173/"))
+                      .initialPageHeight(.full),
+                             initialReadiness: .ready // todo loading
+                  )
+                  .presentationBackground(.clear)
+              }
+    }
 
   var withoutSidebarView: some View {
     ZStack {
       switch model.lifecycleView {
       case .development:
-        EmptyView()
+          developmentView
+//          EmptyView()
 
       case .record:
         NavigationStack(path: $path) {
@@ -332,7 +346,7 @@ struct ContentView: View {
         actionsView
 
       case .loading:
-        mountainBike
+        AppIdentityView()
         ProgressView()
           .progressViewStyle(CircularProgressViewStyle(tint: Color.yellow))
           .frame(width: 50, height: 50, alignment: .center)
@@ -353,27 +367,47 @@ struct ContentView: View {
   // MARK: - Body
 
   var body: some View {
-    #if os(iOS)
-      if horizontalSizeClass == .compact {
-        withoutSidebarView
-      } else {
-        withSidebarView
-      }
-    #else
-      withSidebarView
-    #endif
+        #if os(iOS)
+          if horizontalSizeClass == .regular {
+            withSidebarView
+          } else {
+              // compact or nil(Automatic in preview)
+            withoutSidebarView
+          }
+        #else
+          withSidebarView
+        #endif
+    }
   }
-}
 
 struct ContentView_Previews: PreviewProvider {
   static var previews: some View {
     @Previewable @StateObject var assetsViewModel = AssetsViewModel(db: AppDatasource.shared.db)
 
     Group {
+        ContentView(captureService: MockedCaptureService(.notDetermined))
+            .environmentObject(Model(loadedLangConst: "en", primaryView: .development))
+          .environment(\.blackbirdDatabase, AppDatasource.shared.db)
+          .environment(\.assetsViewModel, assetsViewModel)
+          .previewDevice(PreviewDevice(rawValue: "iPhone 16 Pro"))
+          .previewInterfaceOrientation(.portrait)
+          .previewDisplayName("Development")
+
+        // Regular view preview with video stream
+        // Actions view preview
+        ContentView(captureService: MockedCaptureService(.notDetermined))
+            .environmentObject(Model(loadedLangConst: "en", primaryView: .actions))
+          .environment(\.blackbirdDatabase, AppDatasource.shared.db)
+          .environment(\.assetsViewModel, assetsViewModel)
+          .onAppear {
+            AppDatasource.shared.forceLocalizeReload()
+          }
+          .previewDisplayName("Actions")
+
       // Regular view preview with video stream
       if let (_, mockService) = VideoPreviewHelper.createVideoPreview() {
         ContentView(captureService: mockService)
-          .environmentObject(Model(loadedLangConst: "en"))
+              .environmentObject(Model(loadedLangConst: "en", primaryView: .record))
           .environment(\.blackbirdDatabase, AppDatasource.shared.db)
           .environment(\.assetsViewModel, assetsViewModel)
           .previewDisplayName("Loaded & Authorized (Video Stream)")
@@ -395,7 +429,7 @@ struct ContentView_Previews: PreviewProvider {
 
       // Redacted view preview
       ContentView(captureService: MockedCaptureService(.notDetermined))
-        .environmentObject(Model(loadedLangConst: "en"))
+            .environmentObject(Model(loadedLangConst: "en", primaryView: .record))
         .environment(\.blackbirdDatabase, AppDatasource.shared.db)
         .environment(\.assetsViewModel, assetsViewModel)
         .redacted(reason: .placeholder)

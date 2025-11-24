@@ -125,6 +125,8 @@ public class DatabaseConnectivityManager: ObservableObject {
     logger.info("🚀 Starting database connection with fallback strategy")
 
     // Try connection modes in priority order
+    // In release builds, skip debug/development checks to avoid ~340ms startup delay
+    #if DEBUG
     let connectionModes: [DatabaseMode] = [
       .debug,  // Highest priority for development
       .development,  // Git-tracked database
@@ -132,17 +134,30 @@ public class DatabaseConnectivityManager: ObservableObject {
       .inMemory,  // In-memory fallback
       .bundled,  // Last resort (read-only)
     ]
+    #else
+    let connectionModes: [DatabaseMode] = [
+      .production,  // App Support folder
+      .inMemory,  // In-memory fallback
+      .bundled,  // Last resort (read-only)
+    ]
+    logger.debug("🚀 Release build: skipping debug/development database checks")
+    #endif
 
     for mode in connectionModes {
+      let attemptStartTime = CFAbsoluteTimeGetCurrent()
       logger.info("🔍 Attempting connection in \(mode.displayName) mode")
 
       if let database = await attemptConnection(mode: mode) {
+        let attemptDuration = CFAbsoluteTimeGetCurrent() - attemptStartTime
         await MainActor.run {
           self.currentMode = mode
           self.isConnected = true
         }
-        logger.info("✅ Successfully connected in \(mode.displayName) mode")
+        logger.info("✅ Successfully connected in \(mode.displayName) mode (took \(String(format: "%.3f", attemptDuration))s)")
         return (database, mode)
+      } else {
+        let attemptDuration = CFAbsoluteTimeGetCurrent() - attemptStartTime
+        logger.debug("⏱️ \(mode.displayName) check took \(String(format: "%.3f", attemptDuration))s")
       }
     }
 
@@ -179,7 +194,8 @@ public class DatabaseConnectivityManager: ObservableObject {
         return try await connectToBundled(&issues)
       }
     } catch {
-      logger.error("❌ Connection failed for \(mode.displayName): \(error)")
+      // Use warning instead of error for expected fallback failures
+      logger.warning("⚠️ Connection failed for \(mode.displayName): \(error.localizedDescription)")
       issues.append(.unknownError(error))
       await MainActor.run {
         self.lastError = error

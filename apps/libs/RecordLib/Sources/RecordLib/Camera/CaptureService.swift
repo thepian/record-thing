@@ -97,8 +97,8 @@ public class CaptureService: NSObject, ObservableObject {
     // Setup notification observers for app state changes
     setupNotificationObservers()
 
-    // Setup motion detection
-    setupMotionDetection()
+    // Motion detection will be started explicitly when camera view appears
+    // setupMotionDetection() - removed to make motion detection context-aware
 
     #if os(iOS)
       // Setup orientation tracking

@@ -115,7 +115,7 @@ struct ThepiaApp: App {
   @Environment(\.scenePhase) private var scenePhase
 
   @StateObject var datasource = AppDatasource.shared  // Important for triggering updates after translation loaded.
-  @StateObject private var model = Model(loadedLang: AppDatasource.shared.$loadedLang)
+  @StateObject private var model = Model(loadedLang: AppDatasource.shared.$loadedLang, primaryView: .development)
   @StateObject private var captureService = CaptureService()
   @StateObject private var assetsViewModel = AssetsViewModel()
 

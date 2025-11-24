@@ -122,12 +122,13 @@ final class Model: ObservableObject {
 
   convenience init(loadedLang _loadedLang: Published<String?>.Publisher?, primaryView: LifecycleView = .record) {
     self.init()
-    self.lifecycleView = lifecycleView
+    self.primaryView = primaryView  // Store the parameter
+    self.lifecycleView = .loading   // Start with loading
 
     if let _loadedLang = _loadedLang {
       _loadedLang.sink { [weak self] newValue in
         self?.loadedLang = newValue
-          self?.lifecycleView = self?.primaryView ?? .record
+        self?.lifecycleView = self?.primaryView ?? .record  // Use stored primaryView
       }
       .store(in: &cancellables)
     }

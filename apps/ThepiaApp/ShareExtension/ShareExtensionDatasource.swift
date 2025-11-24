@@ -38,7 +38,7 @@ class ShareExtensionDatasource: RecordLib.AppDatasource {
   func saveSharedContent(_ content: SharedContent, note: String) async -> Bool {
     logger.info("💾 Saving shared content: \(content.contentType.displayName)")
 
-    guard let db = db else {
+    guard let _ = db else {
       logger.error("❌ Database not available for saving shared content")
       DatabaseMonitor.shared.logError(
         NSError(
@@ -101,7 +101,7 @@ class ShareExtensionDatasource: RecordLib.AppDatasource {
   func createUnprocessedShare(_ content: SharedContent, note: String) async -> Bool {
     logger.info("📝 Creating unprocessed share entry")
 
-    guard let db = db else {
+    guard let _ = db else {
       logger.error("❌ Database not available for unprocessed share")
       return false
     }

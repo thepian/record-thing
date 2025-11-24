@@ -143,6 +143,10 @@ public struct CameraDrivenView<CameraOverlayView: View>: View {
             let status = captureService.checkPermission()
             cameraViewModel?.reflectCaptureDevice(status: status)
             cameraViewModel?.setCaptureService(captureService)
+            
+            // Start motion detection when camera view appears
+            captureService.startMotionDetection()
+            
             captureService.startSessionIfAuthorized(completion: { err in
                 if let error = err {
                     logger.error("Session not started: \(error.localizedDescription)")
@@ -150,6 +154,11 @@ public struct CameraDrivenView<CameraOverlayView: View>: View {
                     logger.debug("Camera session started successfully")
                 }
             })
+        }
+        .onDisappear {
+            // Stop motion detection when camera view disappears
+            logger.debug("CameraDrivenView disappearing, stopping motion detection")
+            captureService.stopMotionDetection()
         }
         #if os(macOS)
         .onChange(of: captureService.permissionGranted, initial: false) { _, newValue in

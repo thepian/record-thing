@@ -12,6 +12,12 @@
 		3E1494752DF5DD1A00DC520D /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 3E3B74732DF2389D0094122F /* ShareExtension.appex */; };
 		3E351FAA2ED474BF0074ADD8 /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3E351FA92ED474BF0074ADD8 /* RecordLib */; };
 		3E351FAC2ED479BC0074ADD8 /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3E351FAB2ED479BC0074ADD8 /* RecordLib */; };
+		3E351FE52ED4905F0074ADD8 /* FlowsLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3E351FE42ED4905F0074ADD8 /* FlowsLib */; };
+		3E351FE72ED4906D0074ADD8 /* FlowsLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3E351FE62ED4906D0074ADD8 /* FlowsLib */; };
+		3E35203A2ED49DA30074ADD8 /* AppIdentityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E3520392ED49DA30074ADD8 /* AppIdentityView.swift */; };
+		3E35203B2ED49DA30074ADD8 /* AppIdentityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E3520392ED49DA30074ADD8 /* AppIdentityView.swift */; };
+		3E35203C2ED49DA30074ADD8 /* AppIdentityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E3520392ED49DA30074ADD8 /* AppIdentityView.swift */; };
+		3E35203D2ED49DA30074ADD8 /* AppIdentityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E3520392ED49DA30074ADD8 /* AppIdentityView.swift */; };
 		3E3B747D2DF2389E0094122F /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 3E3B74732DF2389D0094122F /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		3E3B74882DF239D30094122F /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3E3B74872DF239D30094122F /* RecordLib */; };
 		3E3B748A2DF239DC0094122F /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3E3B74892DF239DC0094122F /* Blackbird */; };
@@ -356,6 +362,7 @@
 
 /* Begin PBXFileReference section */
 		33BFC6A1DCA101BFABE069E5 /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		3E3520392ED49DA30074ADD8 /* AppIdentityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIdentityView.swift; sourceTree = "<group>"; };
 		3E3B74732DF2389D0094122F /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		3E3B748B2DF23AB10094122F /* StrategistsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrategistsList.swift; sourceTree = "<group>"; };
 		3E3B748C2DF23AB10094122F /* StrategistsMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrategistsMenu.swift; sourceTree = "<group>"; };
@@ -445,6 +452,7 @@
 			files = (
 				3E53739B2D7F16330082BF62 /* SwiftUIIntrospect in Frameworks */,
 				3E5A35C12D75F05200069A95 /* Blackbird in Frameworks */,
+				3E351FE52ED4905F0074ADD8 /* FlowsLib in Frameworks */,
 				3E351FAC2ED479BC0074ADD8 /* RecordLib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -456,6 +464,7 @@
 				3E53739F2D7F163E0082BF62 /* SwiftUIIntrospect in Frameworks */,
 				3E5A35C52D75F06000069A95 /* Blackbird in Frameworks */,
 				3EE200DA2DF57F610066A87E /* RecordLib in Frameworks */,
+				3E351FE72ED4906D0074ADD8 /* FlowsLib in Frameworks */,
 				3E351FAA2ED474BF0074ADD8 /* RecordLib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -611,6 +620,7 @@
 		6111A1C826157D870046AAA9 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				3E3520392ED49DA30074ADD8 /* AppIdentityView.swift */,
 				6111A1CF26157D870046AAA9 /* AnimatableFontModifier.swift */,
 				6111A1C926157D870046AAA9 /* BubbleBackground.swift */,
 				6111A1CC26157D870046AAA9 /* BubbleView.swift */,
@@ -721,6 +731,7 @@
 				3E5A35C02D75F05200069A95 /* Blackbird */,
 				3E53739A2D7F16330082BF62 /* SwiftUIIntrospect */,
 				3E351FAB2ED479BC0074ADD8 /* RecordLib */,
+				3E351FE42ED4905F0074ADD8 /* FlowsLib */,
 			);
 			productName = "Smoothies iOS";
 			productReference = 610F550626158DDB001D3AA0 /* ThepiaApp iOS All.app */;
@@ -748,6 +759,7 @@
 				3E53739E2D7F163E0082BF62 /* SwiftUIIntrospect */,
 				3EE200D92DF57F610066A87E /* RecordLib */,
 				3E351FA92ED474BF0074ADD8 /* RecordLib */,
+				3E351FE62ED4906D0074ADD8 /* FlowsLib */,
 			);
 			productName = "Smoothies macOS";
 			productReference = 610F554926158DE2001D3AA0 /* ThepiaApp.app */;
@@ -837,6 +849,7 @@
 				3E5A35BD2D75EFE400069A95 /* XCRemoteSwiftPackageReference "Blackbird" */,
 				3E5373972D7F14D00082BF62 /* XCRemoteSwiftPackageReference "swiftui-introspect" */,
 				3E5373AB2D8605C10082BF62 /* XCLocalSwiftPackageReference "../libs/RecordLib" */,
+				3E351FE32ED4905F0074ADD8 /* XCLocalSwiftPackageReference "../libs/FlowsLib" */,
 			);
 			productRefGroup = 5E612405244E8B32004DDFF7 /* Products */;
 			projectDirPath = "";
@@ -959,6 +972,7 @@
 				3E5373712D7E2A740082BF62 /* EvidenceTypeMenu.swift in Sources */,
 				3E5373722D7E2A740082BF62 /* EvidenceTypeList.swift in Sources */,
 				3E5373732D7E2A740082BF62 /* EvidenceTypeView.swift in Sources */,
+				3E35203A2ED49DA30074ADD8 /* AppIdentityView.swift in Sources */,
 				610F54FB26158DDB001D3AA0 /* AnimatableFontModifier.swift in Sources */,
 				3EE200E42DF595650066A87E /* SettingsView.swift in Sources */,
 			);
@@ -990,6 +1004,7 @@
 				3EE0BDDA2D56599E00AD1085 /* Account.swift in Sources */,
 				3EE0BDCB2D5611D300AD1085 /* ThingsRow.swift in Sources */,
 				3E58BB212DB54E4B003B1592 /* ThingDetailPanel.swift in Sources */,
+				3E35203C2ED49DA30074ADD8 /* AppIdentityView.swift in Sources */,
 				3ECD50D72C9759EF00755E83 /* MLModel.swift in Sources */,
 				3E3B748F2DF23AB10094122F /* StrategistsRow.swift in Sources */,
 				3E3B74902DF23AB10094122F /* StrategistsList.swift in Sources */,
@@ -1044,6 +1059,7 @@
 				3E5373832D7E2A740082BF62 /* EvidenceTypeMenu.swift in Sources */,
 				3E5373842D7E2A740082BF62 /* EvidenceTypeList.swift in Sources */,
 				3E5373852D7E2A740082BF62 /* EvidenceTypeView.swift in Sources */,
+				3E35203B2ED49DA30074ADD8 /* AppIdentityView.swift in Sources */,
 				E0DC7FD027B72FDC00A6417B /* AnimatableFontModifier.swift in Sources */,
 				3EE200E32DF595650066A87E /* SettingsView.swift in Sources */,
 			);
@@ -1075,6 +1091,7 @@
 				3EE0BDDB2D56599E00AD1085 /* Account.swift in Sources */,
 				3EE0BDC72D5611D300AD1085 /* ThingsRow.swift in Sources */,
 				3E58BB202DB54E4B003B1592 /* ThingDetailPanel.swift in Sources */,
+				3E35203D2ED49DA30074ADD8 /* AppIdentityView.swift in Sources */,
 				3ECD50D62C9759EF00755E83 /* MLModel.swift in Sources */,
 				3E3B74972DF23AB10094122F /* StrategistsRow.swift in Sources */,
 				3E3B74982DF23AB10094122F /* StrategistsList.swift in Sources */,
@@ -1704,6 +1721,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
+		3E351FE32ED4905F0074ADD8 /* XCLocalSwiftPackageReference "../libs/FlowsLib" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../libs/FlowsLib;
+		};
 		3E5373AB2D8605C10082BF62 /* XCLocalSwiftPackageReference "../libs/RecordLib" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../libs/RecordLib;
@@ -1738,6 +1759,15 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3E5373AB2D8605C10082BF62 /* XCLocalSwiftPackageReference "../libs/RecordLib" */;
 			productName = RecordLib;
+		};
+		3E351FE42ED4905F0074ADD8 /* FlowsLib */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FlowsLib;
+		};
+		3E351FE62ED4906D0074ADD8 /* FlowsLib */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3E351FE32ED4905F0074ADD8 /* XCLocalSwiftPackageReference "../libs/FlowsLib" */;
+			productName = FlowsLib;
 		};
 		3E3B74872DF239D30094122F /* RecordLib */ = {
 			isa = XCSwiftPackageProductDependency;

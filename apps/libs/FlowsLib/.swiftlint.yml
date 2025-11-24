@@ -1,0 +1,178 @@
+# SwiftLint Configuration for RecordLib
+# Inherits from main project but with library-specific settings
+
+# Paths to include during linting
+included:
+  - Sources
+
+# Paths to exclude during linting
+excluded:
+  - .build
+  - build
+  - Tests # Exclude test files from some rules
+  - Package.swift
+
+# Rules to disable
+disabled_rules:
+  - trailing_whitespace # Can be handled by editor
+  - todo # Allow TODO comments during development
+  - line_length # Temporarily disable for existing code
+  - function_body_length # Temporarily disable for existing code
+  - type_body_length # Temporarily disable for existing code
+  - file_length # Temporarily disable for existing code
+  - force_unwrapping # Temporarily disable for existing code
+
+# Rules to enable that are opt-in
+opt_in_rules:
+  - array_init
+  - attributes
+  - closure_end_indentation
+  - closure_spacing
+  - collection_alignment
+  - contains_over_filter_count
+  - contains_over_filter_is_empty
+  - contains_over_first_not_nil
+  - contains_over_range_nil_comparison
+  - discouraged_object_literal
+  - empty_collection_literal
+  - empty_count
+  - empty_string
+  - enum_case_associated_values_count
+  - explicit_init
+  - extension_access_modifier
+  - fallthrough
+  - fatal_error_message
+  - first_where
+  - flatmap_over_map_reduce
+  - identical_operands
+  - joined_default_parameter
+  - last_where
+  - legacy_random
+  - literal_expression_end_indentation
+  - lower_acl_than_parent
+  - modifier_order
+  - number_separator
+  - object_literal
+  - operator_usage_whitespace
+  - overridden_super_call
+  - override_in_extension
+  - pattern_matching_keywords
+  - prefer_self_type_over_type_of_self
+  - private_action
+  - private_outlet
+  - prohibited_super_call
+  - reduce_into
+  - redundant_nil_coalescing
+  - redundant_type_annotation
+  - sorted_first_last
+  - static_operator
+  - strong_iboutlet
+  - toggle_bool
+  - unavailable_function
+  - unneeded_parentheses_in_closure_argument
+  - untyped_error_in_catch
+  - vertical_parameter_alignment_on_call
+  - vertical_whitespace_closing_braces
+  - vertical_whitespace_opening_braces
+  - yoda_condition
+
+# Rule configurations
+line_length:
+  warning: 120
+  error: 150
+  ignores_function_declarations: true
+  ignores_comments: true
+  ignores_urls: true
+
+function_body_length:
+  warning: 50
+  error: 100
+
+function_parameter_count:
+  warning: 6
+  error: 8
+
+type_body_length:
+  warning: 300
+  error: 400
+
+file_length:
+  warning: 500
+  error: 1000
+  ignore_comment_only_lines: true
+
+cyclomatic_complexity:
+  warning: 10
+  error: 20
+
+nesting:
+  type_level:
+    warning: 3
+    error: 6
+  statement_level:
+    warning: 5
+    error: 10
+
+identifier_name:
+  min_length:
+    warning: 2
+    error: 1
+  max_length:
+    warning: 40
+    error: 60
+  excluded:
+    - id
+    - db
+    - ui
+    - x
+    - y
+    - z
+
+type_name:
+  min_length:
+    warning: 3
+    error: 2
+  max_length:
+    warning: 40
+    error: 50
+
+large_tuple:
+  warning: 3
+  error: 4
+
+# Indentation configuration - RecordLib uses 2-space indentation consistently
+indentation: 2
+
+# Custom rules for library code
+custom_rules:
+  # Ensure public APIs are documented
+  public_api_documentation:
+    name: "Public API Documentation"
+    regex: "^\\s*public\\s+(class|struct|enum|protocol|func|var|let)(?!.*//)"
+    message: "Public APIs should be documented"
+    severity: warning
+
+  # Discourage force unwrapping in library code
+  force_unwrap_library:
+    name: "Force Unwrap in Library"
+    regex: "\\!(?![\\s]*//)"
+    match_kinds:
+      - identifier
+    message: "Avoid force unwrapping in library code. Use proper error handling"
+    severity: error
+
+  # Encourage proper error handling
+  proper_error_handling:
+    name: "Proper Error Handling"
+    regex: "try\\!"
+    message: "Use proper error handling instead of try!"
+    severity: warning
+
+# Reporter type
+reporter: "xcode"
+
+# Analyzer rules (requires SwiftLint 0.50.0+)
+analyzer_rules:
+  - explicit_self
+  - unused_declaration
+  - unused_import
