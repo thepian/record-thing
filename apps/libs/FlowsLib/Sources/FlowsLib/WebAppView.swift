@@ -66,6 +66,11 @@ public struct WebAppView: View {
             self.keyboardHeight = 0
         }
     }
+    .onReceive(NotificationCenter.default.publisher(for: .WebAppStateUpdated)) { notification in
+        if let dict = notification.userInfo as? [String: Any] {
+            state.handleMessage(dict)
+        }
+    }
     .onChange(of: state.readiness) { newValue in
         if newValue == .completed {
             dismiss()
@@ -94,13 +99,6 @@ public struct WebAppView: View {
   var webView: some View {
       // Create a mutable copy of config to add the handler
       var viewConfig = config
-      
-      // Add the 'thepia' message handler
-      viewConfig.messageHandlers["thepia"] = { message in
-          if let dict = message as? [String: Any] {
-              state.handleMessage(dict)
-          }
-      }
       
       let cornerRadius: CGFloat = state.pageHeight == .full ? 0 : 24
       let shape = UnevenRoundedRectangle(topLeadingRadius: cornerRadius, bottomLeadingRadius: 0, bottomTrailingRadius: 0, topTrailingRadius: cornerRadius)
@@ -151,7 +149,18 @@ struct WebAppView_Previews: PreviewProvider {
             .presentationBackground(.clear)
             .modifier(PreviewBackground())
             .previewDisplayName("Ready State (Static)")
-        
+
+        WebAppView(config: WebAppConfig()
+            .startURL(URL(string: "https://dev.thepia.net:5173"))
+            .backgroundMaterial(.clear)
+            .initialPageHeight(.full),
+            initialReadiness: .ready
+        )
+            .presentationBackground(.clear)
+            .modifier(PreviewBackground())
+            .previewDisplayName("dev.thepia.net")
+
+      
         WebAppView(config: WebAppConfig()
             .startURL(URL(string: "https://dev.thepia.net:5173/setup"))
             .initialPageHeight(.full),

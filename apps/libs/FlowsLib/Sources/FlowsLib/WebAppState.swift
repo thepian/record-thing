@@ -41,35 +41,46 @@ public class WebAppState: ObservableObject {
     
     public func handleMessage(_ message: [String: Any]) {
         DispatchQueue.main.async {
-            if let typeString = message["type"] as? String,
-               let readiness = WebAppReadiness(rawValue: typeString) {
+            // Support both flat message and nested 'payload'
+            let data = message["payload"] as? [String: Any] ?? message
+            
+            if let readinessString = data["readiness"] as? String,
+               let readiness = WebAppReadiness(rawValue: readinessString) {
+                self.readiness = readiness
+            } else if let typeString = data["type"] as? String, 
+                      let readiness = WebAppReadiness(rawValue: typeString) {
+                // Legacy support: 'type' used to be used for readiness
                 self.readiness = readiness
             }
             
-            if let heightString = message["pageHeight"] as? String,
+            if let heightString = data["pageHeight"] as? String,
                let height = WebAppPageHeight(rawValue: heightString) {
                 self.pageHeight = height
             }
             
-            if let materialString = message["backgroundMaterial"] as? String,
+            if let materialString = data["backgroundMaterial"] as? String,
                let material = WebAppBackgroundMaterial(rawValue: materialString) {
                 self.backgroundMaterial = material
             }
             
-            if let step = message["currentStep"] as? String {
+            if let step = data["currentStep"] as? String {
                 self.currentStep = step
             }
             
-            if let steps = message["stepList"] as? [String] {
+            if let steps = data["stepList"] as? [String] {
                 self.stepList = steps
             }
             
-            if let backName = message["backName"] as? String {
+            if let backName = data["backName"] as? String {
                 self.hasBackWithName = backName
-            } else if message["backName"] != nil {
+            } else if data["backName"] != nil {
                 // Explicit null/nil means clear it
                 self.hasBackWithName = nil
             }
         }
     }
+}
+
+public extension Notification.Name {
+    static let WebAppStateUpdated = Notification.Name("WebAppStateUpdated")
 }

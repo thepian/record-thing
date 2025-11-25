@@ -29,10 +29,15 @@ public class FlowsBridgeViewControllerMac: NSViewController, WKNavigationDelegat
         contentController.add(self, name: "bridge")
         
         // Register dynamic handlers
-        if let handlers = config?.messageHandlers {
-            for (name, handler) in handlers {
-                contentController.add(ClosureScriptHandler(handler: handler), name: name)
-            }
+        var handlers = config?.messageHandlers ?? [:]
+        
+        // Default/Mixin: If 'thepia' handler is not provided but authHandler is, add default ThepiaMessageHandler
+        if handlers["thepia"] == nil, let authHandler = config?.authHandler {
+            handlers["thepia"] = ThepiaMessageHandler(authHandler: authHandler)
+        }
+        
+        for (name, handler) in handlers {
+            contentController.add(handler, name: name)
         }
         
         // Add user scripts
@@ -48,9 +53,6 @@ public class FlowsBridgeViewControllerMac: NSViewController, WKNavigationDelegat
         // Setup data store
         // Use default persistent data store
         let wkDataStore = WKWebsiteDataStore.default()
-        
-        // Clear cache for specific domains to ensure fresh data
-        WebContentManager.shared.clearWebViewCache(for: ["api.thepia.com"])
         
         // Seed cookies from shared storage
         WebContentManager.shared.seedCookies()
@@ -77,7 +79,8 @@ public class FlowsBridgeViewControllerMac: NSViewController, WKNavigationDelegat
             if startURL.isFileURL {
                 webView.loadFileURL(startURL, allowingReadAccessTo: startURL.deletingLastPathComponent())
             } else {
-                webView.load(URLRequest(url: startURL))
+                // Force reload from server, ignoring local cache
+                webView.load(URLRequest(url: startURL, cachePolicy: .reloadRevalidatingCacheData, timeoutInterval: 60))
             }
         } else {
             // Check if we need to seed from bundle

@@ -3,10 +3,11 @@ import WebKit
 
 public struct WebAppConfig {
     public var startURL: URL?
-    public var messageHandlers: [String: (Any) -> Void]
+    public var messageHandlers: [String: WKScriptMessageHandler]
     public var userScripts: [WKUserScript]
     public var initialPageHeight: WebAppPageHeight
     public var backgroundMaterial: WebAppBackgroundMaterial
+    public var authHandler: FlowsAuthHandler?
     
     public static let defaultCSSScript = WKUserScript(source: """
         document.documentElement.style.setProperty('--app-bg', 'transparent');
@@ -19,15 +20,17 @@ public struct WebAppConfig {
     """, injectionTime: .atDocumentEnd, forMainFrameOnly: false)
     
     public init(startURL: URL? = nil, 
-                messageHandlers: [String: (Any) -> Void] = [:], 
+                messageHandlers: [String: WKScriptMessageHandler] = [:],
                 userScripts: [WKUserScript] = [WebAppConfig.defaultCSSScript],
                 initialPageHeight: WebAppPageHeight = .sheet,
-                backgroundMaterial: WebAppBackgroundMaterial = .thinMaterial) {
+                backgroundMaterial: WebAppBackgroundMaterial = .thinMaterial,
+                authHandler: FlowsAuthHandler? = nil) {
         self.startURL = startURL
         self.messageHandlers = messageHandlers
         self.userScripts = userScripts
         self.initialPageHeight = initialPageHeight
         self.backgroundMaterial = backgroundMaterial
+        self.authHandler = authHandler
     }
     
     // MARK: - Builder Pattern
@@ -38,11 +41,7 @@ public struct WebAppConfig {
         return copy
     }
     
-    public func messageHandler(_ name: String, handler: @escaping (Any) -> Void) -> WebAppConfig {
-        var copy = self
-        copy.messageHandlers[name] = handler
-        return copy
-    }
+
     
     public func userScript(_ script: WKUserScript) -> WebAppConfig {
         var copy = self
@@ -61,6 +60,30 @@ public struct WebAppConfig {
         copy.backgroundMaterial = material
         return copy
     }
+    
+    public func messageHandler(_ name: String, handler: @escaping (Any) -> Void) -> WebAppConfig {
+        var copy = self
+        copy.messageHandlers[name] = ClosureScriptHandler(handler: handler)
+        return copy
+    }
+    
+    public func messageHandler(_ name: String, handler: WKScriptMessageHandler) -> WebAppConfig {
+        var copy = self
+        copy.messageHandlers[name] = handler
+        return copy
+    }
+    
+    public func authHandler(_ handler: FlowsAuthHandler?) -> WebAppConfig {
+        var copy = self
+        copy.authHandler = handler
+        return copy
+    }
+}
+
+// MARK: - Script Message Handler Wrapper
+
+public protocol WebAppMessageHandler: WKScriptMessageHandler {
+    var handlerName: String { get }
 }
 
 public class ClosureScriptHandler: NSObject, WKScriptMessageHandler {

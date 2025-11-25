@@ -2,16 +2,22 @@ import Foundation
 import FlowsLib
 import RecordLib
 import Blackbird
+import os
 
 public class NativeFlowsAuthHandler: FlowsAuthHandler {
     private var db: Blackbird.Database? {
         return AppDatasource.shared.db
     }
     
+    private let logger = Logger(subsystem: "com.record-thing", category: "auth")
+    
     public init() {}
     
     public func saveSession(_ session: [String: Any]) async throws {
-        guard let db = db else { throw NSError(domain: "NativeFlowsAuthHandler", code: 1, userInfo: [NSLocalizedDescriptionKey: "Database not initialized"]) }
+        guard let db = db else { 
+            logger.error("saveSession: Database not initialized")
+            throw NSError(domain: "NativeFlowsAuthHandler", code: 1, userInfo: [NSLocalizedDescriptionKey: "Database not initialized"]) 
+        }
         
         // Extract fields
         guard let userId = session["userId"] as? String,
@@ -36,6 +42,7 @@ public class NativeFlowsAuthHandler: FlowsAuthHandler {
         )
         
         try await authSession.write(to: db)
+        logger.info("Saved session for user: \(userId, privacy: .public)")
         
         // Also update user's lastUsed if user data is present in session (implied by plan)
         // Or just ensure user exists? The plan says "Update users table - persistent profile"
@@ -52,8 +59,11 @@ public class NativeFlowsAuthHandler: FlowsAuthHandler {
         let sessions = try await FlowsAuthSession.read(from: db)
         
         guard let session = sessions.sorted(by: { $0.savedAt > $1.savedAt }).first else {
+            logger.debug("getSession: No session found")
             return nil
         }
+        
+        logger.debug("getSession: Found session for user: \(session.userId, privacy: .public)")
         
         var dict: [String: Any] = [
             "userId": session.userId,
@@ -78,7 +88,9 @@ public class NativeFlowsAuthHandler: FlowsAuthHandler {
         // Delete all sessions
         // Blackbird doesn't have "deleteAll" on model?
         // Use raw query
+        // Use raw query
         try await db.execute("DELETE FROM FlowsAuthSession")
+        logger.info("Cleared all sessions")
     }
     
     public func saveUser(_ user: [String: Any]) async throws {
@@ -112,14 +124,18 @@ public class NativeFlowsAuthHandler: FlowsAuthHandler {
         )
         
         try await flowsUser.write(to: db)
+        logger.info("Saved user: \(userId, privacy: .public)")
     }
     
     public func getUser(_ userId: String) async throws -> [String: Any]? {
         guard let db = db else { throw NSError(domain: "NativeFlowsAuthHandler", code: 1, userInfo: [NSLocalizedDescriptionKey: "Database not initialized"]) }
         
         guard let user = try await FlowsUser.read(from: db, id: userId) else {
+            logger.debug("getUser: User not found: \(userId, privacy: .public)")
             return nil
         }
+        
+        logger.debug("getUser: Found user: \(userId, privacy: .public)")
         
         var dict: [String: Any] = [
             "userId": user.userId,
@@ -152,6 +168,7 @@ public class NativeFlowsAuthHandler: FlowsAuthHandler {
         }
         
         try await user.delete(from: db)
+        logger.info("Cleared user: \(userId, privacy: .public)")
     }
     
     public func updateUserMetadata(userId: String, metadata: [String: Any]) async throws {
@@ -183,6 +200,7 @@ public class NativeFlowsAuthHandler: FlowsAuthHandler {
         user.lastUsed = ISO8601DateFormatter().string(from: Date())
         
         try await user.write(to: db)
+        logger.info("Updated metadata for user: \(userId, privacy: .public)")
     }
     
     public func patchMetadata(userId: String, patch: [String: Any], appCode: String, token: String) async throws -> [String: Any] {
@@ -190,6 +208,9 @@ public class NativeFlowsAuthHandler: FlowsAuthHandler {
         // For now, just apply the patch locally and return it, mimicking success
         // In a real implementation, we would call the API, get the result, and then update DB.
         
+        // In a real implementation, we would call the API, get the result, and then update DB.
+        
+        logger.info("Patching metadata for user: \(userId, privacy: .public)")
         try await updateUserMetadata(userId: userId, metadata: patch)
         return patch
     }

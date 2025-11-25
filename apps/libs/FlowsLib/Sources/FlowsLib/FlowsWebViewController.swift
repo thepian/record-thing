@@ -71,25 +71,31 @@ public class FlowsWebViewController: UIViewController {
         
         // Load some safe, simple content for the preview
         // Load content from config if available
+        // TODO add offline-cache.zip support with feature flag
         if let startURL = config?.startURL {
             print("FlowsWebViewController: Loading URL: \(startURL)")
             if startURL.isFileURL {
                 webView.loadFileURL(startURL, allowingReadAccessTo: startURL.deletingLastPathComponent())
             } else {
-                webView.load(URLRequest(url: startURL))
+                webView.load(URLRequest(url: startURL, cachePolicy: .reloadRevalidatingCacheData, timeoutInterval: 60))
             }
-        } else if let url = URL(string: "https://www.apple.com/feed/") {
-             print("FlowsWebViewController: Loading fallback URL")
+        } else if let url = URL(string: "https://app.thepia.net") {
+             print("FlowsWebViewController: default app.thepia.net")
              webView.load(URLRequest(url: url))
         } else {
              print("FlowsWebViewController: No URL to load")
         }
         
-        // Register message handlers
-        if let handlers = config?.messageHandlers {
-            for (name, handler) in handlers {
-                webView.configuration.userContentController.add(ClosureScriptHandler(handler: handler), name: name)
-            }
+        // Register message handlers from config
+        var handlers = config?.messageHandlers ?? [:]
+        
+        // Default/Mixin: If 'thepia' handler is not provided but authHandler is, add default ThepiaMessageHandler
+        if handlers["thepia"] == nil, let authHandler = config?.authHandler {
+            handlers["thepia"] = ThepiaMessageHandler(authHandler: authHandler)
+        }
+        
+        for (name, handler) in handlers {
+            webView.configuration.userContentController.add(handler, name: name)
         }
         
         // Add user scripts

@@ -51,6 +51,7 @@ public class FlowsBridgeViewController: CAPBridgeViewController {
             }
         } else {
             // Check if we need to seed from bundle
+          // TODO add offline-cache.zip support with feature flag
 //            if !WebContentManager.shared.hasContent() {
 //                _ = WebContentManager.shared.seedFromBundle()
 //            }
@@ -82,9 +83,6 @@ public class FlowsBridgeViewController: CAPBridgeViewController {
         // Use default persistent data store
         let wkDataStore = WKWebsiteDataStore.default()
         
-        // Clear cache for specific domains to ensure fresh data
-        WebContentManager.shared.clearWebViewCache(for: ["api.thepia.com"])
-        
         // Seed cookies from shared storage
         WebContentManager.shared.seedCookies()
         
@@ -94,10 +92,15 @@ public class FlowsBridgeViewController: CAPBridgeViewController {
       }
       
       // Register dynamic message handlers
-      if let handlers = config?.messageHandlers {
-          for (name, handler) in handlers {
-              configuration.userContentController.add(ClosureScriptHandler(handler: handler), name: name)
-          }
+      var handlers = config?.messageHandlers ?? [:]
+      
+      // Default/Mixin: If 'thepia' handler is not provided but authHandler is, add default ThepiaMessageHandler
+      if handlers["thepia"] == nil, let authHandler = config?.authHandler {
+          handlers["thepia"] = ThepiaMessageHandler(authHandler: authHandler)
+      }
+      
+      for (name, handler) in handlers {
+          configuration.userContentController.add(handler, name: name)
       }
       
       // Add user scripts

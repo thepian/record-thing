@@ -18,6 +18,14 @@
 		3E35203B2ED49DA30074ADD8 /* AppIdentityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E3520392ED49DA30074ADD8 /* AppIdentityView.swift */; };
 		3E35203C2ED49DA30074ADD8 /* AppIdentityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E3520392ED49DA30074ADD8 /* AppIdentityView.swift */; };
 		3E35203D2ED49DA30074ADD8 /* AppIdentityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E3520392ED49DA30074ADD8 /* AppIdentityView.swift */; };
+		3E3520692ED5F0560074ADD8 /* NativeFlowsAuthHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E3520622ED5F0560074ADD8 /* NativeFlowsAuthHandler.swift */; };
+		3E35206F2ED5F0560074ADD8 /* NativeFlowsAuthHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E3520622ED5F0560074ADD8 /* NativeFlowsAuthHandler.swift */; };
+		3E3520752ED5F0560074ADD8 /* NativeFlowsAuthHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E3520622ED5F0560074ADD8 /* NativeFlowsAuthHandler.swift */; };
+		3E35207C2ED5F0560074ADD8 /* NativeFlowsAuthHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E3520622ED5F0560074ADD8 /* NativeFlowsAuthHandler.swift */; };
+		3E3520992ED7234E0074ADD8 /* FeatureFlagService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E3520982ED7234E0074ADD8 /* FeatureFlagService.swift */; };
+		3E35209A2ED7234E0074ADD8 /* FeatureFlagService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E3520982ED7234E0074ADD8 /* FeatureFlagService.swift */; };
+		3E35209B2ED7234E0074ADD8 /* FeatureFlagService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E3520982ED7234E0074ADD8 /* FeatureFlagService.swift */; };
+		3E35209C2ED7234E0074ADD8 /* FeatureFlagService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E3520982ED7234E0074ADD8 /* FeatureFlagService.swift */; };
 		3E3B747D2DF2389E0094122F /* ShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 3E3B74732DF2389D0094122F /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		3E3B74882DF239D30094122F /* RecordLib in Frameworks */ = {isa = PBXBuildFile; productRef = 3E3B74872DF239D30094122F /* RecordLib */; };
 		3E3B748A2DF239DC0094122F /* Blackbird in Frameworks */ = {isa = PBXBuildFile; productRef = 3E3B74892DF239DC0094122F /* Blackbird */; };
@@ -363,6 +371,8 @@
 /* Begin PBXFileReference section */
 		33BFC6A1DCA101BFABE069E5 /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		3E3520392ED49DA30074ADD8 /* AppIdentityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIdentityView.swift; sourceTree = "<group>"; };
+		3E3520622ED5F0560074ADD8 /* NativeFlowsAuthHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeFlowsAuthHandler.swift; sourceTree = "<group>"; };
+		3E3520982ED7234E0074ADD8 /* FeatureFlagService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlagService.swift; sourceTree = "<group>"; };
 		3E3B74732DF2389D0094122F /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		3E3B748B2DF23AB10094122F /* StrategistsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrategistsList.swift; sourceTree = "<group>"; };
 		3E3B748C2DF23AB10094122F /* StrategistsMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrategistsMenu.swift; sourceTree = "<group>"; };
@@ -501,6 +511,14 @@
 			path = LICENSE;
 			sourceTree = "<group>";
 		};
+		3E3520642ED5F0560074ADD8 /* Database */ = {
+			isa = PBXGroup;
+			children = (
+				3E3520622ED5F0560074ADD8 /* NativeFlowsAuthHandler.swift */,
+			);
+			path = Database;
+			sourceTree = "<group>";
+		};
 		3E53736A2D7E2A740082BF62 /* EvidenceType */ = {
 			isa = PBXGroup;
 			children = (
@@ -545,6 +563,7 @@
 		3EE200E02DF595210066A87E /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				3E3520982ED7234E0074ADD8 /* FeatureFlagService.swift */,
 				3EE200E12DF595600066A87E /* SettingsView.swift */,
 			);
 			path = Settings;
@@ -571,6 +590,7 @@
 		5E6123FC244E8B32004DDFF7 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				3E3520642ED5F0560074ADD8 /* Database */,
 				3EE200E02DF595210066A87E /* Settings */,
 				3E53735C2D7E2A490082BF62 /* AppDatasource.swift */,
 				5E6123FD244E8B32004DDFF7 /* ThepiaApp.swift */,
@@ -944,6 +964,8 @@
 				610F54D626158DDB001D3AA0 /* ThepiaApp.swift in Sources */,
 				610F54D926158DDB001D3AA0 /* StepperView.swift in Sources */,
 				3EE0BDC82D5611D300AD1085 /* ThingsView.swift in Sources */,
+				3E3520752ED5F0560074ADD8 /* NativeFlowsAuthHandler.swift in Sources */,
+				3E35209B2ED7234E0074ADD8 /* FeatureFlagService.swift in Sources */,
 				3E3B74932DF23AB10094122F /* StrategistsRow.swift in Sources */,
 				3E3B74942DF23AB10094122F /* StrategistsList.swift in Sources */,
 				3E3B74952DF23AB10094122F /* StrategistsView.swift in Sources */,
@@ -1002,6 +1024,7 @@
 				3EE0BDCA2D5611D300AD1085 /* ThingsView.swift in Sources */,
 				3E88536B2DAE917900F97843 /* ThingsGridView.swift in Sources */,
 				3EE0BDDA2D56599E00AD1085 /* Account.swift in Sources */,
+				3E3520992ED7234E0074ADD8 /* FeatureFlagService.swift in Sources */,
 				3EE0BDCB2D5611D300AD1085 /* ThingsRow.swift in Sources */,
 				3E58BB212DB54E4B003B1592 /* ThingDetailPanel.swift in Sources */,
 				3E35203C2ED49DA30074ADD8 /* AppIdentityView.swift in Sources */,
@@ -1012,6 +1035,7 @@
 				3E3B74922DF23AB10094122F /* StrategistsMenu.swift in Sources */,
 				3ED6C4942D59545700FF632C /* RequestsView.swift in Sources */,
 				610F552D26158DE2001D3AA0 /* BubbleView.swift in Sources */,
+				3E35206F2ED5F0560074ADD8 /* NativeFlowsAuthHandler.swift in Sources */,
 				610F552F26158DE2001D3AA0 /* BubbleBackground.swift in Sources */,
 				61A8CB8C26166F2A002845E4 /* Model.swift in Sources */,
 				3ED6C4992D59553F00FF632C /* RequestsMenu.swift in Sources */,
@@ -1031,6 +1055,8 @@
 				E0DC7FAA27B72FDC00A6417B /* ThepiaApp.swift in Sources */,
 				E0DC7FAD27B72FDC00A6417B /* StepperView.swift in Sources */,
 				3EE0BDC42D5611D300AD1085 /* ThingsView.swift in Sources */,
+				3E3520692ED5F0560074ADD8 /* NativeFlowsAuthHandler.swift in Sources */,
+				3E35209C2ED7234E0074ADD8 /* FeatureFlagService.swift in Sources */,
 				3E3B749B2DF23AB10094122F /* StrategistsRow.swift in Sources */,
 				3E3B749C2DF23AB10094122F /* StrategistsList.swift in Sources */,
 				3E3B749D2DF23AB10094122F /* StrategistsView.swift in Sources */,
@@ -1089,6 +1115,7 @@
 				3EE0BDC62D5611D300AD1085 /* ThingsView.swift in Sources */,
 				3E88536C2DAE917900F97843 /* ThingsGridView.swift in Sources */,
 				3EE0BDDB2D56599E00AD1085 /* Account.swift in Sources */,
+				3E35209A2ED7234E0074ADD8 /* FeatureFlagService.swift in Sources */,
 				3EE0BDC72D5611D300AD1085 /* ThingsRow.swift in Sources */,
 				3E58BB202DB54E4B003B1592 /* ThingDetailPanel.swift in Sources */,
 				3E35203D2ED49DA30074ADD8 /* AppIdentityView.swift in Sources */,
@@ -1099,6 +1126,7 @@
 				3E3B749A2DF23AB10094122F /* StrategistsMenu.swift in Sources */,
 				3ED6C4932D59545700FF632C /* RequestsView.swift in Sources */,
 				E0DC800A27B7307600A6417B /* BubbleView.swift in Sources */,
+				3E35207C2ED5F0560074ADD8 /* NativeFlowsAuthHandler.swift in Sources */,
 				E0DC800C27B7307600A6417B /* BubbleBackground.swift in Sources */,
 				E0DC800D27B7307600A6417B /* Model.swift in Sources */,
 				3ED6C4982D59553F00FF632C /* RequestsMenu.swift in Sources */,
