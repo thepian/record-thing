@@ -601,9 +601,9 @@ struct TranslationsManagementView: View {
   private var statsHeader: some View {
     VStack(spacing: 12) {
       HStack(spacing: 20) {
-        StatCard(title: "Current DB", value: "\(stats.dbCount)", color: .blue)
-        StatCard(title: "Default DB", value: "\(stats.defaultDbCount)", color: .green)
-        StatCard(title: "Hardcoded", value: "\(stats.hardcodedCount)", color: .orange)
+        SettingsStatCard(title: "Current DB", value: "\(stats.dbCount)", color: .blue)
+        SettingsStatCard(title: "Default DB", value: "\(stats.defaultDbCount)", color: .green)
+        SettingsStatCard(title: "Hardcoded", value: "\(stats.hardcodedCount)", color: .orange)
       }
 
       HStack {
@@ -800,7 +800,7 @@ struct TranslationRowView: View {
   }
 }
 
-struct StatCard: View {
+struct SettingsStatCard: View {
   let title: String
   let value: String
   let color: Color

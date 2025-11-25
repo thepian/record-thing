@@ -1,6 +1,6 @@
 //
 //  DatabaseErrorDashboard.swift
-//  ThepiaApp
+//  RecordLib
 //
 //  Created by AI Assistant on 06.06.2025.
 //  Copyright © 2025 Thepia. All rights reserved.
@@ -218,10 +218,10 @@ public struct DatabaseErrorDashboard: View {
       }
 
       LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 8) {
-        StatCard(title: "Activities", value: "\(stats.totalActivities)", color: .blue)
-        StatCard(title: "Errors", value: "\(stats.errorCount)", color: .red)
-        StatCard(title: "Connections", value: "\(stats.connectionCount)", color: .green)
-        StatCard(title: "Queries", value: "\(stats.queryCount)", color: .purple)
+        DashboardStatCard(title: "Activities", value: "\(stats.totalActivities)", color: .blue)
+        DashboardStatCard(title: "Errors", value: "\(stats.errorCount)", color: .red)
+        DashboardStatCard(title: "Connections", value: "\(stats.connectionCount)", color: .green)
+        DashboardStatCard(title: "Queries", value: "\(stats.queryCount)", color: .purple)
       }
 
       if let uptime = stats.formattedUptime {
@@ -420,7 +420,7 @@ enum DashboardTab: CaseIterable {
   }
 }
 
-struct StatCard: View {
+struct DashboardStatCard: View {
   let title: String
   let value: String
   let color: Color

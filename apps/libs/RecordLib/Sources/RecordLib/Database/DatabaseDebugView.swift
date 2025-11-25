@@ -381,7 +381,7 @@ public struct DatabaseDebugView: View {
 
 // MARK: - Supporting Views
 
-struct StatisticRow: View {
+private struct StatisticRow: View {
   let title: String
   let value: String
   let icon: String
@@ -411,7 +411,7 @@ struct StatisticRow: View {
   }
 }
 
-struct DatabaseActionButton: View {
+private struct DatabaseActionButton: View {
   let title: String
   let subtitle: String
   let icon: String
@@ -479,7 +479,7 @@ private struct DatabaseErrorDetailsView: View {
         noErrorsView
       } else {
         ForEach(Array(recentErrors.enumerated()), id: \.offset) { index, activity in
-          ErrorRowView(activity: activity, index: index)
+          DebugErrorRowView(activity: activity, index: index)
         }
       }
     }
@@ -505,7 +505,7 @@ private struct DatabaseErrorDetailsView: View {
   }
 }
 
-private struct ErrorRowView: View {
+private struct DebugErrorRowView: View {
   let activity: DatabaseActivity
   let index: Int
 

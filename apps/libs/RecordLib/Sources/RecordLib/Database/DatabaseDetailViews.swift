@@ -1,6 +1,6 @@
 //
 //  DatabaseDetailViews.swift
-//  ThepiaApp
+//  RecordLib
 //
 //  Created by AI Assistant on 06.06.2025.
 //  Copyright © 2025 Thepia. All rights reserved.
@@ -397,7 +397,7 @@ struct TroubleshootingTip: View {
 
 // MARK: - Extensions for Identifiable
 
-extension DatabaseActivity: Identifiable {}
+//extension DatabaseActivity: Identifiable {}
 extension DatabaseError: Identifiable {
     public var id: String {
         return "\(timestamp.timeIntervalSince1970)-\(error.localizedDescription.hashValue)"
