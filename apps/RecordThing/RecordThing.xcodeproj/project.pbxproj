@@ -79,10 +79,10 @@
 		3E78498F2DA7D0270030C91D /* AppSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E78498D2DA7D0270030C91D /* AppSplitView.swift */; };
 		3E7849902DA7D0270030C91D /* AppSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E78498D2DA7D0270030C91D /* AppSplitView.swift */; };
 		3E7849912DA7D0270030C91D /* AppSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E78498D2DA7D0270030C91D /* AppSplitView.swift */; };
-		3E8853662DAD6C1600F97843 /* default-record-thing.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 3E8853652DAD6C1600F97843 /* default-record-thing.sqlite */; };
-		3E8853672DAD6C1600F97843 /* default-record-thing.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 3E8853652DAD6C1600F97843 /* default-record-thing.sqlite */; };
-		3E8853682DAD6C1600F97843 /* default-record-thing.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 3E8853652DAD6C1600F97843 /* default-record-thing.sqlite */; };
-		3E8853692DAD6C1600F97843 /* default-record-thing.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 3E8853652DAD6C1600F97843 /* default-record-thing.sqlite */; };
+		3E8853662DAD6C1600F97843 /* default-db.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 3E8853652DAD6C1600F97843 /* default-db.sqlite */; };
+		3E8853672DAD6C1600F97843 /* default-db.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 3E8853652DAD6C1600F97843 /* default-db.sqlite */; };
+		3E8853682DAD6C1600F97843 /* default-db.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 3E8853652DAD6C1600F97843 /* default-db.sqlite */; };
+		3E8853692DAD6C1600F97843 /* default-db.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 3E8853652DAD6C1600F97843 /* default-db.sqlite */; };
 		3E88536B2DAE917900F97843 /* ThingsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E88536A2DAE917900F97843 /* ThingsGridView.swift */; };
 		3E88536C2DAE917900F97843 /* ThingsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E88536A2DAE917900F97843 /* ThingsGridView.swift */; };
 		3E88536D2DAE917900F97843 /* ThingsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E88536A2DAE917900F97843 /* ThingsGridView.swift */; };
@@ -378,7 +378,7 @@
 		3E5373A02D7F295E0082BF62 /* BrowseTabNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowseTabNavigation.swift; sourceTree = "<group>"; };
 		3E58BB1F2DB54E4B003B1592 /* ThingDetailPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThingDetailPanel.swift; sourceTree = "<group>"; };
 		3E78498D2DA7D0270030C91D /* AppSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSplitView.swift; sourceTree = "<group>"; };
-		3E8853652DAD6C1600F97843 /* default-record-thing.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = "default-record-thing.sqlite"; sourceTree = "<group>"; };
+		3E8853652DAD6C1600F97843 /* default-db.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = "default-db.sqlite"; sourceTree = "<group>"; };
 		3E88536A2DAE917900F97843 /* ThingsGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThingsGridView.swift; sourceTree = "<group>"; };
 		3ECA68472D96B0860003CB58 /* NavigationDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationDestination.swift; sourceTree = "<group>"; };
 		3ECD50AD2C96E3E000755E83 /* RecordLib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RecordLib; path = ../libs/RecordLib; sourceTree = "<group>"; };
@@ -669,7 +669,7 @@
 		A3C268C0262FDAD50093B9DF /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				3E8853652DAD6C1600F97843 /* default-record-thing.sqlite */,
+				3E8853652DAD6C1600F97843 /* default-db.sqlite */,
 				A3C268F5262FE0030093B9DF /* Localizable.strings */,
 				A3C2690F262FE1020093B9DF /* InfoPlist.strings */,
 				A3C268FE262FE0060093B9DF /* Localizable.stringsdict */,
@@ -883,7 +883,7 @@
 				A3C26908262FE1020093B9DF /* InfoPlist.strings in Resources */,
 				610F54FE26158DDB001D3AA0 /* Assets.xcassets in Resources */,
 				A3C268F7262FE0060093B9DF /* Localizable.stringsdict in Resources */,
-				3E8853662DAD6C1600F97843 /* default-record-thing.sqlite in Resources */,
+				3E8853662DAD6C1600F97843 /* default-db.sqlite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -896,7 +896,7 @@
 				A3C2690B262FE1020093B9DF /* InfoPlist.strings in Resources */,
 				610F554126158DE2001D3AA0 /* Assets.xcassets in Resources */,
 				A3C268FA262FE0060093B9DF /* Localizable.stringsdict in Resources */,
-				3E8853682DAD6C1600F97843 /* default-record-thing.sqlite in Resources */,
+				3E8853682DAD6C1600F97843 /* default-db.sqlite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -909,7 +909,7 @@
 				E0DC7FD527B72FDC00A6417B /* InfoPlist.strings in Resources */,
 				E0DC7FD727B72FDC00A6417B /* Assets.xcassets in Resources */,
 				E0DC7FD927B72FDC00A6417B /* Localizable.stringsdict in Resources */,
-				3E8853692DAD6C1600F97843 /* default-record-thing.sqlite in Resources */,
+				3E8853692DAD6C1600F97843 /* default-db.sqlite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -922,7 +922,7 @@
 				E0DC802027B7307600A6417B /* InfoPlist.strings in Resources */,
 				E0DC802227B7307600A6417B /* Assets.xcassets in Resources */,
 				E0DC802427B7307600A6417B /* Localizable.stringsdict in Resources */,
-				3E8853672DAD6C1600F97843 /* default-record-thing.sqlite in Resources */,
+				3E8853672DAD6C1600F97843 /* default-db.sqlite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

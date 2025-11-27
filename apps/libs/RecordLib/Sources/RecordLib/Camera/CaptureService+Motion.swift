@@ -15,7 +15,39 @@ extension CaptureService {
     
     // MARK: - Motion Detection
     
-    func setupMotionDetection() {
+    /// Start motion detection monitoring
+    /// Should be called when camera preview becomes visible
+    public func startMotionDetection() {
+        logger.debug("Starting motion detection")
+        setupMotionDetection()
+    }
+    
+    /// Stop motion detection monitoring
+    /// Should be called when camera preview is hidden
+    public func stopMotionDetection() {
+        logger.debug("Stopping motion detection")
+        
+        // Invalidate motion timeout timer
+        motionTimer?.invalidate()
+        motionTimer = nil
+        
+        #if os(iOS)
+        // Stop accelerometer updates
+        if motionManager.isAccelerometerActive {
+            motionManager.stopAccelerometerUpdates()
+        }
+        #else
+        // Remove mouse monitor
+        if let monitor = mouseMonitor {
+            NSEvent.removeMonitor(monitor)
+            mouseMonitor = nil
+        }
+        #endif
+        
+        logger.debug("Motion detection stopped")
+    }
+    
+    private func setupMotionDetection() {
         #if os(iOS)
         // iOS implementation using CMMotionManager
         guard motionManager.isAccelerometerAvailable else {

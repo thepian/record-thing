@@ -1,0 +1,32 @@
+/*
+See LICENSE folder for this sample’s licensing information.
+
+Abstract:
+TODO
+*/
+
+/*
+  InfoPlist.strings
+  ThepiaApp
+*/
+
+/* Bundle name */
+"CFBundleName" = "ThepiaApp";
+
+/* Bundle display name */
+"CFBundleDisplayName" = "Thepia";
+
+/* Copyright (human-readable) */
+"NSHumanReadableCopyright" = "Copyright © 2024 Thepia. All rights reserved.";
+
+/* Privacy - Camera Usage Description */
+"NSCameraUsageDescription" = "Thepia needs camera access to record video.";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "Thepia needs microphone access to record audio.";
+
+/* Privacy - Photo Library Usage Description */
+"NSPhotoLibraryUsageDescription" = "Thepia needs access to your photo library to save videos.";
+
+/* Privacy - Photo Library Additions Usage Description */
+"NSPhotoLibraryAddUsageDescription" = "Thepia needs access to save videos to your photo library.";

@@ -165,7 +165,7 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
       }
       // Priority 4: Fall back to bundle database
       else if let bundleDbPath = Bundle.main.path(
-        forResource: "default-record-thing", ofType: "sqlite")
+        forResource: "default-db", ofType: "sqlite")
       {
         logger.info("📋 Copying default database from bundle...")
         logger.info("   Source: \(bundleDbPath)")
@@ -186,7 +186,7 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
           )
         }
       } else {
-        logger.error("❌ Bundle database 'default-record-thing.sqlite' not found")
+        logger.error("❌ Bundle database 'default-db.sqlite' not found")
       }
     } else {
       logger.info("✅ Working database already exists at: \(appSupportPath.platformPath)")
@@ -307,19 +307,19 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
       // Reset working database in App Support folder
       let appSupportPath = FileManager.default.urls(
         for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        .appendingPathComponent("record-thing.sqlite")
+        .appendingPathComponent("app-db.sqlite")
 
       // Also reset backup in Documents folder
       let documentsBackupPath = FileManager.default.urls(
         for: .documentDirectory, in: .userDomainMask)[0]
-        .appendingPathComponent("record-thing-backup.sqlite")
+        .appendingPathComponent("app-db.sqlite")
 
       // Remove existing databases
       try? FileManager.default.removeItem(atPath: appSupportPath.platformPath)
       try? FileManager.default.removeItem(atPath: documentsBackupPath.platformPath)
 
       // Copy default database to working location
-      if let bundleDbPath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite")
+      if let bundleDbPath = Bundle.main.path(forResource: "default-db", ofType: "sqlite")
       {
         try? FileManager.default.copyItem(atPath: bundleDbPath, toPath: appSupportPath.platformPath)
         logger.debug("Copied default DB to: \(appSupportPath.platformPath)")
@@ -338,7 +338,7 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
     guard let db = db else { return }
 
     // Update translations table from default database
-    if let bundleDbPath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite") {
+    if let bundleDbPath = Bundle.main.path(forResource: "default-db", ofType: "sqlite") {
       do {
         let defaultDb = try Blackbird.Database(path: bundleDbPath)
         let rows: [Dictionary] = try await defaultDb.query(
@@ -529,7 +529,7 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
     case .inMemory:
       return ":memory:"
     case .bundled:
-      return Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite") ?? ""
+      return Bundle.main.path(forResource: "default-db", ofType: "sqlite") ?? ""
     }
   }
 
@@ -540,7 +540,7 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
     // Always use the runtime-determined App Support directory
     // This automatically handles containerization correctly
     let appSupportURL = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-    let databaseURL = appSupportURL.appendingPathComponent("record-thing.sqlite")
+    let databaseURL = appSupportURL.appendingPathComponent("app-db.sqlite")
 
     logger.info("📁 Production database path: \(databaseURL.platformPath)")
 
@@ -604,10 +604,10 @@ open class AppDatasource: ObservableObject, AppDatasourceAPI {
       let homeDir = NSHomeDirectory()
       let legacyPaths = [
         // Potential legacy container with display name
-        "\(homeDir)/Library/Containers/Record Thing/Data/Library/Application Support/record-thing.sqlite",
+        "\(homeDir)/Library/Containers/Record Thing/Data/Library/Application Support/app-db.sqlite",
         // Other potential legacy paths
-        "\(homeDir)/Library/Application Support/RecordThing/record-thing.sqlite",
-        "\(homeDir)/Library/Application Support/Record Thing/record-thing.sqlite",
+        "\(homeDir)/Library/Application Support/RecordThing/app-db.sqlite",
+        "\(homeDir)/Library/Application Support/Record Thing/app-db.sqlite",
       ]
 
       for legacyPath in legacyPaths {

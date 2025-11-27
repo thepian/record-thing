@@ -254,8 +254,8 @@ public class iCloudSyncManager: ObservableObject {
   private func shouldRestoreFromiCloud() -> Bool {
     guard let iCloudURL = iCloudDocumentsURL else { return false }
 
-    let iCloudDatabaseURL = iCloudURL.appendingPathComponent("record-thing.sqlite")
-    let localDatabaseURL = localDocumentsURL.appendingPathComponent("record-thing.sqlite")
+    let iCloudDatabaseURL = iCloudURL.appendingPathComponent("app-db.sqlite")
+    let localDatabaseURL = localDocumentsURL.appendingPathComponent("app-db.sqlite")
 
     // Check if iCloud has a newer database
     if fileManager.fileExists(atPath: iCloudDatabaseURL.path),
@@ -282,8 +282,8 @@ public class iCloudSyncManager: ObservableObject {
       throw SyncError.iCloudUnavailable
     }
 
-    let localDatabaseURL = localDocumentsURL.appendingPathComponent("record-thing.sqlite")
-    let iCloudDatabaseURL = iCloudURL.appendingPathComponent("record-thing.sqlite")
+    let localDatabaseURL = localDocumentsURL.appendingPathComponent("app-db.sqlite")
+    let iCloudDatabaseURL = iCloudURL.appendingPathComponent("app-db.sqlite")
 
     if fileManager.fileExists(atPath: localDatabaseURL.path) {
       try fileManager.copyItem(at: localDatabaseURL, to: iCloudDatabaseURL)
@@ -311,8 +311,8 @@ public class iCloudSyncManager: ObservableObject {
     }
 
     // Restore database
-    let iCloudDatabaseURL = iCloudURL.appendingPathComponent("record-thing.sqlite")
-    let localDatabaseURL = localDocumentsURL.appendingPathComponent("record-thing.sqlite")
+    let iCloudDatabaseURL = iCloudURL.appendingPathComponent("app-db.sqlite")
+    let localDatabaseURL = localDocumentsURL.appendingPathComponent("app-db.sqlite")
 
     if fileManager.fileExists(atPath: iCloudDatabaseURL.path) {
       try fileManager.copyItem(at: iCloudDatabaseURL, to: localDatabaseURL)

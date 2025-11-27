@@ -255,7 +255,7 @@ public struct DatabaseConnectivityDebugView: View {
           title: "Actual App Support", value: actualAppSupportPath.platformPath)
 
         // Show if the database file exists
-        let dbPath = actualAppSupportPath.appendingPathComponent("record-thing.sqlite")
+        let dbPath = actualAppSupportPath.appendingPathComponent("app-db.sqlite")
         let dbExists = FileManager.default.fileExists(atPath: dbPath.platformPath)
         DatabaseDiagnosticsRow(
           title: "Database File Exists",
@@ -355,7 +355,7 @@ public struct DatabaseConnectivityDebugView: View {
 
       Task {
         guard
-          let bundlePath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite")
+          let bundlePath = Bundle.main.path(forResource: "default-db", ofType: "sqlite")
         else {
           await MainActor.run {
             testConnectionResult = "❌ Bundled database not found"

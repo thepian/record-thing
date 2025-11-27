@@ -113,7 +113,7 @@ Features: Full read/write access, no persistence
 
 ### **5. Bundled Mode** (Last Resort)
 ```
-Path: Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite")
+Path: Bundle.main.path(forResource: "default-db", ofType: "sqlite")
 Use Case: Read-only access to default data
 Requirements: Bundled database in app resources
 Limitations: Read-only access

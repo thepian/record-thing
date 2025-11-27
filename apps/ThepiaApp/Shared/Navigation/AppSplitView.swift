@@ -1,0 +1,243 @@
+import RecordLib
+import SwiftUI
+import SwiftUIIntrospect
+
+struct EvidenceListItem: View {
+  let evidence: EvidencePiece
+
+  var body: some View {
+    HStack {
+      //                evidence.type.icon
+      //                    .foregroundColor(.accentColor)
+
+      VStack(alignment: .leading) {
+        Text(evidence.title)
+          .font(.headline)
+        Text(evidence.metadata["type"] ?? "Unknown")
+          .font(.caption)
+          .foregroundColor(.secondary)
+      }
+    }
+  }
+}
+
+struct AppSplitView<DetailContent: View>: View {
+  @State private var preferredColumn = NavigationSplitViewColumn.detail
+  @Binding var columnVisibility: NavigationSplitViewVisibility
+  @Binding var path: NavigationPath
+  @Binding var lifecycleView: LifecycleView
+  @ObservedObject var evidenceViewModel: EvidenceViewModel
+  @ObservedObject var captureService: CaptureService
+  @ObservedObject var cameraViewModel: CameraViewModel
+  @Environment(\.assetsViewModel) var assetsViewModel
+  let designSystem: DesignSystemSetup
+  let detailContent: DetailContent
+
+  init(
+    columnVisibility: Binding<NavigationSplitViewVisibility>,
+    lifecycleView: Binding<LifecycleView>,
+    path: Binding<NavigationPath>,
+    evidenceViewModel: EvidenceViewModel,
+    cameraViewModel: CameraViewModel,
+    captureService: CaptureService,
+    designSystem: DesignSystemSetup,
+    @ViewBuilder detailContent: () -> DetailContent
+  ) {
+    self._columnVisibility = columnVisibility
+    self._path = path
+    self._lifecycleView = lifecycleView
+    self.evidenceViewModel = evidenceViewModel
+    self.cameraViewModel = cameraViewModel
+    self.captureService = captureService
+    self.designSystem = designSystem
+    self.detailContent = detailContent()
+  }
+
+  #if os(macOS)
+    var macosList: some View {
+      List(selection: $lifecycleView) {
+        // Main sidebar views using enum properties
+        ForEach([LifecycleView.record, .assets, .actions, .settings], id: \.self) { view in
+          NavigationLink(value: view) {
+            Label(view.label, systemImage: view.imageName)
+          }
+          .accessibilityLabel(view.label)
+        }
+
+        // Additional navigation items
+        NavigationLink {
+          ThingsMenu()
+        } label: {
+          Label("Things", systemImage: "square.3.layers.3d")
+        }
+
+        NavigationLink {
+          EvidenceTypeMenu()
+        } label: {
+          Label("Evidence Type", systemImage: "square.3.layers.3d")
+        }
+
+        Section("Actions") {
+          Button(action: {
+            evidenceViewModel.reviewing.toggle()
+          }) {
+            Label("Review Evidence", systemImage: "photo.stack")
+          }
+        }
+      }
+      .listStyle(.sidebar)
+      #if os(macOS)
+        .accentColor(.red)
+      #endif
+    }
+  #endif
+
+  var iosList: some View {
+    List {
+      // Main sidebar views using enum properties
+      ForEach([LifecycleView.record, .assets, .actions, .settings], id: \.self) { view in
+        Button(action: { lifecycleView = view }) {
+          Label(view.label, systemImage: view.imageName)
+        }
+        .accessibilityLabel(view.label)
+      }
+
+      NavigationLink {
+        ThingsMenu()
+      } label: {
+        Label("Things", systemImage: "square.3.layers.3d")
+      }
+
+      NavigationLink {
+        EvidenceTypeMenu()
+      } label: {
+        Label("Evidence Type", systemImage: "square.3.layers.3d")
+      }
+
+      Section("Actions") {
+        Button(action: {
+          evidenceViewModel.reviewing.toggle()
+        }) {
+          Label("Review Evidence", systemImage: "photo.stack")
+        }
+      }
+    }
+    .listStyle(.sidebar)
+  }
+
+  var body: some View {
+    NavigationSplitView(
+      columnVisibility: $columnVisibility, preferredCompactColumn: $preferredColumn
+    ) {
+      // Sidebar
+      ZStack {
+        // Gradient background
+        //                LinearGradient(
+        //                    gradient: Gradient(colors: [
+        //                        Color.white.opacity(0.7),
+        //                        Color.white.opacity(0.4)
+        //                    ]),
+        //                    startPoint: .topLeading,
+        //                    endPoint: .bottomTrailing
+        //                )
+        //                .overlay(
+        //                    // Subtle texture
+        //                    Image(systemName: "circle.grid.3x3.fill")
+        //                        .foregroundColor(.white.opacity(0.1))
+        //                        .scaleEffect(2)
+        //                )
+
+        // Blur effect
+        //                VisualEffectView()
+        #if os(macOS)
+          macosList
+        #else
+          iosList
+        #endif
+      }
+      .navigationTitle("Thepia")
+    } detail: {
+      detailContent
+    }
+    .navigationSplitViewStyle(.balanced)
+    #if os(macOS)
+      .toolbar(.visible, for: .windowToolbar)
+    #else
+      .toolbar(.visible, for: .navigationBar, .tabBar)
+    #endif
+  }
+}
+
+#if os(iOS)
+  extension UIView {
+    fileprivate func clearBackgrounds() {
+      backgroundColor = .clear
+      for subview in subviews {
+        subview.clearBackgrounds()
+      }
+    }
+  }
+#endif
+
+// VisualEffectView for macOS
+#if os(macOS)
+  struct VisualEffectView: NSViewRepresentable {
+    func makeNSView(context: Context) -> NSVisualEffectView {
+      let view = NSVisualEffectView()
+      view.material = .sidebar
+      view.blendingMode = .behindWindow
+      view.state = .active
+      return view
+    }
+
+    func updateNSView(_ nsView: NSVisualEffectView, context: Context) {
+      // No updates needed
+    }
+  }
+#else
+  struct VisualEffectView: UIViewRepresentable {
+    func makeUIView(context: Context) -> UIVisualEffectView {
+      return UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
+    }
+
+    func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
+      // No updates needed
+    }
+  }
+#endif
+
+#if DEBUG
+  struct AppSplitView_Previews: PreviewProvider {
+    static var previews: some View {
+      @StateObject var assetsViewModel = AssetsViewModel()
+
+      AppSplitView(
+        columnVisibility: .constant(.detailOnly),
+        lifecycleView: .constant(.record),
+        path: .constant(NavigationPath()),
+        evidenceViewModel: .createDefault(),
+        cameraViewModel: CameraViewModel(),
+        captureService: CaptureService(),
+        designSystem: .light
+      ) {
+        Text("Detail Content")
+      }
+      .environment(\.assetsViewModel, assetsViewModel)
+      .previewDisplayName("Collapsed")
+
+      AppSplitView(
+        columnVisibility: .constant(.automatic),
+        lifecycleView: .constant(.record),
+        path: .constant(NavigationPath()),
+        evidenceViewModel: .createDefault(),
+        cameraViewModel: CameraViewModel(),
+        captureService: CaptureService(),
+        designSystem: .light
+      ) {
+        Text("Detail Content")
+      }
+      .environment(\.assetsViewModel, assetsViewModel)
+      .previewDisplayName("Expanded")
+    }
+  }
+#endif

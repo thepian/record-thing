@@ -125,6 +125,8 @@ public class DatabaseConnectivityManager: ObservableObject {
     logger.info("🚀 Starting database connection with fallback strategy")
 
     // Try connection modes in priority order
+    // In release builds, skip debug/development checks to avoid ~340ms startup delay
+    #if DEBUG
     let connectionModes: [DatabaseMode] = [
       .debug,  // Highest priority for development
       .development,  // Git-tracked database
@@ -132,17 +134,30 @@ public class DatabaseConnectivityManager: ObservableObject {
       .inMemory,  // In-memory fallback
       .bundled,  // Last resort (read-only)
     ]
+    #else
+    let connectionModes: [DatabaseMode] = [
+      .production,  // App Support folder
+      .inMemory,  // In-memory fallback
+      .bundled,  // Last resort (read-only)
+    ]
+    logger.debug("🚀 Release build: skipping debug/development database checks")
+    #endif
 
     for mode in connectionModes {
+      let attemptStartTime = CFAbsoluteTimeGetCurrent()
       logger.info("🔍 Attempting connection in \(mode.displayName) mode")
 
       if let database = await attemptConnection(mode: mode) {
+        let attemptDuration = CFAbsoluteTimeGetCurrent() - attemptStartTime
         await MainActor.run {
           self.currentMode = mode
           self.isConnected = true
         }
-        logger.info("✅ Successfully connected in \(mode.displayName) mode")
+        logger.info("✅ Successfully connected in \(mode.displayName) mode (took \(String(format: "%.3f", attemptDuration))s)")
         return (database, mode)
+      } else {
+        let attemptDuration = CFAbsoluteTimeGetCurrent() - attemptStartTime
+        logger.debug("⏱️ \(mode.displayName) check took \(String(format: "%.3f", attemptDuration))s")
       }
     }
 
@@ -179,7 +194,8 @@ public class DatabaseConnectivityManager: ObservableObject {
         return try await connectToBundled(&issues)
       }
     } catch {
-      logger.error("❌ Connection failed for \(mode.displayName): \(error)")
+      // Use warning instead of error for expected fallback failures
+      logger.warning("⚠️ Connection failed for \(mode.displayName): \(error.localizedDescription)")
       issues.append(.unknownError(error))
       await MainActor.run {
         self.lastError = error
@@ -294,7 +310,7 @@ public class DatabaseConnectivityManager: ObservableObject {
   public func createInMemoryClone() async -> Blackbird.Database? {
     logger.info("🧠 Creating in-memory database clone")
 
-    guard let bundlePath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite")
+    guard let bundlePath = Bundle.main.path(forResource: "default-db", ofType: "sqlite")
     else {
       logger.error("❌ Bundled database not found")
       return nil
@@ -344,7 +360,7 @@ public class DatabaseConnectivityManager: ObservableObject {
   {
     let appSupportPath = FileManager.default.urls(
       for: .applicationSupportDirectory, in: .userDomainMask)[0]
-      .appendingPathComponent("record-thing.sqlite")
+      .appendingPathComponent("app-db.sqlite")
 
     // Ensure App Support directory exists
     let appSupportDir = appSupportPath.deletingLastPathComponent()
@@ -399,7 +415,7 @@ public class DatabaseConnectivityManager: ObservableObject {
   private func connectToBundled(_ issues: inout [ConnectivityIssue]) async throws -> Blackbird
     .Database?
   {
-    guard let bundlePath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite")
+    guard let bundlePath = Bundle.main.path(forResource: "default-db", ofType: "sqlite")
     else {
       issues.append(.fileNotFound)
       throw NSError(
@@ -432,7 +448,7 @@ public class DatabaseConnectivityManager: ObservableObject {
     case .inMemory:
       return ":memory:"
     case .bundled:
-      return Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite") ?? ""
+      return Bundle.main.path(forResource: "default-db", ofType: "sqlite") ?? ""
     }
   }
 
@@ -443,7 +459,7 @@ public class DatabaseConnectivityManager: ObservableObject {
     // Always use the runtime-determined App Support directory
     // This automatically handles containerization correctly
     let appSupportURL = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-    let databaseURL = appSupportURL.appendingPathComponent("record-thing.sqlite")
+    let databaseURL = appSupportURL.appendingPathComponent("app-db.sqlite")
 
     logger.info("📁 Production database path: \(databaseURL.platformPath)")
     logger.info("📁 App Support directory: \(appSupportURL.platformPath)")
@@ -538,7 +554,7 @@ public class DatabaseConnectivityManager: ObservableObject {
   }
 
   private func copyBundledDatabase(to destination: URL) async throws {
-    guard let bundlePath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite")
+    guard let bundlePath = Bundle.main.path(forResource: "default-db", ofType: "sqlite")
     else {
       throw NSError(
         domain: "DatabaseError", code: 1,

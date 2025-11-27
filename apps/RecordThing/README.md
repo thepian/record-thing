@@ -193,7 +193,7 @@ The debug view provides:
 
 ### What Gets Synced
 
-- **Database**: `record-thing.sqlite` - Main app database
+- **Database**: `app-db.sqlite` - Main app database
 - **Assets**: `assets/` folder - User recordings and media files
 - **Backups**: Database backup copies
 - **User files**: Any files created in Documents directory
@@ -207,7 +207,7 @@ Monitor sync health in production code:
 let summary = SimpleiCloudManager.shared.getSyncSummary()
 
 // Monitor specific files
-let dbStatus = SimpleiCloudManager.shared.getFileStatus("record-thing.sqlite")
+let dbStatus = SimpleiCloudManager.shared.getFileStatus("app-db.sqlite")
 
 // Get detailed sync states
 let allStates = SimpleiCloudManager.shared.documentStates

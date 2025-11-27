@@ -601,9 +601,9 @@ struct TranslationsManagementView: View {
   private var statsHeader: some View {
     VStack(spacing: 12) {
       HStack(spacing: 20) {
-        StatCard(title: "Current DB", value: "\(stats.dbCount)", color: .blue)
-        StatCard(title: "Default DB", value: "\(stats.defaultDbCount)", color: .green)
-        StatCard(title: "Hardcoded", value: "\(stats.hardcodedCount)", color: .orange)
+        SettingsStatCard(title: "Current DB", value: "\(stats.dbCount)", color: .blue)
+        SettingsStatCard(title: "Default DB", value: "\(stats.defaultDbCount)", color: .green)
+        SettingsStatCard(title: "Hardcoded", value: "\(stats.hardcodedCount)", color: .orange)
       }
 
       HStack {
@@ -720,7 +720,7 @@ class TranslationStatsLoader {
     }
 
     // Count translations in default database
-    if let bundleDbPath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite") {
+    if let bundleDbPath = Bundle.main.path(forResource: "default-db", ofType: "sqlite") {
       do {
         let defaultDb = try Blackbird.Database(path: bundleDbPath)
         let defaultRows: [Dictionary] = try await defaultDb.query(
@@ -800,7 +800,7 @@ struct TranslationRowView: View {
   }
 }
 
-struct StatCard: View {
+struct SettingsStatCard: View {
   let title: String
   let value: String
   let color: Color
@@ -858,7 +858,7 @@ class TranslationLoader {
     // If no translations found, try loading from bundled database
     if translations.isEmpty {
       print("🔄 Attempting to load from bundled database...")
-      if let bundleDbPath = Bundle.main.path(forResource: "default-record-thing", ofType: "sqlite")
+      if let bundleDbPath = Bundle.main.path(forResource: "default-db", ofType: "sqlite")
       {
         do {
           let bundleDb = try Blackbird.Database(path: bundleDbPath)
