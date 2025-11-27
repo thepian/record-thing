@@ -105,8 +105,11 @@ final class Model: ObservableObject {
 
   @Published var lifecycleView: LifecycleView = .loading
   @Published var loadedLang: String?
+  @Published var webAppURL: URL?
+  @Published var thepiaConfig: [String: Any]?
 
   init() {
+    fetchManifold()
 
     guard let user = userCredential else { return }
     let provider = ASAuthorizationAppleIDProvider()
@@ -118,6 +121,25 @@ final class Model: ObservableObject {
       }
     }
 
+  }
+
+  func fetchManifold() {
+    guard let url = URL(string: "https://app.thepia.net/manifold.json") else { return }
+    
+    Task {
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let thepia = json["thepia"] as? [String: Any] {
+                DispatchQueue.main.async {
+                    self.thepiaConfig = thepia
+                    logger.debug("✅ Loaded manifold config: \(thepia)")
+                }
+            }
+        } catch {
+            logger.error("❌ Failed to fetch manifold: \(error.localizedDescription)")
+        }
+    }
   }
 
   convenience init(loadedLang _loadedLang: Published<String?>.Publisher?, primaryView: LifecycleView = .record) {
@@ -186,6 +208,6 @@ extension Model {
 
 extension Model {
   var identityImage: Image {
-    Image("thepia_a_beige_scandinavian_kitchen_table_with_bag")
+    Image("beige_scandinavian_kitchen_and_dining_table")
   }
 }

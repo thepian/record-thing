@@ -319,7 +319,7 @@ struct ContentView: View {
           AppIdentityView()
               .fullScreenCover(isPresented: .constant(true)) {
                   WebAppView(config: WebAppConfig()
-                      .startURL(URL(string: "https://dev.thepia.net:5173/"))
+                      .startURL(model.webAppURL ?? URL(string: "https://dev.thepia.net:5173/"))
                       .initialPageHeight(.full)
                       .authHandler(NativeFlowsAuthHandler()),
                              initialReadiness: .ready // todo loading

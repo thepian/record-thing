@@ -243,6 +243,14 @@ struct ThepiaApp: App {
             }
           #endif
         }
+        .onOpenURL { url in
+            logger.debug("🔗 Opened via URL: \(url)")
+            // Check if it matches our associated domain
+            if url.host == "app.thepia.net" {
+                model.webAppURL = url
+                model.lifecycleView = .development
+            }
+        }
         .onChange(of: scenePhase) { oldPhase, newPhase in
           switch newPhase {
           case .active:  // On application startup or resume

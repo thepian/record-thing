@@ -51,5 +51,11 @@
         <!-- Network access -->
         <key>com.apple.security.network.client</key>
         <true />
+        
+        <!-- Associated Domains -->
+        <key>com.apple.developer.associated-domains</key>
+        <array>
+            <string>applinks:app.thepia.net</string>
+        </array>
     </dict>
 </plist>

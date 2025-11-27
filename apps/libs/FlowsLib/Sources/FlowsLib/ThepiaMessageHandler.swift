@@ -12,43 +12,19 @@ public class ThepiaMessageHandler: NSObject, WKScriptMessageHandler {
     public func userContentController(_ userContentController: WKUserContentController,
                               didReceive message: WKScriptMessage) {
         guard let dict = message.body as? [String: Any],
-              let type = dict["type"] as? String else {
+              let requestId = dict["requestId"] as? String? else {
             return
         }
-        
-        if type == "webapp_state" {
-            NotificationCenter.default.post(name: .WebAppStateUpdated, object: nil, userInfo: dict)
-            return
-        }
-        
-        // For all other message types, we expect a requestId
-        guard let requestId = dict["requestId"] as? String else {
-            // If it's not webapp_state and no requestId, we can't respond, so just return.
-            return
-        }
-        
-        // If type is present, route based on it (new protocol)
-        // If not present, infer from procedure or other fields (backward compatibility if needed)
         
         if let messageType = dict["type"] as? String {
             switch messageType {
-            case "auth":
-                // Generic auth wrapper if used
-                handleAuthMessage(body: dict, requestId: requestId, webView: message.webView)
             case "flowsdb":
-                handleFlowsDBMessage(body: dict, requestId: requestId, webView: message.webView)
-            case "saveSession", "getSession", "clearSession", 
-                 "saveUser", "getUser", "clearUser", 
-                 "updateUserMetadata", "patchMetadata":
-                // Legacy/Direct auth types - map to flowsdb auth procedures
-                var newBody = dict
-                newBody["procedure"] = "auth.\(messageType)"
-                if let data = dict["data"] {
-                    newBody["payload"] = data
-                }
-                handleFlowsDBMessage(body: newBody, requestId: requestId, webView: message.webView)
+                handleFlowsDBMessage(body: dict, requestId: requestId as String?, webView: message.webView)
+            case "webapp_state":
+                // Handle state notification (fire-and-forget)
+                NotificationCenter.default.post(name: .WebAppStateUpdated, object: nil, userInfo: dict)
             default:
-                sendError(requestId: requestId, error: "Unknown message type: \(messageType)", webView: message.webView)
+                sendError(requestId: requestId as String?, error: "Unknown message type: \(messageType)", webView: message.webView)
             }
         } else {
             sendError(requestId: requestId, error: "Missing message type", webView: message.webView)
@@ -103,7 +79,11 @@ public class ThepiaMessageHandler: NSObject, WKScriptMessageHandler {
         }
     }
 
-    private func handleFlowsDBMessage(body: [String: Any], requestId: String, webView: WKWebView?) {
+    private func handleFlowsDBMessage(body: [String: Any], requestId: String?, webView: WKWebView?) {
+        guard let requestId = requestId as? String else {
+            sendError(requestId: nil, error: "missing requestId", webView: webView)
+            return
+        }
         guard let procedure = body["procedure"] as? String else {
             sendError(requestId: requestId, error: "Missing procedure", webView: webView)
             return
@@ -226,7 +206,7 @@ public class ThepiaMessageHandler: NSObject, WKScriptMessageHandler {
         }
 
         // Call JavaScript response handler
-        let js = "window.__thepiaFlowsDBResponseHandler(\(jsonString))"
+        let js = "window.__thepiaResponseHandlerString))"
         
         DispatchQueue.main.async {
             webView?.evaluateJavaScript(js, completionHandler: { _, error in
@@ -237,7 +217,7 @@ public class ThepiaMessageHandler: NSObject, WKScriptMessageHandler {
         }
     }
     
-    private func sendError(requestId: String, error: String, webView: WKWebView?) {
+    private func sendError(requestId: String?, error: String, webView: WKWebView?) {
         var response: [String: Any] = [
             "requestId": requestId,
             "success": false,
@@ -249,7 +229,7 @@ public class ThepiaMessageHandler: NSObject, WKScriptMessageHandler {
             return
         }
         
-        let js = "window.__thepiaFlowsDBResponseHandler(\(jsonString))"
+        let js = "window.__thepiaResponseHandlerString))"
         
         DispatchQueue.main.async {
             webView?.evaluateJavaScript(js, completionHandler: nil)

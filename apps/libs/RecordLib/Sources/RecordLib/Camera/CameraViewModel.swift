@@ -145,7 +145,7 @@ public class CameraViewModel: ObservableObject {
     /// Pauses the camera stream
     public func pauseCamera() {
         guard let captureService = captureService else {
-            logger.error("Cannot pause camera: capture service not set")
+            logger.debug("pauseCamera ignored: capture service not set (camera likely not started)")
             return
         }
         
@@ -157,7 +157,7 @@ public class CameraViewModel: ObservableObject {
     /// Resumes the camera stream
     public func resumeCamera() {
         guard let captureService = captureService else {
-            logger.error("Cannot resume camera: capture service not set")
+            logger.debug("resumeCamera ignored: capture service not set")
             return
         }
         
